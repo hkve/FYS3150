@@ -29,6 +29,7 @@ public:
 
 	void Print_problem();
 	void Print_LU();
+	void Print_sol();
 	void Delete();
 };
 

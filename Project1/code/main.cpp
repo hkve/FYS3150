@@ -30,9 +30,8 @@ int main(int argc, char const *argv[])
 
 		//Problem1.Print_problem();
 		//Problem1.Print_LU();
-		Problem1.Delete();
-/*
-*/	
+		Problem1.Print_sol();
+		Problem1.Delete();	
 	}
 
 	return 0;

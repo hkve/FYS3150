@@ -117,9 +117,11 @@ void Problem::Write_to_file(string filename) {
 
 	ofstream outfile (filename);
 
+	outfile << m_x[0] - m_h << "," << 0 <<endl; // Making sure x(0) = 0, v(0) = 0
 	for(int i = 0; i< m_n; i++) {
 		outfile << m_x[i] << "," << m_v[i] <<endl;
 	}
+	outfile << m_x[m_n-1] + m_h << "," << 0 <<endl; // Making sure x(n+1) = 1, v(n+1) = 0 
 
 	outfile.close();
 	
@@ -148,6 +150,15 @@ void Problem::Print_LU() {
 		}
 		cout << endl;
 	}  
+}
+
+void Problem::Print_sol() {
+	cout << "x \t v(x) for n = " << m_n <<endl;
+	cout << m_x[0] - m_h << " " << 0 <<endl; // Making sure x(0) = 0, v(0) = 0
+	for(int i = 0; i < m_n; i++) {
+		cout << m_x[i] << " " << m_v[i] <<endl;
+	}
+	cout << m_x[m_n-1] + m_h << " " << 0 <<endl; // Making sure x(n+1) = 1, v(n+1) = 0 
 }
 
 void Problem::Delete() {
