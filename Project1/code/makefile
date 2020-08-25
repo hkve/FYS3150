@@ -1,7 +1,7 @@
 all: compile execute
 
 compile:
-	g++ -o main.out main.cpp problem.cpp 
+	g++ -o main.exe main.cpp problem.cpp 
 
 execute:
 	./main.out sol_data 3

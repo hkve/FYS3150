@@ -4,21 +4,24 @@
 #include <string>
 
 class Problem {
+/*
+	Problem class, everything is declared here
+*/
 private:
-	int m_p;
-	int m_n;
-	double m_h;
-	double** m_matrix;
-	double** m_L;
-	double** m_U;
+	int m_p; // exponent
+	int m_n; // matrix dims
+	double m_h; // step length
+	double** m_matrix; // A matrix
+	double** m_L; // L matrix
+	double** m_U; // U matrix
 
-	double* m_x;
-	double* m_btilde;
-	double* m_y;
-	double* m_v;
+	double* m_x; // x vector
+	double* m_btilde; // b_tilde vector
+	double* m_y; // y vector 
+	double* m_v; // v vector
 
 public:
-	Problem(int p);
+	Problem(int p); // Constructor, 
 	inline double f(double x); 
 	inline double analytical(double x);
 	void Initialize();
