@@ -17,7 +17,7 @@ int main(int argc, char const *argv[])
 
 	// Reading method for data and the maximum exponent for matrix dims
 	if (argc <= 1) {
-		cout << "bad usage: " << argv[0] << " also add methode (sgeneral, general or specific) and max power of n. ex: ./main general 4 \n";
+		cout << "bad usage: " << argv[0] << " also add methode (sgeneral, general or special) and max power of n. ex: ./main general 4 \n";
 		exit(1);
 	}
 	else {
@@ -32,11 +32,11 @@ int main(int argc, char const *argv[])
 	else if(method == "general") {
 		general(method, max_p);
 	}
-	else if(method == "specific") {
+	else if(method == "special") {
 		cout << method <<endl;
 	}
 	else {
-		cout << method << " is not a valid method, enter sgeneral, general or specific" <<endl;
+		cout << method << " is not a valid method, enter sgeneral, general or special" <<endl;
 	}
 
 	return 0;
