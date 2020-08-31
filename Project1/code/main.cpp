@@ -4,11 +4,13 @@
 #include <chrono>
 #include "super_general.hpp"
 #include "general.hpp"
+#include "special.hpp"
 
 using namespace std;
 
 void super_general(string method, int max_p);
 void general(string method, int max_p);
+void special(string method, int max_p);
 
 int main(int argc, char const *argv[])
 {
@@ -33,7 +35,7 @@ int main(int argc, char const *argv[])
 		general(method, max_p);
 	}
 	else if(method == "special") {
-		cout << method <<endl;
+		special(method, max_p);
 	}
 	else {
 		cout << method << " is not a valid method, enter sgeneral, general or special" <<endl;
@@ -71,5 +73,23 @@ void general(string method, int max_p) {
 
 		problem.Write_to_file(method); // Write results
 		problem.Delete(); // Free up memory
+	}
+}
+
+void special(string method, int max_p) {
+	for(int p = 1; p <= max_p; p++) {
+		Special problem(p);
+		problem.Initialize();
+
+		auto start = chrono::steady_clock::now();
+		problem.Backward_sub();
+
+		auto end = chrono::steady_clock::now();
+		
+		cout << "p = " << p;
+		cout << chrono::duration_cast<chrono::nanoseconds>(end - start).count() << " ns" <<endl;
+
+		problem.Write_to_file(method);
+		problem.Delete();
 	}
 }
