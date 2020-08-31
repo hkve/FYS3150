@@ -1,7 +1,8 @@
 all: compile execute
 
 compile:
-	g++ -o main.exe main.cpp problem.cpp 
+	g++ -o main.exe main.cpp super_general.cpp general.cpp 
 
 execute:
-	./main.out sol_data 3
+	./main.exe  $A $B
+

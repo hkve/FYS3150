@@ -1,40 +1,75 @@
-#include "problem.hpp"
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <chrono>
+#include "super_general.hpp"
+#include "general.hpp"
 
 using namespace std;
 
+void super_general(string method, int max_p);
+void general(string method, int max_p);
+
 int main(int argc, char const *argv[])
 {
+	int max_p;
+	string method;
 
-	int max_n;
-	string filename;
-
-	// Reading filename for data and the maximum exponent for matrix dims
+	// Reading method for data and the maximum exponent for matrix dims
 	if (argc <= 1) {
-		cout << "bad usage: " << argv[0] << ", also add filename and a max power of n. ex: ./main outfile 4" << "\n";
+		cout << "bad usage: " << argv[0] << " also add methode (sgeneral, general or specific) and max power of n. ex: ./main general 4 \n";
 		exit(1);
 	}
 	else {
-		filename = argv[1];
-		max_n = atoi(argv[2]);  // Make int
+		method = argv[1]; // Gets method
+		max_p = atoi(argv[2]);  // Gets max power and make int
 	}
 
-	for(int i = 1; i <= max_n; i++) {
-		Problem Problem1(i); // Make object	
 
-		Problem1.Initialize(); // Filling array and seting up vectors
-		Problem1.LU(); // Preform LU decomposition
-		Problem1.Forward_substitution(); // Solving Ly = b_tilde
-		Problem1.Backward_substitution(); // Solving LUv = b_tilde => Uv = y
-		Problem1.Write_to_file(filename); // Write results to file
-
-		// Some print functions
-		//Problem1.Print_problem();
-		//Problem1.Print_LU();
-		//Problem1.Print_sol();
-		Problem1.Delete();	// Free up memory (i hope) for the next exponent
+	if(method == "sgeneral") {
+		super_general(method, max_p);
+	}
+	else if(method == "general") {
+		general(method, max_p);
+	}
+	else if(method == "specific") {
+		cout << method <<endl;
+	}
+	else {
+		cout << method << " is not a valid method, enter sgeneral, general or specific" <<endl;
 	}
 
 	return 0;
+}
+
+void super_general(string method, int max_p) {
+	for(int p = 1; p <= max_p; p++) {
+		S_general problem(p);
+		problem.Initialize();	
+		problem.LU();
+		problem.Forward_sub();
+		problem.Backward_sub();
+		
+		problem.Write_to_file(method);
+		problem.Delete();
+	}
+}
+
+void general(string method, int max_p) {
+	for(int p = 1; p <= max_p; p++) {
+		General problem(p); // Call constructor
+		problem.Initialize(); // Fill arrays
+
+		auto start = chrono::steady_clock::now();
+		
+		problem.Forward_sub(); 
+		problem.Backward_sub();
+
+		auto end = chrono::steady_clock::now();
+		
+		cout << chrono::duration_cast<chrono::nanoseconds>(end - start).count() << " ns" <<endl;
+
+		problem.Write_to_file(method); // Write results
+		problem.Delete(); // Free up memory
+	}
 }

@@ -1,17 +1,29 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import os as os
 
-filename = "sol_data"
+def run_program(methods, max_p):
+	for i in range(len(methods)):
+		cmd = "./main.exe " + methods[i] + " " + str(max_p[i]) 
+		os.system(cmd)
 
+def plot_data(methods, max_p):
+	for i in range(len(methods)):
+		for j in range(1, max_p[i]+1):
+			fig, ax = plt.subplots(nrows=1, ncols=1)
+			filename = "data/" + methods[i] + str(j) + ".txt"
+			data = np.loadtxt(filename, delimiter=",")
+			x, calc, analytical = data[:,0], data[:,1], data[:,2]
 
-for i in range(1,4):
-	read_filename = filename + str(i) + ".txt"
-	data = np.loadtxt(read_filename, delimiter=",")
-	plt.plot(data[:,0], data[:,1], label="n = 10e"+str(i))
-	x = data[:,0]
+			h = 10**(-j)
+			ax.set(title=f"Calc vs analytical for h = {h}", xlabel="x", ylabel="y")
+			ax.plot(x, calc, label=methods[i])
+			ax.plot(x, analytical, label="Analytical")
+			plt.legend()
+			plt.show()
 
-analytical = 1-(1-np.exp(-10))*x - np.exp(-10*x)
+methods = ["sgeneral", "general"]
+max_p = [3, 6]
 
-plt.plot(x, analytical, label="analytical")
-plt.legend()
-plt.show()
+plot_data(methods, max_p)
+
