@@ -23,7 +23,7 @@ def plot_data(methods, max_p):
 		
 		analytical = np.loadtxt(filename, delimiter=",")[:,2]	
 		ax.plot(x, analytical, label="Analytical", linestyle="dashed", c="k")
-		plt.legend()
+		ax.legend()
 		plt.show()
 
 
