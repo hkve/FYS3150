@@ -69,6 +69,7 @@ void general(string method, int max_p) {
 
 		auto end = chrono::steady_clock::now();
 		
+		cout << "p = " << p << " t = ";
 		cout << chrono::duration_cast<chrono::nanoseconds>(end - start).count() << " ns" <<endl;
 
 		problem.Write_to_file(method); // Write results
@@ -82,11 +83,11 @@ void special(string method, int max_p) {
 		problem.Initialize();
 
 		auto start = chrono::steady_clock::now();
+		
 		problem.Backward_sub();
 
 		auto end = chrono::steady_clock::now();
-		
-		cout << "p = " << p;
+		cout << "p = " << p << " t = ";
 		cout << chrono::duration_cast<chrono::nanoseconds>(end - start).count() << " ns" <<endl;
 
 		problem.Write_to_file(method);

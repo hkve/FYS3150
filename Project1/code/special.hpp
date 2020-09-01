@@ -12,7 +12,6 @@ private:
 	double* m_x;
 	double* m_d;
 	double* m_f;
-	double* m_f_tilde;
 	double* m_u;
 public:
 	Special(int p);
