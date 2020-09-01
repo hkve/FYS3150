@@ -15,7 +15,6 @@ Special::Special(int p) {
 	m_x = new double[m_n];
 	m_d = new double[m_n];
 	m_f = new double[m_n];
-	m_f_tilde = new double[m_n];
 	m_u = new double[m_n];
 }
 
@@ -35,16 +34,15 @@ void Special::Initialize() {
 		m_d[i] = (i+2)/((double) i+1);
 	}
 
-	m_f_tilde[0] = m_f[0]; // Start not changed
 	for(int i = 1; i < m_n; i++) {
-		m_f_tilde[i] = m_f[i] + m_f_tilde[i-1]/m_d[i-1]; 
+		m_f[i] = m_f[i] + m_f[i-1]/m_d[i-1]; 
 	}
 }
 
 void Special::Backward_sub() {
-	m_u[m_n-1] = m_f_tilde[m_n-1]/m_d[m_n-1];
-	for(int i = m_n-1; i > 0; i--) {
-		m_u[i-1] = (m_f_tilde[i-1]+m_u[i])/m_d[i-1];
+	m_u[m_n-1] = m_f[m_n-1]/m_d[m_n-1];
+	for(int i = m_n-2; i >= 0; i--) {
+		m_u[i] = (m_f[i]+m_u[i+1])/m_d[i];
 	}
 }
 
@@ -77,5 +75,4 @@ void Special::Delete() { // Free up memory
 	delete [] m_x;
 	delete [] m_d;
 	delete [] m_f;
-	delete [] m_f_tilde;
 }
