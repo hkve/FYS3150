@@ -10,7 +10,6 @@ The class is called with an upper limit for p, and will solve the equations
 for every whole number up to, and including p.
 */
 
-
 #include <iostream>
 #include <cmath>
 #include <string>
@@ -21,11 +20,11 @@ for every whole number up to, and including p.
 using namespace std; // To not hurt eyes
 
 General::General(int p) {
-	pmax = p; // Not sponsored
+	pmax = p; // (not sponsored) maximum power of ten to solve for
 	n = (int) pow(10, p);
 	h = (double) 1/(n+1);
 
-	u = new double[n]; x = new double[n]; f = new double[n];
+	u = new double[n]; x = new double[n]; f = new double[n]; // solution u, argument x and rhs f
 	a = new double[n]; b = new double[n]; c = new double[n]; // Diagonal vectors
 	b_tilde = new double[n]; f_tilde = new double[n]; // Vectors for reduced matrix
 }
@@ -76,7 +75,7 @@ void General::Backward_sub() { // Solving the reduced array
 }
 
 void General::Write_to_file(string filename) {
-	filename = "data/"+ filename + to_string(P) + ".txt";
+	filename = "data/"+ filename + to_string(pmax) + ".txt";
 
 	ifstream ifile(filename);
 	if(ifile) { // Check if file exists
