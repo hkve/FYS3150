@@ -5,7 +5,7 @@
 
 class General {
 private:
-	int P; // Max power
+	int pmax; // Max power
 	int n; // Dims for matrix A
 	double h;
 
