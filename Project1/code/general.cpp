@@ -1,3 +1,15 @@
+/*
+This class numerically solves the matrix equation Au = f where
+A is a tridiagonal Toeplitz matrix. The right hand side is given by
+the function f(x) = 100 exp(-10x), but could easily be generalized to
+any arbitrary function. The boundary conditions are set as f(0)=f(1)=0,
+and x € [0,1].
+
+We will solve the equation with LU-decomposition and using 10^p points.
+The class is called with an upper limit for p, and will solve the equations
+for every whole number up to, and including p.
+*/
+
 #include <iostream>
 #include <cmath>
 #include <string>
