@@ -30,15 +30,18 @@ General::General(int p) {
 	b_tilde = new double[n]; f_tilde = new double[n]; // Vectors for reduced matrix
 }
 
-inline double General::func(double x) { // u''(x)
+inline double General::func(double x) { // f(x)
 	return 100*exp(-10*x);
 }
 
-inline double General::analytical(double x) {
+inline double General::analytical(double x) { // analytical solution u(x)
 	return 1-(1-exp(-10))*x-exp(-10*x);
 }
 
 void General::Initialize() {
+	/*This initializes the class with and creates vectors a, b, c
+	containing the diagonal elements of our matrix A, for our
+	specific problem.*/
 	double hh = h*h; // Reduce FLOPS
 	
 	a[0] = c[n-1] = 0; // Useless elements of a and c
