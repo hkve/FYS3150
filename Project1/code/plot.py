@@ -22,8 +22,9 @@ def plot_data(methods, max_p):
 			plt.legend()
 			plt.show()
 
+"""
 methods = ["sgeneral", "general"]
 max_p = [3, 6]
-
+"""
 plot_data(methods, max_p)
 
