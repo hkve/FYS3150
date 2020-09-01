@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 import os as os
 
 def run_program(methods, max_p):
@@ -9,22 +10,25 @@ def run_program(methods, max_p):
 
 def plot_data(methods, max_p):
 	for i in range(len(methods)):
-		for j in range(1, max_p[i]+1):
+		with sns.axes_style("darkgrid"):
 			fig, ax = plt.subplots(nrows=1, ncols=1)
+			ax.set(title=f"Calc vs analytical for {methods[i]} method", xlabel="x", ylabel="y")
+		for j in range(1, max_p[i]+1):
 			filename = "data/" + methods[i] + str(j) + ".txt"
 			data = np.loadtxt(filename, delimiter=",")
-			x, calc, analytical = data[:,0], data[:,1], data[:,2]
+			x, calc = data[:,0], data[:,1]
 
 			h = 10**(-j)
-			ax.set(title=f"Calc vs analytical for h = {h}", xlabel="x", ylabel="y")
-			ax.plot(x, calc, label=methods[i])
-			ax.plot(x, analytical, label="Analytical")
-			plt.legend()
-			plt.show()
+			ax.plot(x, calc, label=f"h = {h}")
+		
+		analytical = np.loadtxt(filename, delimiter=",")[:,2]	
+		ax.plot(x, analytical, label="Analytical", linestyle="dashed", c="k")
+		plt.legend()
+		plt.show()
 
-"""
-methods = ["sgeneral", "general"]
-max_p = [3, 6]
-"""
+
+methods = ["sgeneral", "general", "special"]
+max_p = [3, 4, 4]
+
 plot_data(methods, max_p)
 
