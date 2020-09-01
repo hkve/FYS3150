@@ -20,24 +20,27 @@ for every whole number up to, and including p.
 using namespace std; // To not hurt eyes
 
 General::General(int p) {
-	P = p;
+	pmax = p; // (not sponsored) maximum power of ten to solve for
 	n = (int) pow(10, p);
 	h = (double) 1/(n+1);
 
-	u = new double[n]; x = new double[n]; f = new double[n];
+	u = new double[n]; x = new double[n]; f = new double[n]; // solution u, argument x and rhs f
 	a = new double[n]; b = new double[n]; c = new double[n]; // Diagonal vectors
 	b_tilde = new double[n]; f_tilde = new double[n]; // Vectors for reduced matrix
 }
 
-inline double General::func(double x) { // u''(x)
+inline double General::func(double x) { // f(x)
 	return 100*exp(-10*x);
 }
 
-inline double General::analytical(double x) {
+inline double General::analytical(double x) { // analytical solution u(x)
 	return 1-(1-exp(-10))*x-exp(-10*x);
 }
 
 void General::Initialize() {
+	/*This initializes the class with and creates vectors a, b, c
+	containing the diagonal elements of our matrix A, for our
+	specific problem.*/
 	double hh = h*h; // Reduce FLOPS
 	
 	a[0] = c[n-1] = 0; // Useless elements of a and c
@@ -72,7 +75,7 @@ void General::Backward_sub() { // Solving the reduced array
 }
 
 void General::Write_to_file(string filename) {
-	filename = "data/"+ filename + to_string(P) + ".txt";
+	filename = "data/"+ filename + to_string(pmax) + ".txt";
 
 	ifstream ifile(filename);
 	if(ifile) { // Check if file exists

@@ -19,7 +19,7 @@ int main(int argc, char const *argv[])
 
 	// Reading method for data and the maximum exponent for matrix dims
 	if (argc <= 1) {
-		cout << "bad usage: " << argv[0] << " also add methode (sgeneral, general or special) and max power of n. ex: ./main general 4 \n";
+		cout << "bad usage: " << argv[0] << " also add method (sgeneral, general or special) and max power of n. ex: ./main general 4 \n";
 		exit(1);
 	}
 	else {
