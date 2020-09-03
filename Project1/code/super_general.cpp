@@ -179,6 +179,12 @@ void S_general::Print_sol() {
 }
 
 void S_general::Delete() {
+	
+	for(int i = 0; i < m_n; i++) {
+		delete [] m_matrix[i];
+		delete [] m_L[i];
+	}
+	
 	// Free up space for next exponential
  	delete [] m_matrix;
  	delete [] m_L;

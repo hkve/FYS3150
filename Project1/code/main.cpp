@@ -54,6 +54,7 @@ void super_general(string method, int max_p) {
 		
 		problem.Write_to_file(method);
 		problem.Delete();
+
 	}
 }
 

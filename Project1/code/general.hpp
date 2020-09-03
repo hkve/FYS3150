@@ -5,23 +5,23 @@
 
 class General {
 private:
-	int pmax; // Max power
-	int n; // Dims for matrix A
-	double h;
+	int m_pmax; // Max power
+	int m_n; // Dims for matrix A
+	double m_h;
 
 	// Vectors u (solution) - f (u'') - x (steps)
-	double* u;
-	double* f;
-	double* x;
+	double* m_u;
+	double* m_f;
+	double* m_x;
 
 	// Vectors a,b,c (tridiagonal elements)  
-	double* a;
-	double* b;
-	double* c;
+	double* m_a;
+	double* m_b;
+	double* m_c;
 
 	// Vectors , b_tilde and f_tilde
-	double* b_tilde;
-	double* f_tilde;
+	double* m_b_tilde;
+	double* m_f_tilde;
 public:
 	General(int p); // Constructor
 	inline double func(double x); // u''(x)
