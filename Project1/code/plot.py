@@ -7,7 +7,7 @@ from scipy import stats
 
 def run_program(methods, max_p):
 	for method, p in zip(methods, max_p):
-		# there are slight syntactic differences between Linux and python
+		# there are slight syntactic differences between Linux and Windows
 		# concerning these commands; using platform-module to differentiate
 		if platform.system() == 'Windows':
 			cmd = ".\main.exe " + method + " " + str(p)
