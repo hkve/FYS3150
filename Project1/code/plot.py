@@ -15,13 +15,13 @@ def plot_data(methods, max_p):
 			ax.set(title=f"Calc vs analytical for {methods[i]} method", xlabel="x", ylabel="y")
 		for j in range(1, max_p[i]+1):
 			filename = "data/" + methods[i] + str(j) + ".txt"
-			data = np.loadtxt(filename, delimiter=",")
+			data = np.loadtxt(filename)
 			x, calc = data[:,0], data[:,1]
 
 			h = 10**(-j)
 			ax.plot(x, calc, label=f"h = {h}")
 		
-		analytical = np.loadtxt(filename, delimiter=",")[:,2]	
+		analytical = np.loadtxt(filename)[:,2]	
 		ax.plot(x, analytical, label="Analytical", linestyle="dashed", c="k")
 		ax.legend()
 		plt.show()

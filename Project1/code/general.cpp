@@ -14,6 +14,7 @@ for every whole number up to, and including p.
 #include <cmath>
 #include <string>
 #include <fstream>
+#include <iomanip>
 #include "general.hpp"
 
 
@@ -84,11 +85,15 @@ void General::Write_to_file(string filename) {
 
 	ofstream outfile (filename); // Create file
 
-	outfile << "0, 0, 0" << endl; // Making sure x(0) = 0, u(0) = 0
-	for(int i = 0; i< n; i++) {
-		outfile << x[i] << "," << u[i] << "," << analytical(x[i]) <<endl;
+	for(int i = 0; i < 3; i++) {outfile << setw(15) << setprecision(8) << 0;} // Startpoints
+	outfile << endl;
+	for(int i = 0; i<n; i++) {
+		outfile << setw(15) << setprecision(8) << x[i];
+		outfile << setw(15) << setprecision(8) << u[i]; 
+		outfile << setw(15) << setprecision(8) << analytical(x[i]) <<endl;
 	}
-	outfile << "1, 0, 0" <<endl; // Making sure x(n+1) = 1, u(n+1) = 0 
+	outfile << setw(15) << setprecision(8) << 1;
+	for(int i = 0; i < 2; i++) {outfile << setw(15) << setprecision(8) << 0;} // Endpoints
 
 	outfile.close();
 }

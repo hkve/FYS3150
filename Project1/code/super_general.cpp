@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <cstdio>
+#include <iomanip> 
 
 using namespace std;
 
@@ -125,11 +126,17 @@ void S_general::Write_to_file(string filename) {
 
 	ofstream outfile (filename); // Create file
 
-	outfile << "0, 0, 0" <<endl; // Making sure x(0) = 0, v(0) = 0
-	for(int i = 0; i< m_n; i++) {
-		outfile << m_x[i] << "," << m_v[i] << "," << analytical(m_x[i]) <<endl;
+	// m_m 		m_u 	analytical
+	for(int i = 0; i < 3; i++) {outfile << setw(15) << setprecision(8) << 0;} // Startpoints
+	outfile << endl;
+	for(int i = 0; i<m_n; i++) {
+		outfile << setw(15) << setprecision(8) << m_x[i];
+		outfile << setw(15) << setprecision(8) << m_v[i]; 
+		outfile << setw(15) << setprecision(8) << analytical(m_x[i]) <<endl;
 	}
-	outfile << "1, 0, 0" <<endl; // Making sure x(n+1) = 1, v(n+1) = 0 
+	outfile << setw(15) << setprecision(8) << 1;
+	for(int i = 0; i < 2; i++) {outfile << setw(15) << setprecision(8) << 0;} // Endpoints
+	
 
 	outfile.close();
 }
