@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import os as os
+from scipy import stats
 
 def run_program(methods, max_p):
 	for i in range(len(methods)):
@@ -36,13 +37,15 @@ def plot_data(methods, max_p):
 
 	rel_error = np.array(rel_error)
 	H = np.array(H)
-	print(H)
-	fig, ax = plt.subplots(nrows=1, ncols=1)
-	ax.set_yscale("log")
-	ax.set_xscale("log")
+	slope, const, r_value, p_value, std_err = stats.linregress(np.log10(H[:5]), np.log10(rel_error[:5]))
+	print(slope, std_err)
+	with sns.axes_style("darkgrid"):
+		fig, ax = plt.subplots(nrows=1, ncols=1)
+		ax.set(yscale="log", xscale="log", xlabel="h", ylabel=r"Max($\epsilon$)")
+		ax.plot(H[:5], 10**const * H[:5]**slope, c="k", linestyle="dashdot")
+		ax.scatter(H, rel_error, c="r")
+		plt.show()
 
-	ax.scatter(H, rel_error)
-	plt.show()
 methods = ["sgeneral", "general", "special"]
 max_p = [1, 1, 7]
 
