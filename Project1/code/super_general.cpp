@@ -104,15 +104,15 @@ void S_general::Forward_sub() {
 } 
 void S_general::Backward_sub() {
 	//Solving Uv = y 
-	m_v = new double[m_n];
+	m_u = new double[m_n];
 	int n = m_n-1;
-	m_v[n] = m_y[n]/m_U[n][n];
+	m_u[n] = m_y[n]/m_U[n][n];
 	for(int i = n-1; i >= 0; i--) {
 		double sum = 0;
 		for(int j = i+1; j < n; j++) {
-			sum += m_U[i][j]*m_v[j];
+			sum += m_U[i][j]*m_u[j];
 		}
-		m_v[i] = (m_y[i]-sum)/m_U[i][i];
+		m_u[i] = (m_y[i]-sum)/m_U[i][i];
 	} 
 }
 
@@ -131,7 +131,7 @@ void S_general::Write_to_file(string filename) {
 	outfile << endl;
 	for(int i = 0; i<m_n; i++) {
 		outfile << setw(15) << setprecision(8) << m_x[i];
-		outfile << setw(15) << setprecision(8) << m_v[i]; 
+		outfile << setw(15) << setprecision(8) << m_u[i]; 
 		outfile << setw(15) << setprecision(8) << analytical(m_x[i]) <<endl;
 	}
 	outfile << setw(15) << setprecision(8) << 1;
@@ -173,7 +173,7 @@ void S_general::Print_sol() {
 	cout << "x \t v(x) for n = " << m_n <<endl;
 	cout << 0 << " " << 0 <<endl; // Making sure x(0) = 0, v(0) = 0
 	for(int i = 0; i < m_n; i++) {
-		cout << m_x[i] << " " << m_v[i] <<endl;
+		cout << m_x[i] << " " << m_u[i] <<endl;
 	}
 	cout << 1 << " " << 0 <<endl; // Making sure x(n+1) = 1, v(n+1) = 0 
 }
@@ -193,5 +193,5 @@ void S_general::Delete() {
  	delete [] m_x;
  	delete [] m_btilde;
  	delete [] m_y;
- 	delete [] m_v;
+ 	delete [] m_u;
 }

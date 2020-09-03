@@ -18,7 +18,7 @@ private:
 	double* m_x; // x vector
 	double* m_btilde; // b_tilde vector
 	double* m_y; // y vector 
-	double* m_v; // v vector
+	double* m_u; // v vector
 
 public:
 	S_general(int p); // Constructor
