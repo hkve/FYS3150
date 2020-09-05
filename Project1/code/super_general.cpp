@@ -66,25 +66,25 @@ void S_general::LU() {
 	// Find the LU decomp with Doolittle algorithm 
 	double sum;
 	for (int i = 0; i < m_n; i++) { // Looping over each row
-		for (int k = i; k < m_n; k++) { // Finding U 
+		for (int j = i; j < m_n; j++) { // Finding U 
 			sum = 0.0;
-			for (int j = 0; j < i; j++) {
-				sum += (m_L[i][j]*m_U[j][k]);
+			for (int k = 0; k < i; k++) {
+				sum += (m_L[i][k]*m_U[k][j]);
 			}
-			m_U[i][k] = m_matrix[i][k] - sum;
+			m_U[i][j] = m_matrix[i][j] - sum;
 		}
 
 
-		for (int k = i; k < m_n; k++) { // Finding L
-			if (k==i) {
+		for (int j = i; j < m_n; j++) { // Finding L
+			if (j==i) {
 				m_L[i][i] = 1; // Setting diagonal of L = 1 for convenience
 			}
 			else {
 				sum = 0.0;
-				for(int j = 0; j < i; j++) {
-					sum += (m_L[k][j]*m_U[j][i]);
+				for(int k = 0; k < i; k++) {
+					sum += (m_L[j][k]*m_U[k][i]);
 				}	
-				m_L[k][i] = (m_matrix[k][i] - sum)/m_U[i][i];
+				m_L[j][i] = (m_matrix[j][i] - sum)/m_U[i][i];
 			}
 		}
 	}	
