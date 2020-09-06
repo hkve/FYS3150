@@ -56,7 +56,7 @@ def plot_data(methods, max_p):
 
 
 if __name__ == "__main__":
-	methods = ["sgeneral", "general", "special"]
+	methods = ["LU", "Thomas", "special"]
 	max_p = [1, 1, 7]
 
 	# run_program(methods, max_p)

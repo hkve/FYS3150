@@ -1,9 +1,9 @@
-#ifndef GENERAL_HPP
-#define GENERAL_HPP
+#ifndef THOMAS_HPP
+#define THOMAS_HPP
 
 #include <string>
 
-class General {
+class Thomas {
 private:
 	int m_pmax; // Max power
 	int m_n; // Dims for matrix A
@@ -23,7 +23,7 @@ private:
 	double* m_b_tilde;
 	double* m_f_tilde;
 public:
-	General(int p); // Constructor
+	Thomas(int p); // Constructor
 	inline double func(double x); // u''(x)
 	inline double analytical(double x); // u(x)
 	void Initialize(); // Fill arrays

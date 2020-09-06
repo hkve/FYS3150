@@ -1,4 +1,4 @@
-#include "super_general.hpp"
+#include "LU.hpp"
 #include <iostream>
 #include <cmath>
 #include <string>
@@ -8,22 +8,22 @@
 
 using namespace std;
 
-S_general::S_general(int p) {
+LU::LU(int p) {
 	// Constructor, setting pow, n_steps, and step length
 	m_p = p;
 	m_n = (int) pow(10, p);
 	m_h = (double) 1/(m_n+1);
 }
 
-inline double S_general::f(double x) { // v''(x)
+inline double LU::f(double x) { // v''(x)
 	return 100*exp(-10*x);
 }
 
-inline double S_general::analytical(double x) {
+inline double LU::analytical(double x) {
 	return 1-(1-exp(-10))*x-exp(-10*x);
 }
 
-void S_general::Initialize() {
+void LU::Initialize() {
 	// Making m_n long arrays
 	m_matrix = new double*[m_n]; // Matrix A
 	m_L = new double*[m_n]; // Lower matrix for LU
@@ -62,35 +62,35 @@ void S_general::Initialize() {
 }
 
 
-void S_general::LU() {
+void LU::Decomp() {
 	// Find the LU decomp with Doolittle algorithm 
 	double sum;
 	for (int i = 0; i < m_n; i++) { // Looping over each row
-		for (int k = i; k < m_n; k++) { // Finding U 
-			sum = 0.0;
-			for (int j = 0; j < i; j++) {
-				sum += (m_L[i][j]*m_U[j][k]);
+		for (int j = i; j < m_n; j++) { // Finding U 
+			sum = 0.0;	
+			for (int k = 0; k < i; k++) {
+				sum += (m_L[i][k]*m_U[k][j]);
 			}
-			m_U[i][k] = m_matrix[i][k] - sum;
+			m_U[i][j] = m_matrix[i][j] - sum;
 		}
 
 
-		for (int k = i; k < m_n; k++) { // Finding L
-			if (k==i) {
+		for (int j = i; j < m_n; j++) { // Finding L
+			if (j==i) {
 				m_L[i][i] = 1; // Setting diagonal of L = 1 for convenience
 			}
 			else {
 				sum = 0.0;
-				for(int j = 0; j < i; j++) {
-					sum += (m_L[k][j]*m_U[j][i]);
+				for(int k = 0; k < i; k++) {
+					sum += (m_L[j][k]*m_U[k][i]);
 				}	
-				m_L[k][i] = (m_matrix[k][i] - sum)/m_U[i][i];
+				m_L[j][i] = (m_matrix[j][i] - sum)/m_U[i][i];
 			}
 		}
 	}	
 }
 
-void S_general::Forward_sub() {
+void LU::Forward_sub() {
 	// Solving Ly = b_tilde
 	m_y = new double[m_n];
 	m_y[0] = m_btilde[0];
@@ -102,7 +102,7 @@ void S_general::Forward_sub() {
 		m_y[i] = m_btilde[i] - sum;
 	}
 } 
-void S_general::Backward_sub() {
+void LU::Backward_sub() {
 	//Solving Uv = y 
 	m_u = new double[m_n];
 	int n = m_n-1;
@@ -116,7 +116,7 @@ void S_general::Backward_sub() {
 	} 
 }
 
-void S_general::Write_to_file(string filename) {
+void LU::Write_to_file(string filename) {
 	filename = "data/" + filename + to_string(m_p) + ".txt";
 
 	ifstream ifile(filename);
@@ -141,7 +141,7 @@ void S_general::Write_to_file(string filename) {
 	outfile.close();
 }
 
-void S_general::Print_problem() {
+void LU::Print_problem() {
 	// Printing the A and b_tilde in Av = b_tilde
 	for(int i = 0; i < m_n; i++) {
 		for(int j = 0; j < m_n; j++) {
@@ -151,7 +151,7 @@ void S_general::Print_problem() {
 	}
 }
 
-void S_general::Print_LU() {
+void LU::Print_Decomp() {
 	// Printing the LU decomp
 	for(int i = 0; i < m_n; i++) {
 		for(int j = 0; j < m_n; j++) {
@@ -168,7 +168,7 @@ void S_general::Print_LU() {
 	}  
 }
 
-void S_general::Print_sol() {
+void LU::Print_sol() {
 	// Printing solution (v)
 	cout << "x \t v(x) for n = " << m_n <<endl;
 	cout << 0 << " " << 0 <<endl; // Making sure x(0) = 0, v(0) = 0
@@ -178,7 +178,7 @@ void S_general::Print_sol() {
 	cout << 1 << " " << 0 <<endl; // Making sure x(n+1) = 1, v(n+1) = 0 
 }
 
-void S_general::Delete() {
+void LU::Delete() {
 	
 	for(int i = 0; i < m_n; i++) {
 		delete [] m_matrix[i];

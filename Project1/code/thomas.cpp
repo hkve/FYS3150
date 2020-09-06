@@ -15,12 +15,12 @@ for every whole number up to, and including p.
 #include <string>
 #include <fstream>
 #include <iomanip>
-#include "general.hpp"
+#include "thomas.hpp"
 
 
 using namespace std; // To not hurt eyes
 
-General::General(int p) {
+Thomas::Thomas(int p) {
 	m_pmax = p; // (not sponsored) maximum power of ten to solve for
 	m_n = (int) pow(10, p);
 	m_h = (double) 1/(m_n+1);
@@ -30,15 +30,15 @@ General::General(int p) {
 	m_b_tilde = new double[m_n]; m_f_tilde = new double[m_n]; // Vectors for reduced matrix
 }
 
-inline double General::func(double x) { // f(x)
+inline double Thomas::func(double x) { // f(x)
 	return 100*exp(-10*x);
 }
 
-inline double General::analytical(double x) { // analytical solution u(x)
+inline double Thomas::analytical(double x) { // analytical solution u(x)
 	return 1-(1-exp(-10))*x-exp(-10*x);
 }
 
-void General::Initialize() {
+void Thomas::Initialize() {
 	/*This initializes the class with and creates vectors a, b, c
 	containing the diagonal elements of our matrix A, for our
 	specific problem.*/
@@ -58,7 +58,7 @@ void General::Initialize() {
 	m_f[m_n-1] = hh*func(m_x[m_n-1]);
 }
 
-void General::Forward_sub() { // Reducing a elements from array
+void Thomas::Forward_sub() { // Reducing a elements from array
 	m_b_tilde[0] = m_b[0];
 	m_f_tilde[0] = m_f[0];
 
@@ -68,14 +68,14 @@ void General::Forward_sub() { // Reducing a elements from array
 	}
 }
 
-void General::Backward_sub() { // Solving the reduced array
+void Thomas::Backward_sub() { // Solving the reduced array
 	m_u[m_n-1] = m_f_tilde[m_n-1]/m_b_tilde[m_n-1];
 	for(int i = m_n-1; i > 0; i--) {
 		m_u[i-1] = (m_f_tilde[i-1]-m_c[i-1]*m_u[i])/m_b_tilde[i-1];
 	}
 }
 
-void General::Write_to_file(string filename) {
+void Thomas::Write_to_file(string filename) {
 	filename = "data/"+ filename + to_string(m_pmax) + ".txt";
 
 	ifstream ifile(filename);
@@ -98,7 +98,7 @@ void General::Write_to_file(string filename) {
 	outfile.close();
 }
 
-void General::Print_sol() {
+void Thomas::Print_sol() {
 	cout << "x\tu" <<endl<< "0 0" <<endl; // Making sure x(0) = 0, u(0) = 0
 	for(int i = 0; i < m_n; i++) {
 		cout << m_x[i] << " " << m_u[i] <<endl;
@@ -106,7 +106,7 @@ void General::Print_sol() {
 	cout << "1 0" <<endl;  // Making sure x(n+1) = 1, u(n+1) = 0 
 }
 
-void General::Delete() { // Free up memory
+void Thomas::Delete() { // Free up memory
 	delete [] m_a; delete [] m_b; delete [] m_c;
 	delete [] m_x; delete [] m_u; delete [] m_f;
 	delete [] m_b_tilde; delete [] m_f_tilde;
