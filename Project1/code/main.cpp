@@ -3,13 +3,13 @@
 #include <fstream>
 #include <chrono>
 #include "LU.hpp"
-#include "general.hpp"
+#include "thomas.hpp"
 #include "special.hpp"
 
 using namespace std;
 
 void lu(string method, int max_p);
-void general(string method, int max_p);
+void thomas(string method, int max_p);
 void special(string method, int max_p);
 
 int main(int argc, char const *argv[])
@@ -19,7 +19,7 @@ int main(int argc, char const *argv[])
 
 	// Reading method for data and the maximum exponent for matrix dims
 	if (argc <= 1) {
-		cout << "bad usage: " << argv[0] << " also add method (LU, general or special) and max power of n. ex: ./main general 4 \n";
+		cout << "bad usage: " << argv[0] << " also add method (LU, thomas or special) and max power of n. ex: ./main thomas 4 \n";
 		exit(1);
 	}
 	else {
@@ -31,14 +31,14 @@ int main(int argc, char const *argv[])
 	if(method == "LU") {
 		lu(method, max_p);
 	}
-	else if(method == "general") {
-		general(method, max_p);
+	else if(method == "Thomas") {
+		thomas(method, max_p);
 	}
 	else if(method == "special") {
 		special(method, max_p);
 	}
 	else {
-		cout << method << " is not a valid method, enter sgeneral, general or special" <<endl;
+		cout << method << " is not a valid method, enter LU, Thomas or Thomas_singular" <<endl;
 	}
 
 	return 0;
@@ -57,9 +57,9 @@ void lu(string method, int max_p) {
 	}
 }
 
-void general(string method, int max_p) {
+void thomas(string method, int max_p) {
 	for(int p = 1; p <= max_p; p++) {
-		General problem(p); // Call constructor
+		Thomas problem(p); // Call constructor
 		problem.Initialize(); // Fill arrays
 
 		auto start = chrono::steady_clock::now();
