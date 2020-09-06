@@ -1,11 +1,11 @@
-#ifndef SUPER_GENERAL_HPP
-#define SUPER_GENERAL_HPP
+#ifndef LU_HPP
+#define LU_HPP
 
 #include <string>
 
-class S_general {
+class LU {
 /*
-	S_general class, everything is declared here
+	LU class, everything is declared here
 */
 private:
 	int m_p; // exponent
@@ -21,17 +21,17 @@ private:
 	double* m_u; // v vector
 
 public:
-	S_general(int p); // Constructor
+	LU(int p); // Constructor
 	inline double f(double x); 
 	inline double analytical(double x);
 	void Initialize();
-	void LU();
+	void Decomp();
 	void Forward_sub();
 	void Backward_sub();
 	void Write_to_file(std::string filename);
 
 	void Print_problem();
-	void Print_LU();
+	void Print_Decomp();
 	void Print_sol();
 	void Temp();
 	void Delete();

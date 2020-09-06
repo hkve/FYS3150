@@ -2,13 +2,13 @@
 #include <string>
 #include <fstream>
 #include <chrono>
-#include "super_general.hpp"
+#include "LU.hpp"
 #include "general.hpp"
 #include "special.hpp"
 
 using namespace std;
 
-void super_general(string method, int max_p);
+void lu(string method, int max_p);
 void general(string method, int max_p);
 void special(string method, int max_p);
 
@@ -19,7 +19,7 @@ int main(int argc, char const *argv[])
 
 	// Reading method for data and the maximum exponent for matrix dims
 	if (argc <= 1) {
-		cout << "bad usage: " << argv[0] << " also add method (sgeneral, general or special) and max power of n. ex: ./main general 4 \n";
+		cout << "bad usage: " << argv[0] << " also add method (LU, general or special) and max power of n. ex: ./main general 4 \n";
 		exit(1);
 	}
 	else {
@@ -28,8 +28,8 @@ int main(int argc, char const *argv[])
 	}
 
 
-	if(method == "sgeneral") {
-		super_general(method, max_p);
+	if(method == "LU") {
+		lu(method, max_p);
 	}
 	else if(method == "general") {
 		general(method, max_p);
@@ -44,11 +44,11 @@ int main(int argc, char const *argv[])
 	return 0;
 }
 
-void super_general(string method, int max_p) {
+void lu(string method, int max_p) {
 	for(int p = 1; p <= max_p; p++) {
-		S_general problem(p);
+		LU problem(p);
 		problem.Initialize();	
-		problem.LU();
+		problem.Decomp();
 		problem.Forward_sub();
 		problem.Backward_sub();
 		
