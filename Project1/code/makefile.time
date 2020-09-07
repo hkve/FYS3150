@@ -1,0 +1,8 @@
+all: compile execute
+
+compile:
+	g++ -o time_diff.exe time_diff.cpp LU.cpp thomas.cpp thomas_singval.cpp 
+
+execute:
+	./time_diff.exe  $A $B
+	
