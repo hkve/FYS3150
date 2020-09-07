@@ -5,7 +5,6 @@ It also contains the methods for plotting various data written to file.
 Executing this python file requires flags for the various operations.
 -c : compiling the c++ programs
 -r : running the methods that are called as arguments with c++
--p : plotting the results of the methods that are called as arguments
 -t : running the time analysis
 The flags can be combined, as in "-cr" to compile and run
 
@@ -111,11 +110,11 @@ def plot_time(filename):
 
 		
 if __name__ == "__main__":
-	methods = ["LU", "Thomas", "Thomas_singval"]
+	methods = ["LU", "Thomas", "Thomas_singval"] # available algorithms
 
 	flags = [] # for the operations to execute
 	try:
-		if sys.argv[1][0] == "-": # checks to see whether any flag is given
+		if sys.argv[1][0] == "-": # check to see whether any flag is given
 			for flag in sys.argv[1][1:]:
 				flags.append(flag)
 		else:
@@ -128,7 +127,6 @@ if __name__ == "__main__":
 		print("The avalaible flags are:")
 		print("-c : compile programs")
 		print("-r : run programs")
-		print("-p : plot results")
 		print("-t : plot time analysis")
 		print("\nThe available methods are:")
 		for method in methods:
@@ -154,10 +152,10 @@ if __name__ == "__main__":
 				raise Exception("There was no argument following the method, a maximum p is required.")
 
 			if "r" in flags: # runs the program
-				os.system("make " + f"A={method} " + f"B={max_p}")
+				os.system("make execute " + f"A={method} " + f"B={max_p}")
 
-			if "p" in flags: # plots the results written to file
-				plot_data(method, max_p)
+			# plots the results written to file
+			plot_data(method, max_p)
 
 	if "t" in flags: # plots the result of the time analysis
 		plot_time("times")
