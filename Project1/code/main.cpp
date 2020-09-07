@@ -62,15 +62,8 @@ void thomas(string method, int max_p) {
 		Thomas problem(p); // Call constructor
 		problem.Initialize(); // Fill arrays
 
-		auto start = chrono::steady_clock::now();
-		
 		problem.Forward_sub(); 
 		problem.Backward_sub();
-
-		auto end = chrono::steady_clock::now();
-		
-		cout << "p = " << p << " t = ";
-		cout << chrono::duration_cast<chrono::nanoseconds>(end - start).count() << " ns" <<endl;
 
 		problem.Write_to_file(method); // Write results
 		problem.Delete(); // Free up memory
@@ -80,15 +73,9 @@ void thomas(string method, int max_p) {
 void thomas_singval(string method, int max_p) {
 	for(int p = 1; p <= max_p; p++) {
 		Thomas_singval problem(p);
-		problem.Initialize();
-
-		auto start = chrono::steady_clock::now();
+		problem.Initialize();		
 		
 		problem.Backward_sub();
-
-		auto end = chrono::steady_clock::now();
-		cout << "p = " << p << " t = ";
-		cout << chrono::duration_cast<chrono::nanoseconds>(end - start).count() << " ns" <<endl;
 
 		problem.Write_to_file(method);
 		problem.Delete();

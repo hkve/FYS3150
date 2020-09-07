@@ -84,4 +84,5 @@ void Thomas_singval::Delete() { // Free up memory
 	delete [] m_x;
 	delete [] m_d;
 	delete [] m_f;
+	delete [] m_u;
 }
