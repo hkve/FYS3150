@@ -6,14 +6,7 @@ import sys
 import platform
 from scipy import stats
 
-def run_program(method, max_p):
-	# there are slight syntactic differences between Linux and Windows
-	# concerning these commands; using platform-module to differentiate
-	if platform.system() == 'Windows':
-		cmd = ".\main.exe " + method + " " + str(max_p)
-	else:
-		cmd = "./main.exe " + method + " " + str(max_p)
-	os.system(cmd)
+
 
 def plot_data(method, max_p):
 	rel_error = []
@@ -52,6 +45,7 @@ def plot_data(method, max_p):
 		ax.legend()
 		plt.show()
 
+
 def plot_time(filename):
 	filename = "data/" + filename + ".txt"
 	data = np.loadtxt(filename)
@@ -86,17 +80,33 @@ def plot_time(filename):
 		ax.set(xscale="log", xlabel="h", ylabel=r"<t> [m/s]")
 		ax.scatter(H_thomas, thomas_middle/thomas_sing_middle)
 		plt.show()
+
+
+		
 if __name__ == "__main__":
 	methods = ["LU", "Thomas", "Thomas_singval"]
+
+	for arg in sys.argv:
+		if arg[0] == "-":
+			flags = [arg[i] for i in range(1, len(arg))]
+		else:
+			flags = []
+
+	if "c" in flags:
+		os.system("make compile")
 
 	for method in methods:
 		if method in sys.argv:
 			arg_idx = sys.argv.index(method)
 			max_p = int(sys.argv[arg_idx+1])
 
-			# run_program(method, max_p)
-			plot_data(method, max_p)
+			if "r" in flags:
+				os.system("make " + f"A={method} " + f"B={max_p}")
 
-	plot_time("times")
+			if "p" in flags:
+				plot_data(method, max_p)
+
+	if "t" in flags:
+		plot_time("times")
 
 

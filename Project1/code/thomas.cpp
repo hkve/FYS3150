@@ -91,8 +91,8 @@ void Thomas::Write_to_file(string filename) {
 		double u_exact = analytical(m_x[i]);
 		outfile << setw(15) << setprecision(8) << m_x[i];
 		outfile << setw(15) << setprecision(8) << m_u[i]; 
-		outfile << setw(15) << setprecision(8) << u_exact;
-		outfile << setw(15) << setprecision(8) << abs((u_exact-m_u[i])/u_exact) <<endl;
+		outfile << setw(15) << setprecision(8) << analytical(m_x[i]);
+		outfile << setw(15) << setprecision(8) << fabs((u_exact-m_u[i])/u_exact) <<endl;
 	}
 	outfile << setw(15) << setprecision(8) << 1;
 	for(int i = 0; i < 3; i++) {outfile << setw(15) << setprecision(8) << 0;} // Endpoints
