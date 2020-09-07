@@ -34,13 +34,13 @@ void Thomas_singval::Initialize() {
 		m_f[i] = hh*func(m_x[i]);
 		m_d[i] = (i+2)/((double) i+1);
 	}
-
-	for(int i = 1; i < m_n; i++) {
-		m_f[i] = m_f[i] + m_f[i-1]/m_d[i-1]; 
-	}
 }
 
 void Thomas_singval::Backward_sub() {
+	for(int i = 1; i < m_n; i++) {
+		m_f[i] = m_f[i] + m_f[i-1]/m_d[i-1]; 
+	}
+	
 	m_u[m_n-1] = m_f[m_n-1]/m_d[m_n-1];
 	for(int i = m_n-2; i >= 0; i--) {
 		m_u[i] = (m_f[i]+m_u[i+1])/m_d[i];
