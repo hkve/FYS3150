@@ -65,7 +65,7 @@ void Thomas::Forward_sub() { // Reducing a elements from array
 	double q;
 
 	for(int i = 1; i < m_n; i++) {
-		temp = m_a[i]/m_b_tilde[i-1];
+		q = m_a[i]/m_b_tilde[i-1];
 		m_b_tilde[i] = m_b[i] - m_c[i-1]*q;
 		m_f_tilde[i] = m_f[i] - m_f_tilde[i-1]*q;
 	}
