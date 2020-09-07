@@ -54,11 +54,44 @@ def plot_data(methods, max_p):
 		ax.legend()
 		plt.show()
 
+def plot_time(filename):
+	filename = "data/" + filename + ".txt"
+	data = np.loadtxt(filename)
+	LU_max = 3
+	thomas_max = 7
+	LU = data[:,0:LU_max]/(1e6) # To mili seconds
+	thomas = data[:,LU_max:(LU_max+thomas_max)]/(1e6) # To mili seconds
+	thomas_sing = data[:,(LU_max+thomas_max):(LU_max+2*thomas_max)]/(1e6) # To mili seconds
 
+	LU_middle = np.mean(LU, axis=0)
+	thomas_middle = np.mean(thomas, axis=0)
+	thomas_sing_middle = np.mean(thomas_sing, axis=0)
+
+	LU_error = np.std(LU, axis=0)
+	thomas_error = np.std(thomas, axis=0)
+	thomas_sing_error = np.std(thomas_sing, axis=0)
+
+	H_LU = [10**(-i) for i in range(1, LU_max+1)]	
+	H_thomas = [10**(-i) for i in range(1, thomas_max+1)]
+
+	with sns.axes_style("darkgrid"):
+		fig, ax = plt.subplots(nrows=1, ncols=1)
+		ax.set(yscale="log", xscale="log", xlabel="h", ylabel=r"<t> [m/s]")
+		ax.plot(H_LU, LU_middle, label="LU")
+		ax.plot(H_thomas, thomas_middle, label="Thomas")
+		ax.plot(H_thomas, thomas_sing_middle, label="Thomas singel valued")
+		ax.legend()
+		plt.show()
+
+	with sns.axes_style("darkgrid"):
+		fig, ax = plt.subplots(nrows=1, ncols=1)
+		ax.set(xscale="log", xlabel="h", ylabel=r"<t> [m/s]")
+		ax.scatter(H_thomas, thomas_middle/thomas_sing_middle)
+		plt.show()
 if __name__ == "__main__":
 	methods = ["LU", "Thomas", "Thomas_singval"]
 	max_p = [1, 1, 7]
-
+ 
 	# run_program(methods, max_p)
-	plot_data(methods, max_p)
-
+	# plot_data(methods, max_p)
+	plot_time("times")
