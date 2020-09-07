@@ -63,6 +63,7 @@ void LU::Initialize() {
 
 
 void LU::Decomp() {
+	cout << "I try the decomp" <<endl;
 	// Find the LU decomp with Doolittle algorithm 
 	double sum;
 	for (int i = 0; i < m_n; i++) { // Looping over each row
@@ -88,6 +89,12 @@ void LU::Decomp() {
 			}
 		}
 	}	
+	// Delete A matrix
+	for(int i = m_n-1; i <= 0; i--) {
+		delete [] m_matrix[i];
+	}
+	delete [] m_matrix;
+	m_matrix = nullptr;
 }
 
 void LU::Forward_sub() {
@@ -101,9 +108,17 @@ void LU::Forward_sub() {
 		}
 		m_y[i] = m_btilde[i] - sum;
 	}
+
+	// Delete L matrix
+	for(int i = m_n-1; i <= 0; i--) {
+		delete [] m_L[i];
+	}
+	delete [] m_L;
+	m_L = nullptr;
 } 
 void LU::Backward_sub() {
 	//Solving Uv = y 
+	cout << "start bw" <<endl;
 	m_u = new double[m_n];
 	int n = m_n-1;
 	m_u[n] = m_y[n]/m_U[n][n];
@@ -114,6 +129,14 @@ void LU::Backward_sub() {
 		}
 		m_u[i] = (m_y[i]-sum)/m_U[i][i];
 	} 
+
+	cout << "end bw" <<endl;
+	// Delete U matrix
+	for(int i = m_n; i <= 0; i--) {
+		delete [] m_U[i];
+	}
+	delete [] m_U;
+	m_U = nullptr;
 }
 
 void LU::Write_to_file(string filename) {
@@ -179,19 +202,13 @@ void LU::Print_sol() {
 }
 
 void LU::Delete() {
-	
-	for(int i = 0; i < m_n; i++) {
-		delete [] m_matrix[i];
-		delete [] m_L[i];
-	}
-	
 	// Free up space for next exponential
- 	delete [] m_matrix;
- 	delete [] m_L;
- 	delete [] m_U;
-
  	delete [] m_x;
  	delete [] m_btilde;
  	delete [] m_y;
  	delete [] m_u;
+  	m_x = nullptr;
+ 	m_btilde = nullptr;
+ 	m_y = nullptr;
+ 	m_u = nullptr;
 }
