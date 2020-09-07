@@ -1,3 +1,23 @@
+'''
+This program acts as a main hub from which we can compile, run and plot all other scripts.
+It also contains the methods for plotting various data written to file.
+
+Executing this python file requires flags for the various operations.
+-c : compiling the c++ programs
+-r : running the methods that are called as arguments with c++
+-p : plotting the results of the methods that are called as arguments
+-t : running the time analysis
+The flags can be combined, as in "-cr" to compile and run
+
+To execute a method, and the method name (ie. LU) to the args, followed by the maximum
+power of 10 for which to set n to as it solves the Poisson equation numerically.
+To run multiple methods, you can just add arguments, alternating methods and max powers.
+Run Example:
+>>> python .\plot.py -crp LU 3
+
+'''
+
+
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -51,9 +71,9 @@ def plot_time(filename):
 	data = np.loadtxt(filename)
 	LU_max = 3
 	thomas_max = 7
-	LU = data[:,0:LU_max]/(1e6) # To mili seconds
-	thomas = data[:,LU_max:(LU_max+thomas_max)]/(1e6) # To mili seconds
-	thomas_sing = data[:,(LU_max+thomas_max):(LU_max+2*thomas_max)]/(1e6) # To mili seconds
+	LU = data[:,0:LU_max]/(1e6) # To milliseconds
+	thomas = data[:,LU_max:(LU_max+thomas_max)]/(1e6) # To milliseconds
+	thomas_sing = data[:,(LU_max+thomas_max):(LU_max+2*thomas_max)]/(1e6) # To milliseconds
 
 	LU_middle = np.mean(LU, axis=0)
 	thomas_middle = np.mean(thomas, axis=0)
@@ -73,7 +93,7 @@ def plot_time(filename):
 		ax.set(yscale="log", xscale="log", xlabel="h", ylabel=r"<t> [m/s]")
 		ax.plot(H_LU, LU_middle, label="LU")
 		ax.plot(H_thomas, thomas_middle, label="Thomas")
-		ax.plot(H_thomas, thomas_sing_middle, label="Thomas singel valued")
+		ax.plot(H_thomas, thomas_sing_middle, label="Thomas single valued")
 		ax.legend()
 		plt.show()
 
@@ -93,27 +113,53 @@ def plot_time(filename):
 if __name__ == "__main__":
 	methods = ["LU", "Thomas", "Thomas_singval"]
 
-	for arg in sys.argv:
-		if arg[0] == "-":
-			flags = [arg[i] for i in range(1, len(arg))]
+	flags = [] # for the operations to execute
+	try:
+		if sys.argv[1][0] == "-": # checks to see whether any flag is given
+			for flag in sys.argv[1][1:]:
+				flags.append(flag)
 		else:
-			flags = []
+			raise Exception("A flag was not given, nothing was executed. Try the flag -h for a list of available flags and operations.")
+	except IndexError:
+		raise Exception("A flag was not given, nothing was executed. Try the flag -h for a list of available flags and operations.")
 
-	if "c" in flags:
+
+	if "h" in flags:
+		print("The avalaible flags are:")
+		print("-c : compile programs")
+		print("-r : run programs")
+		print("-p : plot results")
+		print("-t : plot time analysis")
+		print("\nThe available methods are:")
+		for method in methods:
+			print(method)
+		sys.exit(1)
+
+		
+
+	if "c" in flags: # compiles using makefile
 		os.system("make compile")
 
 	for method in methods:
+		# checks to see if any argument matches a method
 		if method in sys.argv:
-			arg_idx = sys.argv.index(method)
-			max_p = int(sys.argv[arg_idx+1])
+			try:
+				# tries to find the index of the current method in args
+				# and set max_p to be the value after
+				arg_idx = sys.argv.index(method)
+				max_p = int(sys.argv[arg_idx+1])
+			except ValueError:
+				raise Exception("The argument following a method must be a valid int.")
+			except IndexError:
+				raise Exception("There was no argument following the method, a maximum p is required.")
 
-			if "r" in flags:
+			if "r" in flags: # runs the program
 				os.system("make " + f"A={method} " + f"B={max_p}")
 
-			if "p" in flags:
+			if "p" in flags: # plots the results written to file
 				plot_data(method, max_p)
 
-	if "t" in flags:
+	if "t" in flags: # plots the result of the time analysis
 		plot_time("times")
 
 
