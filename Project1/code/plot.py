@@ -74,6 +74,8 @@ def plot_time(filename):
 	H_LU = [10**(-i) for i in range(1, LU_max+1)]	
 	H_thomas = [10**(-i) for i in range(1, thomas_max+1)]
 
+	print(thomas_middle, thomas_sing_middle)
+
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots(nrows=1, ncols=1)
 		ax.set(yscale="log", xscale="log", xlabel="h", ylabel=r"<t> [m/s]")
@@ -86,7 +88,12 @@ def plot_time(filename):
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots(nrows=1, ncols=1)
 		ax.set(xscale="log", xlabel="h", ylabel=r"<t> [m/s]")
-		ax.scatter(H_thomas, thomas_middle/thomas_sing_middle)
+		thomas_diff = thomas_middle/thomas_sing_middle
+		thomas_diff_error = thomas_diff*np.sqrt((thomas_error/thomas_middle)**2+(thomas_sing_error/thomas_sing_middle)**2) 
+
+		for i in range(len(H_thomas)):
+			ax.scatter(H_thomas[i], thomas_diff[i], c="r")
+			ax.errorbar(H_thomas[i], thomas_diff[i], yerr=thomas_diff_error[i], c="r")
 		plt.show()
 if __name__ == "__main__":
 	methods = ["LU", "Thomas", "Thomas_singval"]
