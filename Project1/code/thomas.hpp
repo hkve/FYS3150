@@ -9,19 +9,19 @@ private:
 	int m_n; // Dims for matrix A
 	double m_h;
 
-	// Vectors u (solution) - f (u'') - x (steps)
+	// Vectors u (solution) - h^2 f (u'') - x (steps)
 	double* m_u;
-	double* m_f;
+	double* m_b;
 	double* m_x;
 
 	// Vectors a,b,c (tridiagonal elements)  
-	double* m_a;
-	double* m_b;
 	double* m_c;
+	double* m_d;
+	double* m_e;
 
-	// Vectors , b_tilde and f_tilde
+	// Vectors , b_tilde and d_tilde
 	double* m_b_tilde;
-	double* m_f_tilde;
+	double* m_d_tilde;
 public:
 	Thomas(int p); // Constructor
 	inline double func(double x); // u''(x)
