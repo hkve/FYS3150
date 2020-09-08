@@ -85,20 +85,19 @@ def plot_time(filename):
 	H_LU = [10**(-i) for i in range(1, LU_max+1)]	
 	H_thomas = [10**(-i) for i in range(1, thomas_max+1)]
 
-	print(thomas_middle, thomas_sing_middle)
 
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots(nrows=1, ncols=1)
-		ax.set(yscale="log", xscale="log", xlabel="h", ylabel=r"<t> [m/s]")
-		ax.plot(H_LU, LU_middle, label="LU")
-		ax.plot(H_thomas, thomas_middle, label="Thomas")
-		ax.plot(H_thomas, thomas_sing_middle, label="Thomas single valued")
+		ax.set(yscale="log", xscale="log", xlabel=r"$h$", ylabel=r"\bar{t} [ms]")
+		ax.errorbar(H_LU, LU_middle, yerr=LU_error, label="LU")
+		ax.errorbar(H_thomas, thomas_middle, yerr=thomas_error , label="Thomas")
+		ax.errorbar(H_thomas, thomas_sing_middle, yerr=thomas_sing_error , label="Thomas single valued")
 		ax.legend()
 		plt.show()
 
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots(nrows=1, ncols=1)
-		ax.set(xscale="log", xlabel="h", ylabel=r"<t> [m/s]")
+		ax.set(xscale="log", xlabel=r"$h$", ylabel=r"$\bar{t}_{8n}/\bar{t}_{4n}$ [ms]")
 		thomas_diff = thomas_middle/thomas_sing_middle
 		thomas_diff_error = thomas_diff*np.sqrt((thomas_error/thomas_middle)**2+(thomas_sing_error/thomas_sing_middle)**2) 
 
