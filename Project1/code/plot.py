@@ -12,7 +12,7 @@ To execute a method, and the method name (ie. LU) to the args, followed by the m
 power of 10 for which to set n to as it solves the Poisson equation numerically.
 To run multiple methods, you can just add arguments, alternating methods and max powers.
 Run Example:
->>> python .\plot.py -crp LU 3
+>>> python .\plot.py -cr LU 3
 
 '''
 
