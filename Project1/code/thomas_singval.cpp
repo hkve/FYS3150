@@ -15,7 +15,7 @@ Thomas_singval::Thomas_singval(int p) {
 
 	m_x = new double[m_n];
 	m_d = new double[m_n];
-	m_f = new double[m_n];
+	m_b = new double[m_n];
 	m_u = new double[m_n];
 }
 
@@ -31,19 +31,19 @@ void Thomas_singval::Initialize() {
 	double hh = m_h*m_h;
 	for(int i = 0; i < m_n; i++) {
 		m_x[i] = m_h*(i+1);
-		m_f[i] = hh*func(m_x[i]);
+		m_b[i] = hh*func(m_x[i]);
 		m_d[i] = (i+2)/((double) i+1);
 	}
 }
 
 void Thomas_singval::Backward_sub() {
 	for(int i = 1; i < m_n; i++) {
-		m_f[i] = m_f[i] + m_f[i-1]/m_d[i-1]; 
+		m_b[i] = m_b[i] + m_b[i-1]/m_d[i-1]; 
 	}
 	
-	m_u[m_n-1] = m_f[m_n-1]/m_d[m_n-1];
+	m_u[m_n-1] = m_b[m_n-1]/m_d[m_n-1];
 	for(int i = m_n-2; i >= 0; i--) {
-		m_u[i] = (m_f[i]+m_u[i+1])/m_d[i];
+		m_u[i] = (m_b[i]+m_u[i+1])/m_d[i];
 	}
 }
 
@@ -83,6 +83,6 @@ void Thomas_singval::Write_to_file(string filename) {
 void Thomas_singval::Delete() { // Free up memory
 	delete [] m_x;
 	delete [] m_d;
-	delete [] m_f;
+	delete [] m_b;
 	delete [] m_u;
 }

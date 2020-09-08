@@ -25,9 +25,9 @@ Thomas::Thomas(int p) {
 	m_n = (int) pow(10, p);
 	m_h = (double) 1/(m_n+1);
 
-	m_u = new double[m_n]; m_x = new double[m_n]; m_f = new double[m_n]; // solution u, argument x and rhs f
-	m_a = new double[m_n]; m_b = new double[m_n]; m_c = new double[m_n]; // Diagonal vectors
-	m_b_tilde = new double[m_n]; m_f_tilde = new double[m_n]; // Vectors for reduced matrix
+	m_u = new double[m_n]; m_x = new double[m_n]; m_b = new double[m_n]; // solution u, argument x and rhs f
+	m_c = new double[m_n]; m_d = new double[m_n]; m_e = new double[m_n]; // Diagonal vectors
+	m_b_tilde = new double[m_n]; m_d_tilde = new double[m_n]; // Vectors for reduced matrix
 }
 
 inline double Thomas::func(double x) { // f(x)
@@ -44,37 +44,37 @@ void Thomas::Initialize() {
 	specific problem.*/
 	double hh = m_h*m_h; // Reduce FLOPS
 	
-	m_a[0] = m_c[m_n-1] = 0; // Useless elements of a and c
-	m_c[0] = -1;
-	m_b[0] = 2; // Fixing endpoints
-	m_f[0] = hh*func(m_x[0]);  // Fixing endpoints
+	m_c[0] = m_e[m_n-1] = 0; // Useless elements of a and c
+	m_e[0] = -1;
+	m_d[0] = 2; // Fixing endpoints
+	m_b[0] = hh*func(m_x[0]);  // Fixing endpoints
 
 	for(int i = 1; i < m_n; i++) {
 		m_x[i-1] = m_h*i;
-		m_a[i] = m_c[i] = -1; m_b[i] = 2;
-		m_f[i-1] = hh*func(m_x[i-1]);
+		m_c[i] = m_e[i] = -1; m_d[i] = 2;
+		m_b[i-1] = hh*func(m_x[i-1]);
 	} 
 	m_x[m_n-1] = m_n*m_h;
-	m_f[m_n-1] = hh*func(m_x[m_n-1]);
+	m_b[m_n-1] = hh*func(m_x[m_n-1]);
 }
 
 void Thomas::Forward_sub() { // Reducing a elements from array
+	m_d_tilde[0] = m_d[0];
 	m_b_tilde[0] = m_b[0];
-	m_f_tilde[0] = m_f[0];
 
 	double q;
 
 	for(int i = 1; i < m_n; i++) {
-		q = m_a[i]/m_b_tilde[i-1];
-		m_b_tilde[i] = m_b[i] - m_c[i-1]*q;
-		m_f_tilde[i] = m_f[i] - m_f_tilde[i-1]*q;
+		q = m_c[i]/m_d_tilde[i-1];
+		m_d_tilde[i] = m_d[i] - m_e[i-1]*q;
+		m_b_tilde[i] = m_b[i] - m_b_tilde[i-1]*q;
 	}
 }
 
 void Thomas::Backward_sub() { // Solving the reduced array
-	m_u[m_n-1] = m_f_tilde[m_n-1]/m_b_tilde[m_n-1];
+	m_u[m_n-1] = m_b_tilde[m_n-1]/m_d_tilde[m_n-1];
 	for(int i = m_n-1; i > 0; i--) {
-		m_u[i-1] = (m_f_tilde[i-1]-m_c[i-1]*m_u[i])/m_b_tilde[i-1];
+		m_u[i-1] = (m_b_tilde[i-1]-m_e[i-1]*m_u[i])/m_d_tilde[i-1];
 	}
 }
 
@@ -112,7 +112,7 @@ void Thomas::Print_sol() {
 }
 
 void Thomas::Delete() { // Free up memory
-	delete [] m_a; delete [] m_b; delete [] m_c;
-	delete [] m_x; delete [] m_u; delete [] m_f;
-	delete [] m_b_tilde; delete [] m_f_tilde;
+	delete [] m_c; delete [] m_d; delete [] m_e;
+	delete [] m_x; delete [] m_u; delete [] m_b;
+	delete [] m_d_tilde; delete [] m_b_tilde;
 }
