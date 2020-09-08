@@ -11,7 +11,7 @@ private:
 
 	double* m_x;
 	double* m_d;
-	double* m_f;
+	double* m_b;
 	double* m_u;
 public:
 	Thomas_singval(int p);
