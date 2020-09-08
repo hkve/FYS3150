@@ -54,12 +54,11 @@ def plot_data(method, max_p):
 	rel_error = np.array(rel_error)
 	H = np.array(H)
 	slope, const, r_value, p_value, std_err = stats.linregress(np.log10(H[:5]), np.log10(rel_error[:5]))
-	print(slope, std_err)
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots(nrows=1, ncols=1)
 		ax.set(yscale="log", xscale="log", xlabel="$h$", ylabel="Max($\epsilon$)")
 		ax.plot(H[:5], 10**const * H[:5]**slope, c="k", \
-				label="Linear fit", linestyle="dashed", marker='o', markersize=3)
+				label=f"Linear fit, slope = {slope:.2f}$\pm${std_err:.2f}", linestyle="dashed",marker='o', markersize=3)
 		ax.scatter(H, rel_error, c="r", label="Computed")
 		ax.legend()
 		plt.show()
