@@ -88,7 +88,6 @@ def plot_time(filename):
 
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots(nrows=1, ncols=1)
-<<<<<<< HEAD
 		ax.set(
 			title = "Computation time of the algorithms",
 			xscale = "log",
@@ -99,27 +98,17 @@ def plot_time(filename):
 		ax.plot(H_LU, LU_middle, label="LU")
 		ax.plot(H_thomas, thomas_middle, label="Thomas")
 		ax.plot(H_thomas, thomas_sing_middle, label="Thomas single valued")
-=======
-		ax.set(yscale="log", xscale="log", xlabel=r"$h$", ylabel=r"\bar{t} [ms]")
-		ax.errorbar(H_LU, LU_middle, yerr=LU_error, label="LU")
-		ax.errorbar(H_thomas, thomas_middle, yerr=thomas_error , label="Thomas")
-		ax.errorbar(H_thomas, thomas_sing_middle, yerr=thomas_sing_error , label="Thomas single valued")
->>>>>>> 5989ecac318c3304844c63ad161dfdad2e597c5c
 		ax.legend()
 		plt.show()
 
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots(nrows=1, ncols=1)
-<<<<<<< HEAD
 		ax.set(
 			title = "Relative computation time",
 			xscale = "log",
 			xlabel = "$h$",
 			ylabel = "y []"
 		)
-=======
-		ax.set(xscale="log", xlabel=r"$h$", ylabel=r"$\bar{t}_{8n}/\bar{t}_{4n}$ [ms]")
->>>>>>> 5989ecac318c3304844c63ad161dfdad2e597c5c
 		thomas_diff = thomas_middle/thomas_sing_middle
 		thomas_diff_error = thomas_diff*np.sqrt((thomas_error/thomas_middle)**2+(thomas_sing_error/thomas_sing_middle)**2) 
 
