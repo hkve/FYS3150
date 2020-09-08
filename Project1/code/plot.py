@@ -57,7 +57,7 @@ def plot_data(method, max_p):
 	print(slope, std_err)
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots(nrows=1, ncols=1)
-		ax.set(yscale="log", xscale="log", xlabel="$h$", ylabel=r"Max($\epsilon$)")
+		ax.set(yscale="log", xscale="log", xlabel="$h$", ylabel="Max($\epsilon$)")
 		ax.plot(H[:5], 10**const * H[:5]**slope, c="k", \
 				label="Linear fit", linestyle="dashed", marker='o', markersize=3)
 		ax.scatter(H, rel_error, c="r", label="Computed")
@@ -93,7 +93,7 @@ def plot_time(filename):
 			xscale = "log",
 			yscale="log",
 			xlabel = "$h$",
-			ylabel = "$<t>$ [s]"
+			ylabel = r"$\bar{t}$ [ms]"
 		)
 		ax.plot(H_LU, LU_middle, label="LU")
 		ax.plot(H_thomas, thomas_middle, label="Thomas")
@@ -107,7 +107,7 @@ def plot_time(filename):
 			title = "Relative computation time",
 			xscale = "log",
 			xlabel = "$h$",
-			ylabel = "y []"
+			ylabel = r"$\bar{t}_{8n} / \bar{t}_{4n}$"
 		)
 		thomas_diff = thomas_middle/thomas_sing_middle
 		thomas_diff_error = thomas_diff*np.sqrt((thomas_error/thomas_middle)**2+(thomas_sing_error/thomas_sing_middle)**2) 
