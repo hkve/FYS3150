@@ -1,3 +1,14 @@
+/*
+This class numerically solves the matrix equation Au = f with a LU-decomposition
+where the right hand side is given by the function f(x) = 100 exp(-10x), but could 
+easily be generalized to any arbitrary function. 
+The boundary conditions are set as u(0)=u(1)=0, and x € [0,1].
+
+The class takes a power p and solves the problem for n = 10^p points. 
+The Dirichlet boundary condition are indipendet of the calculations (as they are known)
+and is not included in the matrix. DMA is used.
+*/
+
 #include "LU.hpp"
 #include <iostream>
 #include <cmath>
