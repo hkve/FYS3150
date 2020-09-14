@@ -9,8 +9,10 @@ private:
 public:
 	Jacobi_eig_solver(double** A, int N);
 
+	void max(double* max, int* k, int* l);
+
 	void Print_matrix();
-	//~Jacobi_eig_solver();
+	~Jacobi_eig_solver();
 };
 
 #endif 

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <tuple>
 #include "Jacobi_eig_solver.hpp"
 
 using namespace std;
@@ -27,8 +28,15 @@ int main(int argc, char const *argv[])
 		}
 	}
 
-	Jacobi_eig_solver problem(A, N);
-	problem.Print_matrix();
+	Jacobi_eig_solver* problem = new Jacobi_eig_solver(A, N);
 
+	
+	double max = 0;
+	int k, l;
+	problem->max(&max, &k, &l);
+	
+	cout << max << " " << k << " " << l;
+
+	delete problem;
 	return 0;
 }
