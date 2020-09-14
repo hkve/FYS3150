@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <tuple>
-#include "Jacobi_eig_solver.hpp"
+#include "JacobiEigSolver.hpp"
 
 using namespace std;
 
@@ -28,14 +28,23 @@ int main(int argc, char const *argv[])
 		}
 	}
 
-	Jacobi_eig_solver* problem = new Jacobi_eig_solver(A, N);
+	JacobiEigSolver* problem = new JacobiEigSolver(A, N);
 
 	
 	double max = 0;
 	int k, l;
-	problem->max(&max, &k, &l);
+	problem->getMax_(&max, &k, &l);
+
+	// cout << max << " " << k << " " << l << endl;
+
+	double** S = problem->setSimilarityMatrix_(k, l);
+	for(int i = 0; i < N; i++) {
+		for(int j = 0; j < N; j++) {
+			cout << S[i][j] << " ";
+		}
+		cout << endl;
+	}
 	
-	cout << max << " " << k << " " << l;
 
 	delete problem;
 	return 0;
