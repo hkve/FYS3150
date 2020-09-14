@@ -1,13 +1,13 @@
 /*
 This class numerically solves the matrix equation Au = f where
-A is a tridiagonal Toeplitz matrix. The right hand side is given by
-the function f(x) = 100 exp(-10x), but could easily be generalized to
-any arbitrary function. The boundary conditions are set as f(0)=f(1)=0,
-and x € [0,1].
+A is a tridiagonal Toeplitz matrix. The Thomas algorithm is used.
+The right hand side is given by the function f(x) = 100 exp(-10x), but could 
+easily be generalized to any arbitrary function. The boundary conditions 
+are set as u(0)=u(1)=0, and x € [0,1].
 
-We will solve the equation with LU-decomposition and using 10^p points.
-The class is called with an upper limit for p, and will solve the equations
-for every whole number up to, and including p.
+The class takes a power p and solves the problem for n = 10^p points. 
+The Dirichlet boundary condition are indipendet of the calculations (as they are known)
+and is not included in the vectors. DMA is used.
 */
 
 #include <iostream>

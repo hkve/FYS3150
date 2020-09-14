@@ -1,3 +1,13 @@
+/*
+This file preforms the calculations for alle the 3 different methodes. 
+From the commandline it takes an algorithm (LU, Thomas, or Thomas_singval)
+and a maximum power max_p. The chosen algorithm will preform the calculations
+for 10^1 to 10^max_p. 
+
+The results will be written to one file for each power. The filename
+follows Name_of_algorithm + power + .txt
+*/
+
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -19,7 +29,7 @@ int main(int argc, char const *argv[])
 
 	// Reading method for data and the maximum exponent for matrix dims
 	if (argc <= 1) {
-		cout << "bad usage: " << argv[0] << " also add method (LU, thomas or thomas_singval) and max power of n. ex: ./main thomas 4 \n";
+		cout << "bad usage: " << argv[0] << " also add method (LU, Thomas or Thomas_singval) and max power of n. ex: ./main thomas 4 \n";
 		exit(1);
 	}
 	else {
@@ -28,13 +38,13 @@ int main(int argc, char const *argv[])
 	}
 
 
-	if(method == "LU" || method == "lu") {
+	if(method == "LU") {
 		lu(method, max_p);
 	}
-	else if(method == "Thomas" || method == "thomas") {
+	else if(method == "Thomas") {
 		thomas(method, max_p);
 	}
-	else if(method == "Thomas_singval" || method == "thomas_singval") {
+	else if(method == "Thomas_singval") {
 		thomas_singval(method, max_p);
 	}
 	else {
