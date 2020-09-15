@@ -29,7 +29,7 @@ void JacobiEigSolver::ComputeSC_(int k, int l, double* pc, double* ps) {
 	double tp = -tau + sqrt(1+tau*tau);
 	double tm = -tau - sqrt(1+tau*tau);
 	double t = (fabs(tp) < fabs(tm)) ? tp : tm;
-	*pc = sqrt(1+t*t);
+	*pc = 1/sqrt(1+t*t);
 	*ps = t * *pc;
 }
 
