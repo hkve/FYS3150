@@ -30,11 +30,39 @@ int main(int argc, char const *argv[])
 
 	JacobiEigSolver* problem = new JacobiEigSolver(A, N);
 
+<<<<<<< HEAD
 	double** S = problem->setSimilarityMatrix_(k, l);
 	for(int i = 0; i < N; i++) {
 		for(int j = 0; j < N; j++) {
 			cout << S[i][j] << " ";
 		}
+=======
+	
+	double max = 0;
+	int k, l;
+	problem->getMax_(&max, &k, &l);
+
+	// cout << max << " " << k << " " << l << endl;
+
+	// double** S = problem->setSimilarityMatrix_(k, l);
+	// for(int i = 0; i < N; i++) {
+	// 	for(int j = 0; j < N; j++) {
+	// 		cout << S[i][j] << " ";
+	// 	}
+	// 	cout << endl;
+	// }
+
+	double** B;
+	B = problem -> doJacobiRotation_(k, l);
+
+
+	max = 0.0;
+	for (int i=0; i<10; i++) {
+		problem -> setA(B);
+		problem -> getMax_(&max, &k, &l);
+		cout << max << " " << k << " " << l << " " << endl;
+		B = problem -> doJacobiRotation_(k, l);
+>>>>>>> f10fb064ad49117dd131a86260332c21d4b7914e
 		cout << endl;
 	}
 	
