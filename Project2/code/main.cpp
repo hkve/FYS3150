@@ -37,11 +37,24 @@ int main(int argc, char const *argv[])
 
 	// cout << max << " " << k << " " << l << endl;
 
-	double** S = problem->setSimilarityMatrix_(k, l);
-	for(int i = 0; i < N; i++) {
-		for(int j = 0; j < N; j++) {
-			cout << S[i][j] << " ";
-		}
+	// double** S = problem->setSimilarityMatrix_(k, l);
+	// for(int i = 0; i < N; i++) {
+	// 	for(int j = 0; j < N; j++) {
+	// 		cout << S[i][j] << " ";
+	// 	}
+	// 	cout << endl;
+	// }
+
+	double** B;
+	B = problem -> doJacobiRotation_(k, l);
+
+
+	max = 0.0;
+	for (int i=0; i<10; i++) {
+		problem -> setA(B);
+		problem -> getMax_(&max, &k, &l);
+		cout << max << " " << k << " " << l << " " << endl;
+		B = problem -> doJacobiRotation_(k, l);
 		cout << endl;
 	}
 	
