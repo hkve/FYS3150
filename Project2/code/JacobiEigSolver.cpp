@@ -8,17 +8,36 @@ using namespace std;
 JacobiEigSolver::JacobiEigSolver(double** A, int N) {
 	A_ = A;
 	N_ = N;
+	threshold_ = 1e-10;
 }
 
-void JacobiEigSolver::setA(double** A) {
-	A_ = A;
+void JacobiEigSolver::setA(double** A, int N) {
+	delete [] A_;
+	N_ = N;
+	double** A_ = new double* [N];
+	for (int i=0; i<N; i++) {
+		A_[i] = new double [N];
+		for (int j=0; j<N; j++) {
+			A_[i][j] = A[i][j];
+		}
+	}
+}
+
+void JacobiEigSolver::CleanA(double threshold) {
+	for (int i=0; i<N_; i++) {
+		for (int j=0; j<N_; j++) {
+			if (fabs(A_[i][j]) <= threshold) {
+				A_[i][j] = 0.0;
+			}
+		}
+	}
 }
 
 void JacobiEigSolver::getMax_(double* pmax, int* pk, int* pl) {
-	// assuming a symmetrix matrxi, such that we only need to search the upper half
+	// assuming a symmetrix matrix, such that we only need to search the upper half
 	// of the matrix for the largest non-diagonal element.
 	for(int i = 0; i < N_; i++) {
-		for(int j = i+1; j < N_; j++) {
+		for(int j = 0; j < N_; j++) {
 			if (i != j) {
 				double aa = A_[i][j]*A_[i][j];
 				if(aa > *pmax * *pmax) {
@@ -27,6 +46,9 @@ void JacobiEigSolver::getMax_(double* pmax, int* pk, int* pl) {
 				}	
 			}
 		}
+	}
+	if (fabs(*pmax) < threshold_) {
+		RUN = false;
 	}
 }
 
@@ -41,7 +63,7 @@ void JacobiEigSolver::ComputeSC_(int k, int l, double* pc, double* ps) {
 
 double** JacobiEigSolver::setSimilarityMatrix_(int k, int l) {
 	double c, s;
-	JacobiEigSolver::ComputeSC_(k, l, &c, &s);
+	this->ComputeSC_(k, l, &c, &s);
 
 	double** S = new double* [N_];
 	for (int i=0; i<N_; i++) {
@@ -71,7 +93,7 @@ double** JacobiEigSolver::setSimilarityMatrix_(int k, int l) {
 
 double** JacobiEigSolver::doJacobiRotation_(int k, int l) {
 	double s, c;
-	JacobiEigSolver::ComputeSC_(k, l, &c, &s);
+	this->ComputeSC_(k, l, &c, &s);
 
 	double** B = new double* [N_];
 	for (int i=0; i<N_; i++) {
@@ -100,15 +122,38 @@ double** JacobiEigSolver::doJacobiRotation_(int k, int l) {
 			}
 		}
 	}
+	return B;
+}
 
-	for(int i = 0; i < N_; i++) {
-		for(int j = 0; j < N_; j++) {
-			cout << B[i][j] << " ";
+
+double** JacobiEigSolver::Solve() {
+	bool RUN = true;
+	double max;
+	int k, l;
+
+	double** B = new double* [N_];
+	for (int i=0; i<N_; i++) {
+		B[i] = new double [N_];
+	}
+
+	int iteration = 0;
+	while (RUN) {
+		cout << "solving..." << endl;
+		max = 0.0;
+		this->getMax_(&max, &k, &l);
+		// cout << max << " " << k << " " << l << " " << endl;
+		B = this->doJacobiRotation_(k, l);
+		this->PrintMatrix(A_, N_);
+		this->setA(B, N_);
+		this->CleanA(threshold_);
+		iteration += 1;
+		if (iteration > 10) {
+			RUN = false;
 		}
 		cout << endl;
 	}
 
-	return B;
+	return A_;
 }
 
 
@@ -119,10 +164,10 @@ JacobiEigSolver::~JacobiEigSolver() {
 	delete [] A_;
 }
 
-void JacobiEigSolver::PrintMatrix() {
-	for(int i = 0; i < N_; i++) {
-		for(int j = 0; j < N_; j++) {
-			cout << A_[i][j] << " ";
+void JacobiEigSolver::PrintMatrix(double** Matrix, int Dimension) {
+	for(int i = 0; i < Dimension; i++) {
+		for(int j = 0; j < Dimension; j++) {
+			cout << Matrix[i][j] << " ";
 		}
 		cout << endl;
 	}

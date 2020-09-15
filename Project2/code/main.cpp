@@ -31,9 +31,9 @@ int main(int argc, char const *argv[])
 	JacobiEigSolver* problem = new JacobiEigSolver(A, N);
 
 	
-	double max = 0;
-	int k, l;
-	problem->getMax_(&max, &k, &l);
+	// double max = 0;
+	// int k, l;
+	// problem->getMax_(&max, &k, &l);
 
 	// cout << max << " " << k << " " << l << endl;
 
@@ -45,19 +45,7 @@ int main(int argc, char const *argv[])
 	// 	cout << endl;
 	// }
 
-	double** B;
-	B = problem -> doJacobiRotation_(k, l);
-
-
-	max = 0.0;
-	for (int i=0; i<10; i++) {
-		problem -> setA(B);
-		problem -> getMax_(&max, &k, &l);
-		cout << max << " " << k << " " << l << " " << endl;
-		B = problem -> doJacobiRotation_(k, l);
-		cout << endl;
-	}
-	
+	problem -> Solve();
 
 	delete problem;
 	return 0;
