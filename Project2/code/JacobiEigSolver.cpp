@@ -23,7 +23,7 @@ void JacobiEigSolver::setA(double** A, int N) {
 
 void JacobiEigSolver::CleanA(double threshold) {
 	for (int i=0; i<N_; i++) {
-		for (int j=0; j<N_; j++) {
+		for (int j=i; j<N_; j++) {
 			if (fabs(A_[i][j]) <= threshold) {
 				A_[i][j] = 0.0;
 			}
