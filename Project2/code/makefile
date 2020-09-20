@@ -1,7 +1,7 @@
 all: compile execute
 
 compile:
-	g++ -o main.exe main.cpp JacobiEigSolver.cpp 
+	g++ -O3 -o main.exe main.cpp JacobiEigSolver.cpp 
 
 execute:
 	./main.exe  

@@ -5,16 +5,18 @@ class JacobiEigSolver
 {
 private:
 	double** A_;
+	double** U_;
 	int N_;
 	void ComputeSC_(int k, int l, double* pc, double* ps);
 	bool RUN;
-	double threshold_;
+	double tolerance_;
 	
 public:
 	JacobiEigSolver(double** A, int N);
 
 	void setA(double** A, int N);
-	void CleanA(double threshold);
+	void setTolerance(double tolerance);
+	void CleanA(double tolerance);
 	void getMax_(double* pmax, int* pk, int* pl);
 	void doJacobiRotation_(int k, int l);
 	double** Solve();
