@@ -13,7 +13,9 @@ public:
 
 	void setA(double** A);
 	void getMax_(double* pmax, int* pk, int* pl);
-	double** doJacobiRotation_(int k, int l);
+	void doJacobiRotation_(int k, int l);
+	double** Solve();
+	// void PrintEigenvalues();
 
 
 	void PrintMatrix();
