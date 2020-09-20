@@ -30,15 +30,11 @@ void JacobiEigSolver::CleanA(double threshold) {
 	}
 }
 
-void JacobiEigSolver::setA(double** A) {
-	A_ = A;
-}
-
 void JacobiEigSolver::getMax_(double* pmax, int* pk, int* pl) {
 	// assuming a symmetrix matrix, such that we only need to search the upper half
 	// of the matrix for the largest non-diagonal element.
 	for(int i = 0; i < N_; i++) {
-		for(int j = i+1; j < N_; j++) {
+		for(int j = 0; j < N_; j++) {
 			if (i != j) {
 				double aa = A_[i][j]*A_[i][j];
 				if(aa > *pmax * *pmax) {
@@ -59,7 +55,7 @@ void JacobiEigSolver::ComputeSC_(int k, int l, double* pc, double* ps) {
 	double tp = -tau + sqrt(1+tau*tau);
 	double tm = -tau - sqrt(1+tau*tau);
 	double t = (fabs(tp) < fabs(tm)) ? tp : tm;
-	*pc = 1/sqrt(1+t*t);
+	*pc = sqrt(1+t*t);
 	*ps = t * *pc;
 }
 
