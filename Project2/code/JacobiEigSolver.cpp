@@ -12,15 +12,13 @@ JacobiEigSolver::JacobiEigSolver(double** A, int N) {
 }
 
 void JacobiEigSolver::setA(double** A, int N) {
-	delete [] A_;
+	A_ = A;
 	N_ = N;
-	double** A_ = new double* [N];
-	for (int i=0; i<N; i++) {
-		A_[i] = new double [N];
-		for (int j=0; j<N; j++) {
-			A_[i][j] = A[i][j];
-		}
-	}
+	// for (int i=0; i<N; i++) {
+	// 	for (int j=0; j<N; j++) {
+	// 		A_[i][j] = A[i][j];
+	// 	}
+	// }
 }
 
 void JacobiEigSolver::CleanA(double threshold) {
@@ -49,6 +47,7 @@ void JacobiEigSolver::getMax_(double* pmax, int* pk, int* pl) {
 	}
 	if (fabs(*pmax) < threshold_) {
 		RUN = false;
+		cout << "shutting down" << endl;
 	}
 }
 
@@ -61,39 +60,29 @@ void JacobiEigSolver::ComputeSC_(int k, int l, double* pc, double* ps) {
 	*ps = t * *pc;
 }
 
-double** JacobiEigSolver::setSimilarityMatrix_(int k, int l) {
-	double c, s;
-	this->ComputeSC_(k, l, &c, &s);
-
-	double** S = new double* [N_];
-	for (int i=0; i<N_; i++) {
-		S[i] = new double [N_];
-	}
-
-	for (int i=0; i<N_; i++) {
-		for (int j=0; j<N_; j++) {
-			if (i==j) {
-				if (i==k) {
-					S[i][j] = c;
-				}
-				else {
-					S[i][j] = 1;
-				}
-			}
-			if (i==k && j==l) {
-				S[i][j] = s;
-			}
-			if (i==l && j==k) {
-				S[i][j] = -s;
-			}
-		}
-	}
-	return S;
-}
-
 double** JacobiEigSolver::doJacobiRotation_(int k, int l) {
 	double s, c;
 	this->ComputeSC_(k, l, &c, &s);
+
+	// double akk = A_[k][k];
+	// double akl = A_[k][l];
+	// double all = A_[l][l];
+	// for (int i=0; i<N_; i++) {
+	// 	if (i!=k && i!=l) {
+	// 		double aik = A_[i][k];
+	// 		double ail = A_[i][l];
+	// 		double bik = A_[i][k]*c - A_[i][l]*s;
+	// 		double bil = A_[i][l]*c + A_[i][k]*s;
+	// 		A_[i][k] = bik;
+	// 		A_[k][i] = bik;
+	// 		A_[i][l] = bil;
+	// 		A_[l][i] = bil;
+	// 	}
+	// }
+	// A_[k][k] = akk*c*c - 2*akl*s*c + all*s*s;
+	// A_[l][l] = all*c*c + 2*akl*s*c + akk*s*s;
+	// A_[k][l] = 0.0;
+	// A_[l][k] = 0.0;
 
 	double** B = new double* [N_];
 	for (int i=0; i<N_; i++) {
@@ -101,12 +90,14 @@ double** JacobiEigSolver::doJacobiRotation_(int k, int l) {
 	}
 
 	for (int i=0; i<N_; i++) {
-		for (int j=0; j<N_; j++) {
+		for (int j=i; j<N_; j++) {
 			if (j==k && i!=k && i!=l) {
 				B[i][j] = A_[i][k] * c - A_[i][l] * s;
+				B[j][i] = A_[i][k] * c - A_[i][l] * s;
 			}
 			if (j==l && i!=k && i!=l) {
 				B[i][j] = A_[i][k] * c + A_[i][l] * s;
+				B[j][i] =  A_[i][k] * c + A_[i][l] * s;
 			}
 			if (i==k && j==k) {
 				B[i][j] = A_[k][k]*c*c - 2*A_[k][l]*c*s + A_[l][l]*s*s;
@@ -116,9 +107,11 @@ double** JacobiEigSolver::doJacobiRotation_(int k, int l) {
 			}
 			if (i==k && j==l) {
 				B[i][j] = 0.0;
+				B[j][i] = 0.0;
 			}
 			else {
 				B[i][j] = A_[i][j];
+				B[j][i] = A_[j][i];
 			}
 		}
 	}
@@ -137,8 +130,8 @@ double** JacobiEigSolver::Solve() {
 	}
 
 	int iteration = 0;
-	while (RUN) {
-		cout << "solving..." << endl;
+	while (fabs(max)>threshold_ && iteration < 10) {
+		cout << "solving iteration " << iteration << endl;
 		max = 0.0;
 		this->getMax_(&max, &k, &l);
 		// cout << max << " " << k << " " << l << " " << endl;
@@ -147,9 +140,9 @@ double** JacobiEigSolver::Solve() {
 		this->setA(B, N_);
 		this->CleanA(threshold_);
 		iteration += 1;
-		if (iteration > 10) {
-			RUN = false;
-		}
+		// if (iteration > 10) {
+		// 	RUN = false;
+		// }
 		cout << endl;
 	}
 
