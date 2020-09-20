@@ -13,7 +13,6 @@ public:
 
 	void setA(double** A);
 	void getMax_(double* pmax, int* pk, int* pl);
-	double** setSimilarityMatrix_(int k, int l);
 	double** doJacobiRotation_(int k, int l);
 
 
