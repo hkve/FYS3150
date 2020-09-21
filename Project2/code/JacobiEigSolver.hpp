@@ -7,7 +7,7 @@ private:
 	double** A_;
 	double** U_;
 	int N_;
-	void ComputeSC_(int k, int l, double* pc, double* ps);
+	void ComputeCS_(int k, int l, double* pc, double* ps);
 	bool RUN;
 	double tolerance_;
 	

@@ -9,9 +9,9 @@ using namespace std;
 // using namespace arma;
 
 JacobiEigSolver::JacobiEigSolver(double** A, int N) {
-	A_ = A;
-	N_ = N;
-	U_ = new double* [N];
+	A_ = A; // The symmetric square matrix for which to solve
+	N_ = N; // The dimension of the above square matrix
+	U_ = new double* [N]; // Setting an identity matrix, to get the final eigenvectors
 	for (int i=0; i<N; i++) {
 		U_[i] = new double [N];
 		U_[i][i] = 1.0;
@@ -25,19 +25,22 @@ JacobiEigSolver::JacobiEigSolver(double** A, int N) {
 	// 		}
 	// 	}
 	// }
-	tolerance_ = 1e-10;
+	tolerance_ = 1e-10; // Tolerance for what to interpret as 0
 }
 
 void JacobiEigSolver::setTolerance(double tolerance) {
+	// Manually set tolerance.
 	tolerance_ = tolerance;
 }
 
 void JacobiEigSolver::setA(double** A, int N) {
+	// Manually set matrix A.
 	A_ = A;
 	N_ = N;
 }
 
 void JacobiEigSolver::CleanA(double tolerance) {
+	// Method to 'clean' matrix A by getting rid of elements smaller than the tolerance.
 	for (int i=0; i<N_; i++) {
 		for (int j=i+1; j<N_; j++) {
 			if (fabs(A_[i][j]) <= tolerance) {
@@ -49,8 +52,9 @@ void JacobiEigSolver::CleanA(double tolerance) {
 }
 
 void JacobiEigSolver::getMax_(double* pmax, int* pk, int* pl) {
-	// assuming a symmetrix matrix, such that we only need to search the upper half
-	// of the matrix for the largest non-diagonal element.
+	// Method for finding the largest non-diagonal element of A.
+	// we need only to search the upper half of the matrix for 
+	// the largest non-diagonal element.
 	double aij;
 	for(int i = 0; i < N_-1; i++) {
 		for(int j = i+1; j < N_; j++) {
@@ -67,7 +71,9 @@ void JacobiEigSolver::getMax_(double* pmax, int* pk, int* pl) {
 	}
 }
 
-void JacobiEigSolver::ComputeSC_(int k, int l, double* pc, double* ps) {
+void JacobiEigSolver::ComputeCS_(int k, int l, double* pc, double* ps) {
+	// Method for finding the appropriate rotation coefficients of the Givens matrix
+	// given the indecies k and l of the element to eliminate
 	double tau, t;
 
 	if (A_[k][l] != 0) {
@@ -79,22 +85,26 @@ void JacobiEigSolver::ComputeSC_(int k, int l, double* pc, double* ps) {
 		}
 		*pc = 1.0 / sqrt(1.0 + t*t);
 		*ps = *pc * t;
-	} else {
+	} else { // Failsafe if the program is asked to compute a rotation when none is needed
 		*pc = 1.0;
 		*ps = 0.0;
 	}
 }
 
 void JacobiEigSolver::doJacobiRotation_(int k, int l) {
-	double s, c, akk, all, aik, ail, uik, uil;
-	this->ComputeSC_(k, l, &c, &s);
+	// Method for performing a Jacobi rotation
+	double c, s, akk, all, aik, ail, uik, uil;
+	this->ComputeCS_(k, l, &c, &s);
 
+	// Changing first the diagonal elements
 	akk = A_[k][k];
 	all = A_[l][l];
 	A_[k][k] = c*c*akk - 2.0*c*s*A_[k][l] + s*s*all;
 	A_[l][l] = c*c*akk + 2.0*c*s*A_[k][l] + s*s*all;
+	// Eliminating the elements desired
 	A_[k][l] = 0.0;
 	A_[l][k] = 0.0;
+	// Changing the appropriate non-diagonal elements
 	for (int i=0; i<N_; i++) {
 		if (i != k && i != l) {
 			aik = A_[i][k];
@@ -103,9 +113,8 @@ void JacobiEigSolver::doJacobiRotation_(int k, int l) {
 			A_[k][i] = A_[i][k];
 			A_[i][l] = c*ail + s*aik;
 			A_[l][i] = A_[i][l];
-
-
 		}
+		// Adjusting the eigenvectors accordingly
 		uik = U_[i][k];
 		uil = U_[i][l];
 		U_[i][k] = c*uik - s*uil;
@@ -116,27 +125,27 @@ void JacobiEigSolver::doJacobiRotation_(int k, int l) {
 
 
 double** JacobiEigSolver::Solve() {
+	// Central algorithm for the iterative solving through Jacobi rotations
 	bool RUN = true;
 	double max;
 	int k, l;
 
-	int iteration = 0;
+	int iteration = 1;
 	this->CleanA(tolerance_);
 	this->PrintMatrix(A_, N_);
-	max = 0.0;
-	this->getMax_(&max, &k, &l);
+	max = tolerance_+1.0;
 
-	while (fabs(max)>tolerance_ && iteration < 100) {
-		iteration += 1;
+	while (fabs(max)>tolerance_ && iteration <= 100) {
 		cout << "solving iteration " << iteration << endl;
-		cout << max << " " << k << " " << l << " " << endl;
+		max = 0.0;
+		this->getMax_(&max, &k, &l);
+		// cout << max << " " << k << " " << l << " " << endl;
 		this->doJacobiRotation_(k, l);
 		// this->CleanA(tolerance_);
 		this->PrintMatrix(A_, N_);
 		cout << endl;
 		// this->PrintEigenvalues()
-		max = 0.0;
-		this->getMax_(&max, &k, &l);
+		iteration += 1;
 	}
 	this->PrintMatrix(U_, N_);
 	return A_;

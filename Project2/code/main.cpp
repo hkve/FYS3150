@@ -8,7 +8,7 @@ using namespace std;
 int main(int argc, char const *argv[])
 {
 	int N = 3;
-	double h = 1/(double) N;
+	double h = 1 / (N-1.0);
 
 	double** A = new double*[N];
 	for(int i = 0; i < N; i++) {
