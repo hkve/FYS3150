@@ -3,10 +3,10 @@
 #include <cmath>
 #include "JacobiEigSolver.hpp"
 #include <iomanip>
-// #include <armadillo>
+#include <armadillo>
 
 using namespace std;
-// using namespace arma;
+using namespace arma;
 
 JacobiEigSolver::JacobiEigSolver(double** A, int N) {
 	A_ = A; // The symmetric square matrix for which to solve
@@ -120,7 +120,6 @@ void JacobiEigSolver::doJacobiRotation_(int k, int l) {
 		U_[i][k] = c*uik - s*uil;
 		U_[i][l] = c*uil + s*uik;
 	}
-
 }
 
 
@@ -144,7 +143,7 @@ double** JacobiEigSolver::Solve() {
 		// this->CleanA(tolerance_);
 		this->PrintMatrix(A_, N_);
 		cout << endl;
-		// this->PrintEigenvalues()
+		this->PrintEigenvalues();
 		iteration += 1;
 	}
 	this->PrintMatrix(U_, N_);
@@ -160,10 +159,11 @@ JacobiEigSolver::~JacobiEigSolver() {
 }
 /*
 void JacobiEigSolver::PrintEigenvalues() {
-	values = arga::eig_sym(A_);
-	cout << "Eigenvalues are: "
-	for (int=0; i<N_; i++){
-		cout << values[i] << ", "
+	double* eigval;
+	double** values = arma::eig_sym(eigval, A_);
+	cout << "Eigenvalues are: ";
+	for (int i=0; i<N_; i++){
+		cout << values[i] << ", ";
 	}
 	cout << endl;
 }
