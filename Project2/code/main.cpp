@@ -1,7 +1,8 @@
 #include <iostream>
 #include <cmath>
-#include <tuple>
 #include "JacobiEigSolver.hpp"
+
+#define PI 3.14159265359
 
 using namespace std;
 
@@ -46,6 +47,16 @@ int main(int argc, char const *argv[])
 	// }
 
 	problem -> Solve();
+
+	for(int j = 1; j < N+1; j++) {
+		double d = 2/(h*h); double a = -1/(h*h);
+		double lambda = d + 2*a*cos(j*PI/(N+1));
+		cout << "lambda = " << lambda<<endl;
+		for(int i = 1; i < N+1; i++) {
+			cout << sin(i*j*PI/(N+1)) << "    ";
+		}
+		cout <<endl<<endl;
+	}
 
 	delete problem;
 	return 0;

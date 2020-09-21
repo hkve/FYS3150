@@ -100,7 +100,7 @@ void JacobiEigSolver::doJacobiRotation_(int k, int l) {
 	akk = A_[k][k];
 	all = A_[l][l];
 	A_[k][k] = c*c*akk - 2.0*c*s*A_[k][l] + s*s*all;
-	A_[l][l] = c*c*akk + 2.0*c*s*A_[k][l] + s*s*all;
+	A_[l][l] = s*s*akk + 2.0*c*s*A_[k][l] + c*c*all;
 	// Eliminating the elements desired
 	A_[k][l] = 0.0;
 	A_[l][k] = 0.0;
@@ -142,11 +142,14 @@ double** JacobiEigSolver::Solve() {
 		// cout << max << " " << k << " " << l << " " << endl;
 		this->doJacobiRotation_(k, l);
 		// this->CleanA(tolerance_);
-		this->PrintMatrix(A_, N_);
-		cout << endl;
+		//this->PrintMatrix(A_, N_);
+		//cout << endl;
 		// this->PrintEigenvalues()
 		iteration += 1;
 	}
+	cout << "A = " <<endl;
+	this->PrintMatrix(A_, N_);
+	cout << "B = " <<endl;
 	this->PrintMatrix(U_, N_);
 	return A_;
 }

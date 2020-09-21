@@ -20,7 +20,7 @@ public:
 	void getMax_(double* pmax, int* pk, int* pl);
 	void doJacobiRotation_(int k, int l);
 	double** Solve();
-	// void PrintEigenvalues();
+	//void PrintEigenvalues();
 
 
 	void PrintMatrix(double** Matrix, int Dimension);
