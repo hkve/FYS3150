@@ -16,12 +16,11 @@ public:
 
 	void setA(double** A, int N);
 	void setTolerance(double tolerance);
-	void CleanA(double tolerance);
+	void CleanMatrix(double** A, double tolerance);
 	void getMax_(double* pmax, int* pk, int* pl);
 	void doJacobiRotation_(int k, int l);
+	void armadilloEig();
 	double** Solve();
-	//void PrintEigenvalues();
-
 
 	void PrintMatrix(double** Matrix, int Dimension);
 	~JacobiEigSolver();
