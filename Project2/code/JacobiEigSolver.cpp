@@ -33,10 +33,9 @@ void JacobiEigSolver::setA(double** A, int N) {
 void JacobiEigSolver::CleanMatrix(double** Matrix,double tolerance) {
 	// Method to 'clean' matrix A by getting rid of elements smaller than the tolerance.
 	for (int i=0; i<N_; i++) {
-		for (int j=i+1; j<N_; j++) {
+		for (int j=0; j<N_; j++) {
 			if (fabs(Matrix[i][j]) <= tolerance) {
 				Matrix[i][j] = 0.0;
-				Matrix[j][i] = 0.0;
 			}
 		}
 	}
@@ -145,14 +144,12 @@ double** JacobiEigSolver::Solve() {
 	int k, l;
 
 	int iteration = 1;
-	this->CleanMatrix(A_, tolerance_);
 	max = tolerance_+1.0;
 
 	while (fabs(max)>tolerance_ && iteration <= 100) {
 		max = 0.0;
 		this->getMax_(&max, &k, &l);
 		this->doJacobiRotation_(k, l);
-		//this->CleanMatrix(A_, tolerance_);
 		iteration += 1;
 	}
 	cout << "Total iterations = " << iteration << endl;
@@ -160,12 +157,20 @@ double** JacobiEigSolver::Solve() {
 	// Prettier output 
 	this->CleanMatrix(A_, tolerance_);
 	this->CleanMatrix(U_, tolerance_);
-	
 
 	cout << "D matrix:" <<endl;
 	this->PrintMatrix(A_, N_);
 	cout << "Eigenvector matrix" <<endl;
 	this->PrintMatrix(U_, N_);
+
+	for(int i = 0; i < N_; i++) {
+		double norm = 0;
+		for(int j = 0; j < N_; j++) {
+			norm += U_[j][i]*U_[j][i];
+		}
+		norm = sqrt(norm);
+		cout << norm <<endl;
+	}
 	return A_;
 }
 
