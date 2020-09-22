@@ -31,27 +31,12 @@ int main(int argc, char const *argv[])
 
 	JacobiEigSolver* problem = new JacobiEigSolver(A, N);
 
-	
-	// double max = 0;
-	// int k, l;
-	// problem->getMax_(&max, &k, &l);
-
-	// cout << max << " " << k << " " << l << endl;
-
-	// double** S = problem->setSimilarityMatrix_(k, l);
-	// for(int i = 0; i < N; i++) {
-	// 	for(int j = 0; j < N; j++) {
-	// 		cout << S[i][j] << " ";
-	// 	}
-	// 	cout << endl;
-	// }
-
 	problem -> Solve();
 
 	for(int j = 1; j < N+1; j++) {
 		double d = 2/(h*h); double a = -1/(h*h);
 		double lambda = d + 2*a*cos(j*PI/(N+1));
-		cout << "lambda = " << lambda<<endl;
+		cout << "lambda = " << lambda << endl;
 		for(int i = 1; i < N+1; i++) {
 			cout << sin(i*j*PI/(N+1)) << "    ";
 		}

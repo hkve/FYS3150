@@ -16,15 +16,6 @@ JacobiEigSolver::JacobiEigSolver(double** A, int N) {
 		U_[i] = new double [N];
 		U_[i][i] = 1.0;
 	}
-	// for (int i=0; i<N, i++) {
-	// 	for (int j=i; j<N; j++) {
-	// 		if (j==i) {
-	// 			U_[i][j] = 1.0;
-	// 		} else {
-	// 			U_[i][j] = 0.0;
-	// 		}
-	// 	}
-	// }
 	tolerance_ = 1e-10; // Tolerance for what to interpret as 0
 }
 
@@ -157,8 +148,10 @@ double** JacobiEigSolver::Solve() {
 JacobiEigSolver::~JacobiEigSolver() {
 	for(int i = 0; i < N_; i++) {
 		delete [] A_[i];
+		delete [] U_[i];
 	}
 	delete [] A_;
+	delete [] U_;
 }
 /*
 void JacobiEigSolver::PrintEigenvalues() {
