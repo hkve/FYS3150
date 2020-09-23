@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <string>
 #include "JacobiEigSolver.hpp"
 
 #define PI 3.14159265359
@@ -34,6 +35,8 @@ int main(int argc, char const *argv[])
 	problem -> armadilloEig();
 	problem -> Solve();
 
+	string filename = "test";
+	problem -> writeToFile(filename);
 /*
 	for(int j = 1; j < N+1; j++) {
 		double d = 2/(h*h); double a = -1/(h*h);

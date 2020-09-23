@@ -6,4 +6,4 @@ main:
 
 bb:
 	g++ -O3 -o BucklingBeam.exe BucklingBeam.cpp JacobiEigSolver.cpp -larmadillo
-	./BucklingBeam.exe
+	./BucklingBeam.exe $N

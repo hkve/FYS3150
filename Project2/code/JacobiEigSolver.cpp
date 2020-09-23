@@ -5,6 +5,9 @@
 #include <iomanip>
 #include <armadillo>
 
+#include <string>
+#include <fstream>
+
 using namespace std;
 using namespace arma;
 
@@ -143,37 +146,40 @@ double** JacobiEigSolver::Solve() {
 	double max;
 	int k, l;
 
-	int iteration = 1;
 	max = tolerance_+1.0;
 
-	while (fabs(max)>tolerance_ && iteration <= 100) {
+	while (fabs(max)>tolerance_ && iterations_ <= 100) {
 		max = 0.0;
 		this->getMax_(&max, &k, &l);
 		this->doJacobiRotation_(k, l);
-		iteration += 1;
+		iterations_ += 1;
 	}
-	cout << "Total iterations = " << iteration << endl;
 	
-	// Prettier output 
 	this->CleanMatrix(A_, tolerance_);
 	this->CleanMatrix(U_, tolerance_);
 
-	cout << "D matrix:" <<endl;
-	this->PrintMatrix(A_, N_);
-	cout << "Eigenvector matrix" <<endl;
-	this->PrintMatrix(U_, N_);
-
-	for(int i = 0; i < N_; i++) {
-		double norm = 0;
-		for(int j = 0; j < N_; j++) {
-			norm += U_[j][i]*U_[j][i];
-		}
-		norm = sqrt(norm);
-		cout << norm <<endl;
-	}
 	return A_;
 }
 
+void JacobiEigSolver::writeToFile(string filename) { 
+	filename = "data/" + filename + ".txt";
+
+	ofstream outfile (filename, ios_base::app); // Create file
+
+	outfile << iterations_ <<endl;
+
+	for(int i = 0; i < N_; i++) {
+		for(int j = 0; j < N_; j++) {
+			if(j == 0) {
+				outfile << setw(15) << setprecision(8) << A_[i][i];
+			}	
+
+			outfile << setw(15) << setprecision(8) << U_[i][j];
+		}
+		outfile << endl;
+	}
+	outfile.close();
+}
 
 JacobiEigSolver::~JacobiEigSolver() {
 	for(int i = 0; i < N_; i++) {
