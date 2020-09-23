@@ -45,9 +45,10 @@ void setA(double** A, int N) {
 		for(int j = 0; j < N; j++) {
 			if(i==j) {
 				A[i][j] = d;
-			}
-			if (abs(i-j) == 1) {
+			} else if (abs(i-j) == 1) {
 				A[i][j] = a;
+			} else {
+				A[i][j] = 0.0;
 			}
 		}
 	}
