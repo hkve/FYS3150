@@ -1,6 +1,8 @@
 #ifndef JACOBIEIGSOLVER_HPP
 #define JACOBIEIGSOLVER_HPP
 
+#include <string>
+
 class JacobiEigSolver
 {
 private:
@@ -10,18 +12,19 @@ private:
 	void ComputeCS_(int k, int l, double* pc, double* ps);
 	bool RUN;
 	double tolerance_;
+	int iterations_ = 0;
 	
 public:
 	JacobiEigSolver(double** A, int N);
 
 	void setA(double** A, int N);
 	void setTolerance(double tolerance);
-	void CleanA(double tolerance);
+	void CleanMatrix(double** A, double tolerance);
 	void getMax_(double* pmax, int* pk, int* pl);
 	void doJacobiRotation_(int k, int l);
+	void armadilloEig();
+	void writeToFile(std::string filename);
 	double** Solve();
-	//void PrintEigenvalues();
-
 
 	void PrintMatrix(double** Matrix, int Dimension);
 	~JacobiEigSolver();

@@ -5,6 +5,9 @@
 #include <iomanip>
 #include <armadillo>
 
+#include <string>
+#include <fstream>
+
 using namespace std;
 using namespace arma;
 
@@ -30,13 +33,12 @@ void JacobiEigSolver::setA(double** A, int N) {
 	N_ = N;
 }
 
-void JacobiEigSolver::CleanA(double tolerance) {
+void JacobiEigSolver::CleanMatrix(double** Matrix,double tolerance) {
 	// Method to 'clean' matrix A by getting rid of elements smaller than the tolerance.
 	for (int i=0; i<N_; i++) {
-		for (int j=i+1; j<N_; j++) {
-			if (fabs(A_[i][j]) <= tolerance) {
-				A_[i][j] = 0.0;
-				A_[j][i] = 0.0;
+		for (int j=0; j<N_; j++) {
+			if (fabs(Matrix[i][j]) <= tolerance) {
+				Matrix[i][j] = 0.0;
 			}
 		}
 	}
@@ -114,36 +116,70 @@ void JacobiEigSolver::doJacobiRotation_(int k, int l) {
 }
 
 
+void JacobiEigSolver::armadilloEig() {
+	// Takes a copy of A and stores in armadillo matrix
+	// Must be run BEFORE solve (since solve changes the matrix A)
+	arma::mat A = arma::zeros(N_,N_);
+
+	for(int i = 0; i < N_; i++) { // There has to be a better way to do this
+		for(int j = 0; j < N_; j++) {
+			A(i,j) = A_[i][j];
+		}
+	}
+
+	// Vector for eigenvalues and matrix for eigenvectors
+	vec eigval;
+	mat eigvec;
+
+	// Armadillo calculating eigenvalues and eigenvectors
+	eig_sym(eigval, eigvec, A);
+
+	cout << "Armadillo eigenvalues:" <<endl;
+	eigval.print();
+	cout << "Armadillo eigenvectors:" <<endl;
+	eigvec.print();
+}
+
 double** JacobiEigSolver::Solve() {
 	// Central algorithm for the iterative solving through Jacobi rotations
 	bool RUN = true;
 	double max;
 	int k, l;
 
-	int iteration = 1;
-	this->CleanA(tolerance_);
-	this->PrintMatrix(A_, N_);
 	max = tolerance_+1.0;
 
-	while (fabs(max)>tolerance_ && iteration <= 100) {
-		cout << "solving iteration " << iteration << endl;
+	while (fabs(max)>tolerance_ && iterations_ <= N_*N_*N_) {
 		max = 0.0;
 		this->getMax_(&max, &k, &l);
-		// cout << max << " " << k << " " << l << " " << endl;
 		this->doJacobiRotation_(k, l);
-		// this->CleanA(tolerance_);
-		//this->PrintMatrix(A_, N_);
-		//cout << endl;
-		// this->PrintEigenvalues()
-		iteration += 1;
+		iterations_ += 1;
 	}
-	cout << "A = " <<endl;
-	this->PrintMatrix(A_, N_);
-	cout << "B = " <<endl;
-	this->PrintMatrix(U_, N_);
+	
+	this->CleanMatrix(A_, tolerance_);
+	this->CleanMatrix(U_, tolerance_);
+
 	return A_;
 }
 
+void JacobiEigSolver::writeToFile(string filename) { 
+	filename = "data/" + filename + ".txt";
+
+	ofstream outfile (filename, ios_base::app); // Create file
+
+	outfile << iterations_ << " " << N_ <<endl;
+
+	for(int i = 0; i < N_; i++) {
+		for(int j = 0; j < N_; j++) {
+			if(j == 0) {
+				outfile << setw(15) << setprecision(8) << A_[i][i];
+			}	
+
+			outfile << setw(15) << setprecision(8) << U_[i][j];
+		}
+		outfile << endl;
+	}
+	outfile.close();
+}
 
 JacobiEigSolver::~JacobiEigSolver() {
 	for(int i = 0; i < N_; i++) {
@@ -153,17 +189,7 @@ JacobiEigSolver::~JacobiEigSolver() {
 	delete [] A_;
 	delete [] U_;
 }
-/*
-void JacobiEigSolver::PrintEigenvalues() {
-	double* eigval;
-	double** values = arma::eig_sym(eigval, A_);
-	cout << "Eigenvalues are: ";
-	for (int i=0; i<N_; i++){
-		cout << values[i] << ", ";
-	}
-	cout << endl;
-}
-*/
+
 void JacobiEigSolver::PrintMatrix(double** Matrix, int Dimension) {
 	for(int i = 0; i < Dimension; i++) {
 		for(int j = 0; j < Dimension; j++) {
