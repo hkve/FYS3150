@@ -148,7 +148,7 @@ double** JacobiEigSolver::Solve() {
 
 	max = tolerance_+1.0;
 
-	while (fabs(max)>tolerance_ && iterations_ <= 100) {
+	while (fabs(max)>tolerance_ && iterations_ <= N_*N_*N_) {
 		max = 0.0;
 		this->getMax_(&max, &k, &l);
 		this->doJacobiRotation_(k, l);
@@ -166,7 +166,7 @@ void JacobiEigSolver::writeToFile(string filename) {
 
 	ofstream outfile (filename, ios_base::app); // Create file
 
-	outfile << iterations_ <<endl;
+	outfile << iterations_ << " " << N_ <<endl;
 
 	for(int i = 0; i < N_; i++) {
 		for(int j = 0; j < N_; j++) {
