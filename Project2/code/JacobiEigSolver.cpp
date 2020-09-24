@@ -3,13 +3,11 @@
 #include <cmath>
 #include "JacobiEigSolver.hpp"
 #include <iomanip>
-#include <armadillo>
 
 #include <string>
 #include <fstream>
 
 using namespace std;
-using namespace arma;
 
 JacobiEigSolver::JacobiEigSolver(double** A, int N) {
 	A_ = A; // The symmetric square matrix for which to solve
@@ -115,7 +113,7 @@ void JacobiEigSolver::doJacobiRotation_(int k, int l) {
 	}
 }
 
-
+/*
 void JacobiEigSolver::armadilloEig() {
 	// Takes a copy of A and stores in armadillo matrix
 	// Must be run BEFORE solve (since solve changes the matrix A)
@@ -139,7 +137,7 @@ void JacobiEigSolver::armadilloEig() {
 	cout << "Armadillo eigenvectors:" <<endl;
 	eigvec.print();
 }
-
+*/
 double** JacobiEigSolver::Solve() {
 	// Central algorithm for the iterative solving through Jacobi rotations
 	bool RUN = true;
