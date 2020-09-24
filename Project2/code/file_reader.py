@@ -2,7 +2,7 @@ import numpy as np
 
 class Run():
 	"""
-	Class for holding the data for each run. Dosen't do anything at the moment but migth be usefull? 
+	Class for holding the data for each run. Dosen't do anything at the moment but migth be useful? 
 	at least we don't need to deal with 3D arrays. 
 	"""
 	def __init__(self, n_iter, N, vals, vecs):
@@ -66,7 +66,7 @@ def read_data_file(filename):
 
 if __name__ == "__main__":
 	#Usage, call the function and enter a filename (no data/)
-	runs = read_data_file("data/BucklingBeam.txt")
+	runs = read_data_file("data/BucklingBeam.dat")
 	
 	# Now we can iterate over each run and get som props, ie
 	for run in runs:

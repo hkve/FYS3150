@@ -3,13 +3,13 @@
 #include <cmath>
 #include "JacobiEigSolver.hpp"
 #include <iomanip>
-#include <armadillo>
+// #include <armadillo>
 
 #include <string>
 #include <fstream>
 
 using namespace std;
-using namespace arma;
+// using namespace arma;
 
 JacobiEigSolver::JacobiEigSolver(double** A, int N) {
 	A_ = A; // The symmetric square matrix for which to solve
@@ -116,29 +116,29 @@ void JacobiEigSolver::doJacobiRotation_(int k, int l) {
 }
 
 
-void JacobiEigSolver::armadilloEig() {
-	// Takes a copy of A and stores in armadillo matrix
-	// Must be run BEFORE solve (since solve changes the matrix A)
-	arma::mat A = arma::zeros(N_,N_);
+// void JacobiEigSolver::armadilloEig() {
+// 	// Takes a copy of A and stores in armadillo matrix
+// 	// Must be run BEFORE solve (since solve changes the matrix A)
+// 	arma::mat A = arma::zeros(N_,N_);
 
-	for(int i = 0; i < N_; i++) { // There has to be a better way to do this
-		for(int j = 0; j < N_; j++) {
-			A(i,j) = A_[i][j];
-		}
-	}
+// 	for(int i = 0; i < N_; i++) { // There has to be a better way to do this
+// 		for(int j = 0; j < N_; j++) {
+// 			A(i,j) = A_[i][j];
+// 		}
+// 	}
 
-	// Vector for eigenvalues and matrix for eigenvectors
-	vec eigval;
-	mat eigvec;
+// 	// Vector for eigenvalues and matrix for eigenvectors
+// 	vec eigval;
+// 	mat eigvec;
 
-	// Armadillo calculating eigenvalues and eigenvectors
-	eig_sym(eigval, eigvec, A);
+// 	// Armadillo calculating eigenvalues and eigenvectors
+// 	eig_sym(eigval, eigvec, A);
 
-	cout << "Armadillo eigenvalues:" <<endl;
-	eigval.print();
-	cout << "Armadillo eigenvectors:" <<endl;
-	eigvec.print();
-}
+// 	cout << "Armadillo eigenvalues:" <<endl;
+// 	eigval.print();
+// 	cout << "Armadillo eigenvectors:" <<endl;
+// 	eigvec.print();
+// }
 
 double** JacobiEigSolver::Solve() {
 	// Central algorithm for the iterative solving through Jacobi rotations
@@ -171,10 +171,10 @@ void JacobiEigSolver::writeToFile(string filename) {
 	for(int i = 0; i < N_; i++) {
 		for(int j = 0; j < N_; j++) {
 			if(j == 0) {
-				outfile << setw(15) << setprecision(8) << A_[i][i];
+				outfile << setw(20) << setprecision(8) << A_[i][i];
 			}	
 
-			outfile << setw(15) << setprecision(8) << U_[i][j];
+			outfile << setw(20) << setprecision(8) << U_[i][j];
 		}
 		outfile << endl;
 	}

@@ -11,10 +11,10 @@ from file_reader import read_data_file
 def run_bb():
 	N = [(10+20*i) for i in range(0,25)]
 	for n in N:
-		os.system("./BucklingBeam.exe " + str(n))
+		os.system(".\BucklingBeam.exe " + str(n))
 
 def plot_error():
-	runs = read_data_file("BucklingBeam.txt")
+	runs = read_data_file("BucklingBeam.dat")
 
 	# calculate analytical eigenvalues
 	vals = []
@@ -86,7 +86,7 @@ def prase_flags(flags):
 		sys.exit(1)
 
 	if "e" in flags:
-		if not "BucklingBeam.txt" in files:
+		if not "BucklingBeam.dat" in files:
 			run_bb()
 		else:
 			plot_error()
@@ -95,6 +95,6 @@ if __name__ == "__main__":
 	
 	flags = get_flags()
 	
-	check_compile()
+	# check_compile()
 
 	prase_flags(flags)
