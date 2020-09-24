@@ -13,3 +13,13 @@ compile_bb:
 	g++ -O3 -o BucklingBeam.exe BucklingBeam.cpp JacobiEigSolver.cpp
 run_bb:
 	./BucklingBeam.exe $N
+
+# Quantum Oscillator
+compile_qo:
+	g++ -O3 -o QuantumOscillator.exe QuantumOscillator.cpp QuantumOscillator.cpp
+# Run for 1 electron
+run_qo1:
+	./Quantum.exe 1 $N $r
+# Run for 2 electrons
+run_qo1:
+	./Quantum.exe 2 $N $r $o
