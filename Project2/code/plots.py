@@ -13,24 +13,7 @@ def run_bb():
 	for n in N:
 		os.system("./BucklingBeam.exe " + str(n))
 
-def plot_eigvectors(run_index=0, vec_start=0, vec_end=0): 
-	runs = read_data_file("data/BucklingBeam.dat")
-	fig, ax = plt.subplots()
 
-	if vec_start == vec_end:
-		vec_indexes = [0]
-	else:
-		vec_indexes = np.arange(vec_start, vec_end+1)
-	
-	for i in vec_indexes:
-		rho = np.linspace(0, 1, runs[run_index].N)
-		vecs = runs[run_index].vals[i]*runs[run_index].vecs[:,i]
-		
-		ax.plot(rho, vecs, label=f"Nr: {i+1}")
-	
-	ax.set(xlabel=r"$\rho$", ylabel="Noe")
-	ax.legend()
-	plt.show()
 	
 def get_flags():
 	flags = []

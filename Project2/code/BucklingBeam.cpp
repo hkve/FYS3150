@@ -3,8 +3,6 @@
 #include <string>
 #include "JacobiEigSolver.hpp"
 
-#define PI 3.14159265359
-
 using namespace std;
 
 void setA(double** A, int N);
