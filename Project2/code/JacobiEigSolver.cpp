@@ -60,7 +60,7 @@ void JacobiEigSolver::getMax_(double* pmax, int* pk, int* pl) {
 	}
 	if (fabs(*pmax) < tolerance_) {
 		RUN = false;
-		cout <<"shutting down, max = " << fabs(*pmax) << endl;
+		//cout <<"shutting down, max = " << fabs(*pmax) << endl;
 	}
 }
 
@@ -157,7 +157,7 @@ double** JacobiEigSolver::Solve() {
 	
 	this->CleanMatrix(A_, tolerance_);
 	this->CleanMatrix(U_, tolerance_);
-
+	cout << "Done N = " << N_ << " number of iterations = " << iterations_ <<endl;
 	return A_;
 }
 

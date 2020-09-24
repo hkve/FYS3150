@@ -3,13 +3,19 @@ import numpy as np
 class Run():
 	"""
 	Class for holding the data for each run. Dosen't do anything at the moment but migth be usefull? 
-	at least we don't need to deal with 3D arrays. Migth implement a sorter? (if it's usefull) 
+	at least we don't need to deal with 3D arrays. 
 	"""
 	def __init__(self, n_iter, N, vals, vecs):
 		self.n_iter = n_iter
 		self.N = N
 		self.vals = vals
 		self.vecs = vecs
+
+	def sort_vals_and_vecs(self):
+		sort = np.argsort(self.vals) # Indexes of sort after eigenvalue
+
+		self.vals = self.vals[sort] # Swap values
+		self.vecs = self.vecs[:,sort] # Swap vectors
 
 
 
@@ -23,7 +29,6 @@ def read_data_file(filename):
 
 	Good luck
 	"""
-	filename = "data/" + filename
 	prop_line = True
 	runs = []
 	with open(filename) as file:
@@ -51,6 +56,7 @@ def read_data_file(filename):
 				if line_counter == N-1:
 					prop_line = True
 					run = Run(n_iter, N, vals, vecs)
+					run.sort_vals_and_vecs()
 					runs.append(run)
 					continue
 
@@ -60,11 +66,11 @@ def read_data_file(filename):
 
 if __name__ == "__main__":
 	#Usage, call the function and enter a filename (no data/)
-	runs = read_data_file("BucklingBeam.txt")
-
+	runs = read_data_file("data/BucklingBeam.txt")
+	
 	# Now we can iterate over each run and get som props, ie
 	for run in runs:
-		print(run.N)
-		print(run.n_iter)
+		print(run.n_iter, run.N)
 		print(run.vals)
 		print(run.vecs)
+	
