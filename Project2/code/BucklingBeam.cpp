@@ -11,7 +11,7 @@ void setA(double** A, int N);
 
 int main(int argc, char** argv)
 {
-	
+	bool time;
 	if(argc <= 1) {
 		cout << "Bad usage, enter matrix dim NxN, example ./BucklingBeam 20";
 		exit(1);
