@@ -34,11 +34,11 @@ int main(int argc, char** argv)
     double omega_r;
     if (argc > 3) {
         omega_r = atof(argv[4]);
+    } else if (NUMBER_OF_ELECTRONS==2) {
+        omega_r = 1;
+        cout << "omega_r was not given, set to 1.0 by default.";
     } else {
         omega_r = 1;
-    }
-    if (NUMBER_OF_ELECTRONS==2) {
-        cout << "omega_r was not given, set to 1.0 by default.";
     }
 
 
@@ -73,9 +73,9 @@ void setA(double** A, int N, double rho_max, int no_electrons = 1, double omega_
 			if(i==j) {
                 // Only the diagonals differ between 1- and 2-electron systems
                 if (no_electrons == 1) {
-                    V_i = d + i*i * hh
+                    V_i = d + i*i * hh;
                 } else {
-                    V_i = d + omega_r * i*i*hh + 1/ (i*h)
+                    V_i = d + omega_r * i*i*hh + 1/ (i*h);
                 }
 			} else if (abs(i-j) == 1) {
                 // Setting upper and lower diagonal elements
