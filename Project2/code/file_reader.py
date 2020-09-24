@@ -65,7 +65,7 @@ def read_data_file(filename):
 	return runs 
 
 if __name__ == "__main__":
-	#Usage, call the function and enter a filename (no data/)
+	# Usage, call the function and enter a filename (no data/)
 	runs = read_data_file("data/BucklingBeam.dat")
 	
 	# Now we can iterate over each run and get som props, ie
