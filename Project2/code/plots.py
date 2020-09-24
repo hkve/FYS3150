@@ -9,6 +9,9 @@ from scipy import stats
 from file_reader import read_data_file
 
 def run_bb():
+	"""
+	If there is no data file for BucklingBeam, run the code for N values
+	"""
 	N = [20, 25, 30, 35, 40, 50, 60, 70, 80, 100, 120, 140, 160, 180, 200]
 	for n in N:
 		os.system("./BucklingBeam.exe " + str(n))
@@ -26,15 +29,15 @@ def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0):
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 
-		if vec_start == vec_end:
+		if vec_start == vec_end: # If only one is needed
 			vec_indexes = [0]
 		else:
-			vec_indexes = np.arange(vec_start, vec_end+1)
+			vec_indexes = np.arange(vec_start, vec_end+1) # If multiple make a list with all desired Ns
 		
+		rho = np.linspace(0, 1, runs[run_index].N) 
 		for i in vec_indexes:
 			eigen_val = runs[run_index].vals[i]
 
-			rho = np.linspace(0, 1, runs[run_index].N)
 			vecs = eigen_val*runs[run_index].vecs[:,i]
 			
 			ax.plot(rho, vecs, label=f"Eig vec: {i+1}")
@@ -44,6 +47,9 @@ def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0):
 		plt.show()
 	
 def plot_convergence():
+	"""
+	Code to plot the convergance, also makes a linear model of the points
+	"""
 	runs = read_data_file("data/BucklingBeam.dat")
 
 	N = []
@@ -60,12 +66,20 @@ def plot_convergence():
 		ax.plot(N, 10**const * N**slope, c="k" ,linestyle="dashed",\
 				label=f"Linear fit, slope = {slope:.2f}$\pm${std_err:.2f}",marker='o', markersize=3)
 		ax.scatter(N, n_iter)
+
 		ax.set_xticks([20, 30, 40, 60, 100, 150, 200])
 		ax.set_xticklabels(["$10$", "$20$", "$40$", "$60$", "$10^2$", r"$1.5 \times 10^2$", "$10^2$"])
+		"""
+		ax.set_yticks([7e2, 2.6e3, 1e4 ,3e4, 8.8e4])
+		ax.set_yticklabels([r"$7 \times 10^2$", r"$2.6 \times 10^3$", "$10^4$", r"$3 \times 10^4$", r"$8.8 \times 10^4$"])
+		"""
 	ax.legend()
 	plt.show()
 
 def get_flags():
+	"""
+	
+	"""
 	flags = []
 	try:
 		if sys.argv[1][0] == "-": # check to see whether any flag is given
