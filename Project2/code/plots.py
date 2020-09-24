@@ -40,6 +40,7 @@ def prase_flags(flags):
 	if "h" in flags:
 		print("The avalaible flags are")
 		print("Not implemented yet...")
+		sys.exit(1)
 
 if __name__ == "__main__":
 	
