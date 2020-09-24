@@ -1,9 +1,15 @@
-all: main
+main: compile_main run_main
+bb: compile_bb run_bb
 
-main:
+# For testing, migth remove
+compile_main:
 	g++ -O3 -o main.exe main.cpp JacobiEigSolver.cpp -larmadillo
-	./main.exe  
+	  
+run_main:
+	./main.exe $N
 
-bb:
+# Buckling Beam 
+compile_bb:
 	g++ -O3 -o BucklingBeam.exe BucklingBeam.cpp JacobiEigSolver.cpp -larmadillo
+run_bb:
 	./BucklingBeam.exe $N
