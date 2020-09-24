@@ -162,7 +162,7 @@ double** JacobiEigSolver::Solve() {
 }
 
 void JacobiEigSolver::writeToFile(string filename) { 
-	filename = "data/" + filename + ".txt";
+	filename = "data/" + filename + ".dat";
 
 	ofstream outfile (filename, ios_base::app); // Create file
 
