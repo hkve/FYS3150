@@ -1,5 +1,5 @@
 .code/
-data/
+.data/
 __pycache__/
 
 *.dat
