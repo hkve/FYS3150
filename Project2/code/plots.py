@@ -13,7 +13,28 @@ def run_bb():
 	for n in N:
 		os.system("./BucklingBeam.exe " + str(n))
 
+def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0): 
+	runs = read_data_file("data/BucklingBeam.dat")
+	
+	with sns.axes_style("darkgrid"):
+		fig, ax = plt.subplots()
 
+		if vec_start == vec_end:
+			vec_indexes = [0]
+		else:
+			vec_indexes = np.arange(vec_start, vec_end+1)
+		
+		for i in vec_indexes:
+			eigen_val = runs[run_index].vals[i]
+
+			rho = np.linspace(0, 1, runs[run_index].N)
+			vecs = eigen_val*runs[run_index].vecs[:,i]
+			
+			ax.plot(rho, vecs, label=f"Eig vec: {i+1}")
+		
+		ax.set(xlabel=r"$\rho$", ylabel="HER SKAL DET STÅ NOE MEN VET IKKE HELT HVA")
+		ax.legend()
+		plt.show()
 	
 def get_flags():
 	flags = []
@@ -57,7 +78,7 @@ def prase_flags(flags):
 	if "v" in flags:
 		if not "BucklingBeam.dat" in files:
 			run_bb()
-		plot_eigvectors(4, vec_start=0, vec_end=1)
+		plot_bb_eigvectors(4, vec_start=0, vec_end=1)
 if __name__ == "__main__":
 	
 	flags = get_flags()
