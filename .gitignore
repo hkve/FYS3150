@@ -1,6 +1,7 @@
-.data/
 .code/
+.data/
 __pycache__/
 
+*.dat
 *.txt
 *.exe
