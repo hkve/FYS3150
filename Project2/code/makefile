@@ -3,7 +3,7 @@ bb: compile_bb run_bb
 
 # For testing, migth remove
 compile_main:
-	g++ -O3 -o main.exe main.cpp JacobiEigSolver.cpp
+	g++ -O3 -o main.exe main.cpp JacobiEigSolver.cpp 
 	  
 run_main:
 	./main.exe $N

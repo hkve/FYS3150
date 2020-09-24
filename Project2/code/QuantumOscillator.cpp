@@ -7,36 +7,38 @@
 
 using namespace std;
 
-void setA(double** A, int N);
+void setA(double** A, int N, double rho_max, int no_electrons, double omega_r);
 
 int main(int argc, char** argv)
 {
 	bool time;
 	if(argc <= 3) {
-		cout << "Bad usage: enter number of electrons ['one','two'], number of integration points [1, inf), integration endpoint [1, inf) and optionally oscillator frequency [0,inf). Example ./QuantumOscillator two 20 5 12";
+		cout << "Bad usage: enter number of electrons [1,2], number of integration points [1, inf), integration endpoint [1, inf) and optionally oscillator frequency [0,inf). Example ./QuantumOscillator two 20 5 12";
 		exit(1);
 	}
 
     int NUMBER_OF_ELECTRONS;
-    if (argv[1] == "one") {
+    if (atoi(argv[1]) == 1) {
         NUMBER_OF_ELECTRONS = 1;
-    } else if (argv[1] == "two") {
+    } else if (atoi(argv[1]) == 2) {
         NUMBER_OF_ELECTRONS = 2;
     } else {
-        cout << "Bad usage: the first argument must be the number of electrons in the systen, either 'one' or 'two'.";
+        cout << "Bad usage: the first argument must be the number of electrons in the systen, either 1 or 2.";
+        exit(1);
     }
 	
 	int	N = atoi(argv[2]);
 
     double rho_max = atof(argv[3]);
 
+    double omega_r;
     if (argc > 3) {
         omega_r = atof(argv[4]);
     } else {
         omega_r = 1;
     }
     if (NUMBER_OF_ELECTRONS==2) {
-        cout << "omega_r was not given, set to 1.0 by default."
+        cout << "omega_r was not given, set to 1.0 by default.";
     }
 
 
