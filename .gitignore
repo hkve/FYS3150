@@ -2,5 +2,6 @@
 .code/
 __pycache__/
 
+*.dat
 *.txt
 *.exe
