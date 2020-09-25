@@ -34,7 +34,7 @@ def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0):
 		else:
 			vec_indexes = np.arange(vec_start, vec_end+1) # If multiple make a list with all desired Ns
 		
-		rho = np.linspace(0, 1, runs[run_index].N) 
+		rho = np.linspace(0, 1, runs[run_index]('N')) 
 		for i in vec_indexes:
 			eigen_val = runs[run_index].vals[i]
 
@@ -48,15 +48,15 @@ def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0):
 	
 def plot_convergence():
 	"""
-	Code to plot the convergance, also makes a linear model of the points
+	Code to plot the convergence, also makes a linear model of the points
 	"""
 	runs = read_data_file("data/BucklingBeam.dat")
 
 	N = []
 	n_iter = [] 
 	for run in runs:
-		N.append(run.N+1) # +1 since the the matrix is has N-1 x N-1 dims
-		n_iter.append(run.n_iter) # Number of iterations to reach epsilon
+		N.append(run('N')+1) # +1 since the the matrix is has N-1 x N-1 dims
+		n_iter.append(run('n_iter')) # Number of iterations to reach epsilon
 
 
 	slope, const, r_value, p_value, std_err = stats.linregress(np.log10(N), np.log10(n_iter))
@@ -110,7 +110,7 @@ def check_compile():
 			os.system("make " + program_makefile_names[i]) 
 			print(f"Compiled {program_names[i]}")
 
-def prase_flags(flags):
+def parse_flags(flags):
 	"""
 	Args:
 		flags: Takes a list of of flags and parses them to choose what plots to show
@@ -131,10 +131,12 @@ def prase_flags(flags):
 	if "c" in flags:
 		plot_convergence()
 
+
+
 if __name__ == "__main__":
 	
 	flags = get_flags()
 	
-	# check_compile()
+	check_compile()
 
-	prase_flags(flags)
+	parse_flags(flags)

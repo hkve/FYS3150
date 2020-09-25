@@ -5,9 +5,14 @@ class Run():
 	Class for holding the data for each run. Dosen't do anything at the moment but migth be useful? 
 	at least we don't need to deal with 3D arrays. 
 	"""
-	def __init__(self, n_iter, N, vals, vecs):
-		self.n_iter = n_iter
-		self.N = N
+	valid_properties = ['n_iter', 'N', 'rho_max', 'omega_r'] # The run-dependent properties will be stored as a dict
+	def __init__(self, vals, vecs, **kwargs):
+		self.properties = {} # Depending on what type of run it is, different properties are stored. (Could potentially make subclasses)
+		for key, item in kwargs.items():
+			if key in self.valid_properties:
+				self.properties[key] = item
+			else:
+				raise Exception(f"Could not understand argument '{key}'. Valid properties as {valid_properties}")
 		self.vals = vals
 		self.vecs = vecs
 
@@ -16,6 +21,14 @@ class Run():
 
 		self.vals = self.vals[sort] # Swap values
 		self.vecs = self.vecs[:,sort] # Swap vectors
+
+	def __call__(self, prop):
+		# Calling the instance of the class with a string denoting the value wanted returns the property correspondingly.
+		if prop in self.properties:
+			return self.properties[prop]
+		else:
+			raise Exception(f"The given property is not recorded in this run. ('{prop}')")
+
 
 
 
@@ -31,13 +44,17 @@ def read_data_file(filename):
 	"""
 	prop_line = True
 	runs = []
+	prop_list = ['n_iter', 'N', 'rho_max', 'omega_r'] # valid properties for a run
 	with open(filename) as file:
 		for line in file:
 			if prop_line == True:
 				line_counter = 0
-				props = line.split()
-				n_iter = int(props[0])
-				N = int(props[1])
+				prop_vals = line.split()
+
+				run_properties = {} # for storing relevant properties of the particular run
+				for prop, value in zip(prop_list, prop_vals):
+					run_properties[prop] = eval(value)
+				N = run_properties['N']
 
 				prop_line = False
 
@@ -49,13 +66,15 @@ def read_data_file(filename):
 				
 				for j in range(len(line)):
 					if j == 0:
+						# first value is the eigenvalue
 						vals[line_counter] = float(line[0])
 					else:
+						# the following are the eigenvectors
 						vecs[line_counter,j-1] = float(line[j])
 
 				if line_counter == N-1:
 					prop_line = True
-					run = Run(n_iter, N, vals, vecs)
+					run = Run(vals, vecs, **run_properties)
 					run.sort_vals_and_vecs()
 					runs.append(run)
 					continue
