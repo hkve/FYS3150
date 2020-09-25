@@ -2,7 +2,7 @@ import numpy as np
 
 class Run():
 	"""
-	Class for holding the data for each run. Dosen't do anything at the moment but migth be useful? 
+	Class for holding the data for each run. Doesn't do anything at the moment but migth be useful? 
 	at least we don't need to deal with 3D arrays. 
 	"""
 	valid_properties = ['n_iter', 'N', 'rho_max', 'omega_r'] # The run-dependent properties will be stored as a dict
@@ -27,7 +27,7 @@ class Run():
 		if prop in self.properties:
 			return self.properties[prop]
 		else:
-			raise Exception(f"The given property is not recorded in this run. ('{prop}')")
+			raise Exception(f"The given property is not recorded for this run. ('{prop}')")
 
 
 
