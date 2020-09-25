@@ -169,8 +169,7 @@ void JacobiEigSolver::writeToFile(string filename) {
 		for(int j = 0; j < N_; j++) {
 			if(j == 0) {
 				outfile << setw(20) << setprecision(8) << A_[i][i];
-			}	
-
+			}
 			outfile << setw(20) << setprecision(8) << U_[i][j];
 		}
 		outfile << endl;
