@@ -155,6 +155,7 @@ double** JacobiEigSolver::Solve() {
 	this->CleanMatrix(A_, tolerance_);
 	this->CleanMatrix(U_, tolerance_);
 	cout << "Done N = " << N_ << " number of iterations = " << iterations_ <<endl;
+	SOLVED = true;
 	return A_;
 }
 
@@ -175,6 +176,47 @@ void JacobiEigSolver::writeToFile(string filename) {
 		outfile << endl;
 	}
 	outfile.close();
+}
+
+double* JacobiEigSolver::getEigvals() {
+	double* eigvecs;
+	if (SOLVED) {
+	eigvecs = new double [N_];
+	for (int i=0; i<N_; i++){
+		eigvecs[i] = A_[i][i];
+	}
+	} else {
+		cout << "The matrix equation has not yet been solved!" << endl;
+		exit(1);
+	}
+	return eigvecs;
+}
+
+double** JacobiEigSolver::getEigvecs() {
+	double** eigvecs;
+	if (SOLVED) {
+	eigvecs = new double* [N_];
+	for (int i=0; i<N_; i++) {
+		eigvecs[i] = new double [N_];
+		for (int j=0; j<N_, j++) {
+			eigvecs[i][j] = U_[i][j];
+		}
+	}
+	this -> CleanMatrix(eigvecs);
+	} else {
+		cout << "The matrix equation as not yet been solved!" << endl;
+		exit(1);
+	}
+	return eigvecs;
+}
+
+int JacobiEigSolver::getIterations() {
+	if (SOLVED) {
+		return iterations_;
+	} else {
+		cout << "The matrix equation as not yet been solved!" << endl;
+		exit(1);
+	}
 }
 
 JacobiEigSolver::~JacobiEigSolver() {

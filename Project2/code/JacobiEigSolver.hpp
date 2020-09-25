@@ -6,6 +6,7 @@
 class JacobiEigSolver
 {
 private:
+	bool SOLVED = false;
 	double** A_;
 	double** U_;
 	int N_;
@@ -25,6 +26,9 @@ public:
 	void armadilloEig();
 	void writeToFile(std::string filename);
 	double** Solve();
+	double* getEigvals();
+	double ** getEigvecs();
+	int getIterations();
 
 	void PrintMatrix(double** Matrix, int Dimension);
 	~JacobiEigSolver();

@@ -2,6 +2,7 @@
 #include <cmath>
 #include <string>
 #include "JacobiEigSolver.hpp"
+#include "WriteEigs.hpp"
 
 #define PI 3.14159265359
 
@@ -52,8 +53,23 @@ int main(int argc, char** argv)
 
 	problem -> Solve();
 
+    double* eigvals;
+    double** eigvecs;
+
+    eigvals = problem -> getEigvals();
+    eigvecs = problem -> getEigvecs();
+
+    // Writing to file
+    double* file_header = new double [4];
+    file_header[0] = problem -> getIterations();
+    file_header[1] = N;
+    file_header[2] = rho_max;
+    file_header[3] = omega_r;
+
 	string filename = NUMBER_OF_ELECTRONS==1 ?  "QuantumOscillator_one" : "QuantumOscillator_two";
-	problem -> writeToFile(filename);
+
+
+	writeToFile(filename, N, eigvals, eigvecs, 4, file_header);
 	
 	return 0;
 }
