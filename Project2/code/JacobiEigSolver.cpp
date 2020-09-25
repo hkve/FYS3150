@@ -198,11 +198,11 @@ double** JacobiEigSolver::getEigvecs() {
 	eigvecs = new double* [N_];
 	for (int i=0; i<N_; i++) {
 		eigvecs[i] = new double [N_];
-		for (int j=0; j<N_, j++) {
+		for (int j=0; j<N_; j++) {
 			eigvecs[i][j] = U_[i][j];
 		}
 	}
-	this -> CleanMatrix(eigvecs);
+	this -> CleanMatrix(eigvecs, tolerance_);
 	} else {
 		cout << "The matrix equation as not yet been solved!" << endl;
 		exit(1);

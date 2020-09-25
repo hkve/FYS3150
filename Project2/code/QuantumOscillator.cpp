@@ -60,16 +60,20 @@ int main(int argc, char** argv)
     eigvecs = problem -> getEigvecs();
 
     // Writing to file
-    double* file_header = new double [4];
+    int header_count = 2+NUMBER_OF_ELECTRONS; // number of header arguments
+    double* file_header = new double [header_count]; // 3 
     file_header[0] = problem -> getIterations();
     file_header[1] = N;
     file_header[2] = rho_max;
-    file_header[3] = omega_r;
+    if (NUMBER_OF_ELECTRONS==2) {
+        cout << "Theres two electrons!" << endl;
+        file_header[3] = omega_r;
+    }
 
 	string filename = NUMBER_OF_ELECTRONS==1 ?  "QuantumOscillator_one" : "QuantumOscillator_two";
 
 
-	writeToFile(filename, N, eigvals, eigvecs, 4, file_header);
+	writeToFile(filename, N, eigvals, eigvecs, header_count, file_header);
 	
 	return 0;
 }
