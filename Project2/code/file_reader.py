@@ -44,7 +44,7 @@ def read_data_file(filename):
 	"""
 	prop_line = True
 	runs = []
-	prop_list = ['n_iter', 'N', 'rho_max', 'omega_r'] # valid properties for a run
+	valid_props = ['n_iter', 'N', 'rho_max', 'omega_r'] # valid properties for a run
 	with open(filename) as file:
 		for line in file:
 			if prop_line == True:
@@ -52,8 +52,8 @@ def read_data_file(filename):
 				prop_vals = line.split()
 
 				run_properties = {} # for storing relevant properties of the particular run
-				for prop, value in zip(prop_list, prop_vals):
-					run_properties[prop] = eval(value)
+				for i, value in enumerate(prop_vals):
+					run_properties[valid_props[i]] = eval(value)
 				N = run_properties['N']
 
 				prop_line = False
