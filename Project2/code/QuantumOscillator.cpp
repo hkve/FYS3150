@@ -66,7 +66,6 @@ int main(int argc, char** argv)
     file_header[1] = N;
     file_header[2] = rho_max;
     if (NUMBER_OF_ELECTRONS==2) {
-        cout << "Theres two electrons!" << endl;
         file_header[3] = omega_r;
     }
 
@@ -93,10 +92,11 @@ void setA(double** A, int N, double rho_max, int no_electrons = 1, double omega_
 			if(i==j) {
                 // Only the diagonals differ between 1- and 2-electron systems
                 if (no_electrons == 1) {
-                    V_i = d + i*i * hh;
+                    V_i = i*i * hh;
                 } else {
-                    V_i = d + omega_r * i*i*hh + 1/ (i*h);
+                    V_i = omega_r * i*i*hh + 1/ (i*h);
                 }
+                A[i][j] = d + V_i;
 			} else if (abs(i-j) == 1) {
                 // Setting upper and lower diagonal elements
 				A[i][j] = a;
