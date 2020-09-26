@@ -81,8 +81,8 @@ void setA(double** A, int N, double rho_max, int no_electrons = 1, double omega_
     // Sets the matrix defining the eigenvalue problem. It is compatible with 1 and 2 electron
     // systems. Since the matrices are similar, these are implemented with the same method.
     // omega_r is unnecessary for the 1-electron system, and the method defaults to this system.
-    double h, hh, a, d, V_i;
-	h = rho_max / (N-1.0);
+    double h, hh, a, d, rho_i, V_i;
+	h = rho_max / (N+1.0);
     hh = h*h; // For slightly fewer FLOPs
 
 	a = -1 / hh;
@@ -91,10 +91,11 @@ void setA(double** A, int N, double rho_max, int no_electrons = 1, double omega_
 		for(int j = 0; j < N; j++) {
 			if(i==j) {
                 // Only the diagonals differ between 1- and 2-electron systems
+                rho_i = (i+1)*h;
                 if (no_electrons == 1) {
-                    V_i = i*i * hh;
+                    V_i = rho_i*rho_i;
                 } else {
-                    V_i = omega_r * i*i*hh + 1/ (i*h);
+                    V_i = omega_r * rho_i*rho_i + 1/ rho_i;
                 }
                 A[i][j] = d + V_i;
 			} else if (abs(i-j) == 1) {
