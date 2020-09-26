@@ -53,10 +53,8 @@ def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0):
 def plot_qo_groundstate(no_electrons): 
 	"""
 	args:
-		run_index: What run (from the BucklingBeam.dat file) to choose vectors from
-				   preferably one with N > 100 (for better resolution in the plot)
-		vec_start: The first eigenvector to plot
-		vec_end: Up to and including this eigenvector to plot 
+		no_electrons: either 'one' or 'two', specifying whether to plot data from
+					  one- or two-electron systems.
 	"""
 	runs = read_data_file("data/QuantumOscillator_" + no_electrons + ".dat")
 	
