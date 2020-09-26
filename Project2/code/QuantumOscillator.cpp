@@ -36,10 +36,10 @@ int main(int argc, char** argv)
     if (argc > 3) {
         omega_r = atof(argv[4]);
     } else if (NUMBER_OF_ELECTRONS==2) {
-        omega_r = 1;
+        omega_r = 1.0;
         cout << "omega_r was not given, set to 1.0 by default.";
     } else {
-        omega_r = 1;
+        omega_r = 1.0;
     }
 
 
