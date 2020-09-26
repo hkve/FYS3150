@@ -50,7 +50,7 @@ def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0):
 
 
 
-def plot_qo_groundstate(): 
+def plot_qo_groundstate(no_electrons): 
 	"""
 	args:
 		run_index: What run (from the BucklingBeam.dat file) to choose vectors from
@@ -58,18 +58,22 @@ def plot_qo_groundstate():
 		vec_start: The first eigenvector to plot
 		vec_end: Up to and including this eigenvector to plot 
 	"""
-	runs = read_data_file("data/QuantumOscillator_one.dat")
+	runs = read_data_file("data/QuantumOscillator_" + no_electrons + ".dat")
 	
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 		
 		for run in runs:
-			lbl = f"N = {run('N')}, " + r"$\rho_{max}$ = " + f"{run('rho_max')}, " + f"$E_0$ = {run.vals[0]}"
+			lbl = f"N = {run('N')}"
+			lbl += r", $\rho_{max}$ = " + f"{run('rho_max')}"
+			if no_electrons == 'two':
+				lbl += r", $\omega_r$ = " + f"{run('omega_r')}"
+			lbl += f", $E_0$ = {run.vals[0]}"
 			rho0 = run('rho_max') / (run('N') + 1)
 			rho = np.linspace(rho0, run('rho_max') - rho0, run('N'))
 			ax.plot(rho, run.vecs[:,0] / rho, label=lbl)
 
-		ax.set(xlabel=r"$\rho$", ylabel=r"$\psi_{GS}$")
+		ax.set(xlabel=r"$\rho$", ylabel=r"$R_{GS}(r)$")
 		ax.legend()
 		plt.show()
 
@@ -167,7 +171,11 @@ def parse_flags(flags):
 		plot_convergence()
 
 	if "q" in flags:
-		plot_qo_groundstate()
+		try:
+			no_electrons = sys.argv[2]
+		except IndexError:
+			raise Exception("Using the quantum flag q requires the second argument to specify whether to plot for 'one' electron or 'two'.")
+		plot_qo_groundstate(no_electrons)
 
 
 
