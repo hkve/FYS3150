@@ -16,6 +16,8 @@ def run_bb():
 	for n in N:
 		os.system(".\BucklingBeam.exe " + str(n))
 
+
+
 def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0): 
 	"""
 	args:
@@ -42,10 +44,37 @@ def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0):
 			
 			ax.plot(rho, vecs, label=f"Eig vec: {i+1}")
 		
-		ax.set(xlabel=r"$\rho$", ylabel="HER SKAL DET STÅ NOE MEN VET IKKE HELT HVA")
+		ax.set(xlabel=r"$\xi$", ylabel="HER SKAL DET STÅ NOE MEN VET IKKE HELT HVA")
 		ax.legend()
 		plt.show()
+
+
+
+def plot_qo_groundstate(): 
+	"""
+	args:
+		run_index: What run (from the BucklingBeam.dat file) to choose vectors from
+				   preferably one with N > 100 (for better resolution in the plot)
+		vec_start: The first eigenvector to plot
+		vec_end: Up to and including this eigenvector to plot 
+	"""
+	runs = read_data_file("data/QuantumOscillator_one.dat")
 	
+	with sns.axes_style("darkgrid"):
+		fig, ax = plt.subplots()
+		
+		for run in runs:
+			lbl = f"N = {run('N')}, " + r"$\rho_{max}$ = " + f"{run('rho_max')}, " + f"$E_0$ = {run.vals[0]}"
+			rho0 = run('rho_max') / (run('N') + 1)
+			rho = np.linspace(rho0, run('rho_max') - rho0, run('N'))
+			ax.plot(rho, run.vecs[:,0] / rho, label=lbl)
+
+		ax.set(xlabel=r"$\rho$", ylabel=r"$\psi_{GS}$")
+		ax.legend()
+		plt.show()
+
+
+
 def plot_convergence():
 	"""
 	Code to plot the convergence, also makes a linear model of the points
@@ -76,6 +105,8 @@ def plot_convergence():
 	ax.legend()
 	plt.show()
 
+
+
 def get_flags():
 	"""
 	
@@ -91,6 +122,8 @@ def get_flags():
 		raise Exception("A flag was not given, nothing was executed. Try the flag -h for a list of available flags and operations.")
 
 	return flags
+
+
 
 def check_compile():
 	"""
@@ -109,6 +142,8 @@ def check_compile():
 		if not name in files: # If missing, compile it
 			os.system("make " + program_makefile_names[i]) 
 			print(f"Compiled {program_names[i]}")
+
+
 
 def parse_flags(flags):
 	"""
@@ -130,6 +165,9 @@ def parse_flags(flags):
 
 	if "c" in flags:
 		plot_convergence()
+
+	if "q" in flags:
+		plot_qo_groundstate()
 
 
 
