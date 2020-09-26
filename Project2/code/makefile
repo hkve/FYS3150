@@ -19,7 +19,7 @@ compile_qo:
 	g++ -O3 -o QuantumOscillator.exe QuantumOscillator.cpp JacobiEigSolver.cpp WriteEigs.cpp
 # Run for 1 electron
 run_qo1:
-	./Quantum.exe 1 $N $r
+	./QuantumOscillator.exe 1 $N $r
 # Run for 2 electrons
-run_qo1:
-	./Quantum.exe 2 $N $r $o
+run_qo2:
+	./QuantumOscillator.exe 2 $N $r $o
