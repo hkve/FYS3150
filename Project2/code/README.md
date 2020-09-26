@@ -25,14 +25,14 @@ necessary to solve it. Since the Quantum problems require a greater
 amount of parameters, this function was necessary, as a means to write
 the appropriate number of header values in the appropriate places.
 
-BucklingBeam
+- BucklingBeam
 This implements the specific problem for solving the buckling beam
 differential equation. When running the program it requires an argument
 which it uses as the N, to set up the NxN matrix representation of the
 differential equation. It then uses JacobiEigSolver to solve the
 equation and WriteEigs to write these to a data file.
 
-QuantumOscillator
+- QuantumOscillator
 Same as for BucklingBeam, this program implements the specific matrices
 for the differential equations relevant to the harmonic oscillator
 potential with either one or two electrons. It uses the JacobiEigSolver
