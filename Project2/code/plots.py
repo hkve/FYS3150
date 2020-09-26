@@ -62,14 +62,21 @@ def plot_qo_groundstate(no_electrons):
 		fig, ax = plt.subplots()
 		
 		for run in runs:
-			lbl = f"N = {run('N')}"
-			lbl += r", $\rho_{max}$ = " + f"{run('rho_max')}"
+			N = run('N')
+			rho_max = run('rho_max')
+
+			lbl = f"N = {N}"
+			lbl += r", $\rho_{max}$ = " + f"{rho_max}"
 			if no_electrons == 'two':
 				lbl += r", $\omega_r$ = " + f"{run('omega_r')}"
 			lbl += f", $E_0$ = {run.vals[0]}"
-			rho0 = run('rho_max') / (run('N') + 1)
-			rho = np.linspace(rho0, run('rho_max') - rho0, run('N'))
-			ax.plot(rho, run.vecs[:,0] / rho, label=lbl)
+
+			ground_state = run.vecs[:,0] # Getting the eigenvector corresponding to the lowest eigenvalue
+			ground_state *= np.sqrt((N+1)/rho_max) # Normalizing it
+			rho_0 = rho_max / (N+1)
+			rho = np.linspace(rho_0, rho_max - rho_0, N)
+
+			ax.plot(rho, ground_state / rho, label=lbl)
 
 		ax.set(xlabel=r"$\rho$", ylabel=r"$R_{GS}(r)$")
 		ax.legend()
