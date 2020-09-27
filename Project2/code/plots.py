@@ -50,11 +50,12 @@ def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0):
 
 
 
-def plot_qo_groundstate(no_electrons): 
+def plot_qo_groundstate(no_electrons, n): 
 	"""
 	args:
 		no_electrons: either 'one' or 'two', specifying whether to plot data from
 					  one- or two-electron systems.
+		n			: energy level to plot (int)
 	"""
 	runs = read_data_file("data/QuantumOscillator_" + no_electrons + ".dat")
 	
@@ -69,16 +70,16 @@ def plot_qo_groundstate(no_electrons):
 			lbl += r", $\rho_{max}$ = " + f"{rho_max}"
 			if no_electrons == 'two':
 				lbl += r", $\omega_r$ = " + f"{run('omega_r')}"
-			lbl += f", $E_0$ = {run.vals[0]}"
+			lbl += ", $E_{%i}$ = " % n + f"{run.vals[n-1]}"
 
-			ground_state = run.vecs[:,0] # Getting the eigenvector corresponding to the lowest eigenvalue
+			ground_state = run.vecs[:,n-1] # Getting the eigenvector corresponding to the lowest eigenvalue
 			ground_state *= np.sqrt((N+1)/rho_max) # Normalizing it
 			rho_0 = rho_max / (N+1)
 			rho = np.linspace(rho_0, rho_max - rho_0, N)
 
-			ax.plot(rho, ground_state / rho, label=lbl)
+			ax.plot(rho, ground_state**2, label=lbl)
 
-		ax.set(xlabel=r"$\rho$", ylabel=r"$R_{GS}(r)$")
+		ax.set(xlabel=r"$\rho$", ylabel="$u_{%i,0}(r)$" % n)
 		ax.legend()
 		plt.show()
 
@@ -113,6 +114,46 @@ def plot_convergence():
 		"""
 	ax.legend()
 	plt.show()
+
+
+
+def print_eigenvals(no_electrons, start_idx, stop_idx):
+	"""
+	This function prints a table of the eigenvalues for the specified data.
+	args:
+		no_electrons: either 'one' or 'two'; specifies whether to print the eigenvalues of the one- or two-electron systems
+		start_idx   : (int) specifies the first eigenvalue to print, counting as 0, 1, ...
+		stop_idx    : (int) specifies the last eigenvalue to print
+	"""
+	runs = read_data_file("data/QuantumOscillator_" + no_electrons + ".dat")
+
+	no_cols = stop_idx - start_idx + 2
+	rows = np.zeros((len(runs)+1, no_cols), dtype=object)
+
+	rows[0,0] = r"Parameters [$N, \rho_\text{max}$]"
+	rows[0,1:] = [r"$\lambda_" + f"{i}$" for i in np.arange(start=start_idx, stop=stop_idx+1)]
+	for i, run in enumerate(runs):
+		eigs = ["{:.3f}".format(eigval) for eigval in run.vals[start_idx:stop_idx+1]]
+		rows[i+1,0] = f"${run('N')}$, ${run('rho_max')}$"
+		rows[i+1,1:] = eigs
+
+	print_table(rows)
+
+
+
+def print_table(rows):
+	"""
+	"""
+	print(r"\begin{table}[H]")
+	print(r"\begin{tabular}{" + "".join([r"|l" for i in range(rows.shape[1])]) + r"|}")
+	print(r"\hline")
+
+	for row in rows:
+		row_txt = " & ".join(row)
+		print("\t", row_txt, r" \\ \hline", sep="")
+
+	print(r"\end{tabular}")
+	print(r"\end{table}")
 
 
 
@@ -178,9 +219,23 @@ def parse_flags(flags):
 	if "q" in flags:
 		try:
 			no_electrons = sys.argv[2]
+			n = int(sys.argv[3])
 		except IndexError:
-			raise Exception("Using the quantum flag q requires the second argument to specify whether to plot for 'one' electron or 'two'.")
-		plot_qo_groundstate(no_electrons)
+			raise Exception("Using the quantum flag q requires the second argument to specify whether to plot \
+							for 'one' electron or 'two' and that the third argument specifies the energy level \
+							to plot for (1, 2, ...).")
+		plot_qo_groundstate(no_electrons, n)
+
+	if "e" in flags:
+		try:
+			no_electrons = sys.argv[2]
+			start_idx = int(sys.argv[3])
+			stop_idx = int(sys.argv[4])
+		except IndexError:
+			raise Exception("Using the quantum flag e requires the second argument to specify whether to plot \
+							for 'one' electron or 'two' and that the third and fourth arguments specify first \
+								and last eigenvalue to plot.")
+		print_eigenvals(no_electrons, start_idx, stop_idx)
 
 
 
