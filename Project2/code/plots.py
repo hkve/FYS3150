@@ -45,15 +45,26 @@ def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0):
 		else:
 			vec_indexes = np.arange(vec_start, vec_end+1) # If multiple make a list with all desired Ns
 		
-		rho = np.linspace(0, 1, runs[run_index]('N')) 
+		N = runs[run_index]("N")
+		rho = np.linspace(0, 1, N) 
+		ana_vec = np.zeros((N, vec_end-vec_start+1))
+		
+		for j in range(vec_end-vec_start+1):
+			for i in range(N):
+				ana_vec[i,j] = np.sin((j+1)*(i+1)*np.pi/(N+1))
+				
+			ana_vec[:,j] /= np.linalg.norm(ana_vec[:,j])
+		
 		for i in vec_indexes:
 			eigen_val = runs[run_index].vals[i]
 
-			vecs = eigen_val*runs[run_index].vecs[:,i]
+			vecs = runs[run_index].vecs[:,i]
 			
-			ax.plot(rho, vecs, label=f"Eig vec: {i+1}")
-		
-		ax.set(xlabel=r"$\xi$", ylabel="HER SKAL DET STÅ NOE MEN VET IKKE HELT HVA")
+			ax.plot(rho, vecs, label=f"Eigen Vec: {i+1}")
+			ax.plot(rho, ana_vec[:,i], c="k", \
+					linestyle="dashed", dashes=(5,10))
+
+		ax.set(xlabel=r"$\xi$", ylabel=r"$u(\xi)$")
 		ax.legend()
 		plt.show()
 
@@ -104,7 +115,7 @@ def plot_rho_max(no_electrons, n):
 
 	for i in range(n_runs):
 		error = abs(runs[i].vals[0:3]-analytical_eig)
-		max_error[i] = np.max(error)
+		max_error[i] = np.max(error)	
 		rho_max[i] = runs[i]("rho_max")
 
 	with sns.axes_style("darkgrid"):
@@ -250,7 +261,9 @@ def parse_flags(flags):
 
 	if "h" in flags:
 		print("The avalaible flags are")
-		print("Not implemented yet...")
+		print("-v\t Plot two eigenvectors Buckling Beam")
+		print("-c\t Plot number of iteration as a function of N")
+		print("-r\t Plot error against different rho values for one electron")
 		sys.exit(1)
 
 	# Making data files
