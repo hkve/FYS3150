@@ -143,7 +143,7 @@ def print_eigenvals(no_electrons, start_idx, stop_idx):
 
 def print_table(rows):
 	"""
-	This method prints a latex table of the elements given by the rows-matrix
+	This method prints a LaTex table of the elements given by the rows-matrix
 	args:
 		rows: (2D array-like of strings) The string elements that the table should include as (rows, cols).
 	"""
@@ -162,7 +162,7 @@ def print_table(rows):
 
 def get_flags():
 	"""
-	
+	Reads off the flags given for execution.
 	"""
 	flags = []
 	try:
@@ -244,8 +244,8 @@ def parse_flags(flags):
 
 if __name__ == "__main__":
 	
-	flags = get_flags()
-	
 	check_compile()
+	
+	flags = get_flags()
 
 	parse_flags(flags)
