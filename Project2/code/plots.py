@@ -143,6 +143,9 @@ def print_eigenvals(no_electrons, start_idx, stop_idx):
 
 def print_table(rows):
 	"""
+	This method prints a latex table of the elements given by the rows-matrix
+	args:
+		rows: (2D array-like of strings) The string elements that the table should include as (rows, cols).
 	"""
 	print(r"\begin{table}[H]")
 	print(r"\begin{tabular}{" + "".join([r"|l" for i in range(rows.shape[1])]) + r"|}")
