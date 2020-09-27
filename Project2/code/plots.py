@@ -16,7 +16,16 @@ def run_bb(slash):
 	for n in N:
 		os.system(slash + "BucklingBeam.exe " + str(n))
 
+def run_qo1(slash):
+	"""
+	If there is no data file for QuantumOscillator_one, run the code for rho_max and N values
+	"""
+	N = [100, 150, 200]
+	rho_max = [4 + 0.1*i for i in range(21)]
 
+	for rho in rho_max:
+		args = "1 " + str(N[0]) + " " + str(rho) + " 1"
+		os.system(slash + "QuantumOscillator.exe " + args)
 
 def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0): 
 	"""
@@ -83,7 +92,33 @@ def plot_qo_groundstate(no_electrons, n):
 		ax.legend()
 		plt.show()
 
+def plot_rho_max(no_electrons, n):
+	runs = read_data_file("data/QuantumOscillator_" + no_electrons + ".dat")
 
+	analytical_eig = np.array([3, 7, 11]) # Analytical result for 3 lowest eigenvalues
+	n_runs = len(runs)
+	max_error = np.zeros(n_runs)
+	rho_max = np.zeros(n_runs)
+
+	for i in range(n_runs):
+		error = abs(runs[i].vals[0:3]-analytical_eig)
+		max_error[i] = np.max(error)
+		rho_max[i] = runs[i]("rho_max")
+
+	with sns.axes_style("darkgrid"):
+		fig, ax = plt.subplots()
+		ax.set(xlabel=r"$\rho_{max}$", ylabel="$|\lambda_{num}-\lambda_{ana}|$")
+		ax.plot(rho_max, max_error, c="k", linestyle="dashed")
+
+		ideal_rho_i = np.argmin(max_error)
+		ideal_rho = abs(rho_max[ideal_rho_i])
+		ideal_error = abs(max_error[ideal_rho_i])
+		ideal_rho_error = abs(ideal_rho-rho_max[ideal_rho_i+1])
+		plt.scatter(ideal_rho, ideal_error, c="r", s=100, \
+					label=r"$\rho_{ideal} = $" + f"{ideal_rho} $\pm$ {ideal_rho_error:.1f}")
+		
+	plt.legend()
+	plt.show()
 
 def plot_convergence():
 	"""
@@ -188,8 +223,8 @@ def check_compile():
 		os.mkdir("data")
 		print("Created missing data directory")
 
-	program_names = ["main.exe", "BucklingBeam.exe"] # Program names
-	program_makefile_names = ["compile_main", "compile_bb"] # Program names in the makefile
+	program_names = ["main.exe", "BucklingBeam.exe", "QuantumOscillator.exe"] # Program names
+	program_makefile_names = ["compile_main", "compile_bb", "compile_qo"] # Program names in the makefile
 
 	for i, name in enumerate(program_names): # Loops over all programs that should be compiled
 		if not name in files: # If missing, compile it
@@ -214,14 +249,22 @@ def parse_flags(flags):
 		print("Not implemented yet...")
 		sys.exit(1)
 
+	# Making data files
 	if "v" in flags or "c" in flags: 
 		if not "BucklingBeam.dat" in files:
 			run_bb(slash)
+	if "r" in flags:
+		if not "QuantumOscillator_one.dat" in files:
+			run_qo1(slash)
+
 	if "v" in flags:
 		plot_bb_eigvectors(4, vec_start=0, vec_end=1)
 
 	if "c" in flags:
 		plot_convergence()
+
+	if "r" in flags:
+		plot_rho_max("one", 10)
 
 	if "q" in flags:
 		try:
