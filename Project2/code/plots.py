@@ -8,13 +8,13 @@ from scipy import stats
 
 from file_reader import read_data_file
 
-def run_bb():
+def run_bb(slash):
 	"""
 	If there is no data file for BucklingBeam, run the code for N values
 	"""
 	N = [20, 25, 30, 35, 40, 50, 60, 70, 80, 100, 120, 140, 160, 180, 200]
 	for n in N:
-		os.system(".\BucklingBeam.exe " + str(n))
+		os.system(slash + "BucklingBeam.exe " + str(n))
 
 
 
@@ -203,6 +203,10 @@ def parse_flags(flags):
 	Args:
 		flags: Takes a list of of flags and parses them to choose what plots to show
 	"""
+	slash = "./"
+	if platform.platform() == "Windows":
+		slash = ".\\"
+
 	files = os.listdir("data/")
 
 	if "h" in flags:
@@ -212,7 +216,7 @@ def parse_flags(flags):
 
 	if "v" in flags or "c" in flags: 
 		if not "BucklingBeam.dat" in files:
-			run_bb()
+			run_bb(slash)
 	if "v" in flags:
 		plot_bb_eigvectors(4, vec_start=0, vec_end=1)
 
