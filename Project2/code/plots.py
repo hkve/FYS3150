@@ -45,14 +45,25 @@ def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0):
 		else:
 			vec_indexes = np.arange(vec_start, vec_end+1) # If multiple make a list with all desired Ns
 		
-		rho = np.linspace(0, 1, runs[run_index]('N')) 
+		N = runs[run_index]("N")
+		rho = np.linspace(0, 1, N) 
+		ana_vec = np.zeros((N, vec_end-vec_start+1))
+		
+		for j in range(vec_end-vec_start+1):
+			for i in range(N):
+				ana_vec[i,j] = np.sin((j+1)*(i+1)*np.pi/(N+1))
+				
+			ana_vec[:,j] /= np.linalg.norm(ana_vec[:,j])
+		
 		for i in vec_indexes:
 			eigen_val = runs[run_index].vals[i]
 
 			vecs = runs[run_index].vecs[:,i]
 			
-			ax.plot(rho, vecs, label=f"Eig vec: {i+1}")
-		
+			ax.plot(rho, vecs, label=f"Num vec: {i+1}")
+			ax.plot(rho, ana_vec[:,i], label=f"Ana vec: {i+1}", c="k", \
+					linestyle="dashed", dashes=(5,10))
+
 		ax.set(xlabel=r"$\xi$", ylabel=r"$u(\xi)$")
 		ax.legend()
 		plt.show()
