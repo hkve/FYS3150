@@ -60,8 +60,8 @@ def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0):
 
 			vecs = runs[run_index].vecs[:,i]
 			
-			ax.plot(rho, vecs, label=f"Num vec: {i+1}")
-			ax.plot(rho, ana_vec[:,i], label=f"Ana vec: {i+1}", c="k", \
+			ax.plot(rho, vecs, label=f"Eigen Vec: {i+1}")
+			ax.plot(rho, ana_vec[:,i], c="k", \
 					linestyle="dashed", dashes=(5,10))
 
 		ax.set(xlabel=r"$\xi$", ylabel=r"$u(\xi)$")
