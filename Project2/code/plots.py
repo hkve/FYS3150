@@ -92,6 +92,8 @@ def plot_qo_groundstate(no_electrons, n):
 		ax.legend()
 		plt.show()
 
+
+
 def plot_rho_max(no_electrons, n):
 	runs = read_data_file("data/QuantumOscillator_" + no_electrons + ".dat")
 
@@ -119,6 +121,8 @@ def plot_rho_max(no_electrons, n):
 		
 	plt.legend()
 	plt.show()
+
+
 
 def plot_convergence():
 	"""
