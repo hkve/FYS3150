@@ -181,7 +181,7 @@ def print_eigenvals(no_electrons, start_idx, stop_idx):
 	rows = np.zeros((len(runs)+1, no_cols), dtype=object)
 
 	rows[0,0] = r"Parameters [$N, \rho_\text{max}$]"
-	rows[0,1:] = [r"$\lambda_" + f"{i}$" for i in np.arange(start=start_idx, stop=stop_idx+1)]
+	rows[0,1:] = [r"$\lambda_" + f"{i}$" for i in np.arange(start=start_idx+1, stop=stop_idx+2)]
 	for i, run in enumerate(runs):
 		eigs = ["{:.3f}".format(eigval) for eigval in run.vals[start_idx:stop_idx+1]]
 		rows[i+1,0] = f"${run('N')}$, ${run('rho_max')}$"
@@ -288,9 +288,9 @@ def parse_flags(flags):
 			no_electrons = sys.argv[2]
 			n = int(sys.argv[3])
 		except IndexError:
-			raise Exception("Using the quantum flag q requires the second argument to specify whether to plot \
-							for 'one' electron or 'two' and that the third argument specifies the energy level \
-							to plot for (1, 2, ...).")
+			raise Exception("Using the quantum flag q requires the second argument to specify whether to plot "\
+							+ "for 'one' electron or 'two' and that the third argument specifies the energy level" \
+							" to plot for (1, 2, ...).")
 		plot_qo_groundstate(no_electrons, n)
 
 	if "e" in flags:
