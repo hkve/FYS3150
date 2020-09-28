@@ -64,7 +64,8 @@ def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0):
 			ax.plot(rho, ana_vec[:,i], c="k", \
 					linestyle="dashed", dashes=(5,10))
 
-		ax.set(xlabel=r"$\xi$", ylabel=r"$u(\xi)$")
+		ax.set_xlabel(xlabel=r"$\xi$", fontsize=12)
+		ax.set_ylabel(ylabel=r"$u(\xi)$", fontsize=12)
 		ax.legend()
 		plt.show()
 
