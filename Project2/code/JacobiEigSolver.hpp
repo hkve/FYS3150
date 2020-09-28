@@ -23,7 +23,7 @@ public:
 	void CleanMatrix(double** A, double tolerance);
 	void getMax_(double* pmax, int* pk, int* pl);
 	void doJacobiRotation_(int k, int l);
-	void armadilloEig();
+	
 	void writeToFile(std::string filename);
 	double** Solve();
 	double* getEigvals();

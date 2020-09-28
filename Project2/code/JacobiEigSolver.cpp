@@ -112,31 +112,6 @@ void JacobiEigSolver::doJacobiRotation_(int k, int l) {
 	}
 }
 
-/*
-void JacobiEigSolver::armadilloEig() {
-	// Takes a copy of A and stores in armadillo matrix
-	// Must be run BEFORE solve (since solve changes the matrix A)
-	arma::mat A = arma::zeros(N_,N_);
-
-// 	for(int i = 0; i < N_; i++) { // There has to be a better way to do this
-// 		for(int j = 0; j < N_; j++) {
-// 			A(i,j) = A_[i][j];
-// 		}
-// 	}
-
-// 	// Vector for eigenvalues and matrix for eigenvectors
-// 	vec eigval;
-// 	mat eigvec;
-
-// 	// Armadillo calculating eigenvalues and eigenvectors
-// 	eig_sym(eigval, eigvec, A);
-
-	cout << "Armadillo eigenvalues:" <<endl;
-	eigval.print();
-	cout << "Armadillo eigenvectors:" <<endl;
-	eigvec.print();
-}
-*/
 double** JacobiEigSolver::Solve() {
 	// Central algorithm for the iterative solving through Jacobi rotations
 	bool RUN = true;

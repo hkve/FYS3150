@@ -10,9 +10,9 @@ run_main:
 
 # Buckling Beam 
 compile_bb:
-	g++ -O3 -o BucklingBeam.exe BucklingBeam.cpp JacobiEigSolver.cpp
+	g++ -O3 -o BucklingBeam.exe BucklingBeam.cpp JacobiEigSolver.cpp -larmadillo
 run_bb:
-	./BucklingBeam.exe $N
+	./BucklingBeam.exe $N 
 
 # Quantum Oscillator
 compile_qo:
