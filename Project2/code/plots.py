@@ -33,7 +33,7 @@ def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0):
 		run_index: What run (from the BucklingBeam.dat file) to choose vectors from
 				   preferably one with N > 100 (for better resolution in the plot)
 		vec_start: The first eigenvector to plot
-		vec_end: Up to and including this eigenvector to plot 
+		vec_end  : Up to and including this eigenvector to plot 
 	"""
 	runs = read_data_file("data/BucklingBeam.dat")
 	
@@ -47,20 +47,20 @@ def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0):
 		
 		N = runs[run_index]("N")
 		rho = np.linspace(0, 1, N) 
-		ana_vec = np.zeros((N, vec_end-vec_start+1))
+		ana_vec = np.zeros((N, vec_end-vec_start+1)) # Array for the analytical eigenvectors
 		
-		for j in range(vec_end-vec_start+1):
-			for i in range(N):
+		for j in range(vec_end-vec_start+1): # For each vector
+			for i in range(N): # For each vector element
 				ana_vec[i,j] = np.sin((j+1)*(i+1)*np.pi/(N+1))
 				
-			ana_vec[:,j] /= np.linalg.norm(ana_vec[:,j])
+			ana_vec[:,j] /= np.linalg.norm(ana_vec[:,j]) # Normalise the j'th eigenvector
 		
-		for i in vec_indexes:
-			eigen_val = runs[run_index].vals[i]
+		for i in vec_indexes: # For each eigenvector
+			num_vecs = runs[run_index].vecs[:,i] # Numerical eigenvectors
+			eigen_val = runs[run_index].vals[i]  # Analytical eigenvectors
 
-			vecs = runs[run_index].vecs[:,i]
 			
-			ax.plot(rho, vecs, label=f"Eigen Vec: {i+1}")
+			ax.plot(rho, num_vecs, label=f"Eigen Vec: {i+1}")
 			ax.plot(rho, ana_vec[:,i], c="k", \
 					linestyle="dashed", dashes=(5,10))
 
