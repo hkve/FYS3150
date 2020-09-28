@@ -133,7 +133,29 @@ def plot_rho_max(no_electrons, n):
 	plt.legend()
 	plt.show()
 
+def plot_time_difference(slash):
+	filename = "data/time.dat"
+	N = np.array([i*2 for i in range(1,101)])
 
+	if  not filename.replace("data/", "") in os.listdir("data/"):
+		for n in N:
+			os.system(slash + "BucklingBeam.exe " + str(n) + " 1")
+
+	data = np.loadtxt(filename)
+	time_jacobi, time_arma = data[:,0]/1e9, data[:,1]/1e9
+	relative = time_jacobi/time_arma
+
+	line_i = np.argmin(np.abs(relative-1))
+	
+	with sns.axes_style("darkgrid"):
+		fig, ax = plt.subplots()
+		ax.set(yscale="log")
+		ax.set_xlabel("N", fontsize=12)
+		ax.set_ylabel(r"$t_{i}/t_{a}$", fontsize=12)
+		ax.hlines(relative[line_i], N[0], N[-1], linestyle="dashed", label=r"$t_{j} \approx t_{a}$")
+		ax.plot(N, relative)
+		ax.legend(fontsize=12)
+		plt.show()
 
 def plot_convergence():
 	"""
@@ -304,6 +326,8 @@ def parse_flags(flags):
 								and last eigenvalue to plot.")
 		print_eigenvals(no_electrons, start_idx, stop_idx)
 
+	if "t" in flags: 
+		plot_time_difference(slash)
 
 
 if __name__ == "__main__":

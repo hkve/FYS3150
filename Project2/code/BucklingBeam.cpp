@@ -21,19 +21,17 @@ int main(int argc, char** argv)
 		time = atoi(argv[2]);
 	}
 
-	int	N = atoi(argv[1]);
+	int	N = atoi(argv[1]); // Matrix size
 
-	double** A = new double*[N];
+	double** A = new double*[N]; // Make space for matrix
 	for(int i = 0; i < N; i++) {
 		A[i] = new double[N];	
 	}
 	
-	setA(A, N);
+	setA(A, N); // Set the elements of A matrix
 
-	// Only run for time taking 
-	
-	double time_arma;
-	if(time == 1) {
+	double time_arma; 
+	if(time == 1) { // Only run for time taking 
 		time_arma = armadilloEig(A, N);
 	}
 
@@ -45,7 +43,7 @@ int main(int argc, char** argv)
 	double time_jacobi = chrono::duration_cast<chrono::nanoseconds>(end_jacobi - start_jacobi).count();
 
 	
-	if (time == 1) {
+	if (time == 1) { // If we want to time, only write Jacobi and armadillo times
 		write_time(time_jacobi, time_arma);
 	}
 	else {
@@ -99,7 +97,7 @@ double armadilloEig(double **A, int N) {
 
 void write_time(double time_jacobi, double time_arma) {
 	string filename = "data/time.dat";
-	ofstream outfile (filename, ios_base::app); // Create file
-	outfile << time_jacobi << " " << time_arma <<endl;
+	ofstream outfile (filename, ios_base::app); // append to file
+	outfile << time_jacobi << " " << time_arma <<endl; 
 	outfile.close();
 }
