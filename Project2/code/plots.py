@@ -79,6 +79,8 @@ def plot_error_vs_rho_N(slash):
 	ax.set_zlabel("log10($|\lambda_{num}-\lambda_{ana}|$)", fontsize=13)
 	plt.show()
 
+
+
 def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0): 
 	"""
 	args:
@@ -244,7 +246,7 @@ def print_eigenvals(no_electrons, start_idx, stop_idx):
 
 def print_table(rows):
 	"""
-	This method prints a LaTex table of the elements given by the rows-matrix
+	This method prints a LaTeX table of the elements given by the rows-matrix
 	args:
 		rows: (2D array-like of strings) The string elements that the table should include as (rows, cols).
 	"""
