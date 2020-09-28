@@ -1,12 +1,12 @@
-**This folder contains all the programs used to solve project 2.**
-It should contain the following:
-JacobiEigSolver.cpp
-JacobiEigSolver.hpp
-WriteEigs.cpp
-WriteEigs.hpp
-BucklingBeam.cpp
-QuantumOscillator.cpp
-file_reader.py
+**This folder contains all the programs used to solve project 2.** \\
+It should contain the following: \\
+JacobiEigSolver.cpp \\
+JacobiEigSolver.hpp \\
+WriteEigs.cpp \\
+WriteEigs.hpp \\
+BucklingBeam.cpp \\
+QuantumOscillator.cpp \\
+file_reader.py \\
 plots.py
 
 ## C++ programs
@@ -51,47 +51,48 @@ the project. It will check if there are uncompiled C++-files and compile
 them, and has functionality to run the files for certain parameters if
 the particular data-plot requires it.
 The file is run through flags, all which should follow the same '-'
-sign. The available flags are:
-    - h : List the available flags with short descriptions
-    - v : Plot the first couple of eigenvectors of the Buckling Beam
-         problem. If the data required is not generated, it will use the BucklingBeam program to create a suitable data set.
-    - c : Plot the number of iterations required for JacobiEigSolver to
+sign. The available flags are: \\
+    -h : List the available flags with short descriptions \\
+    -v : Plot the first couple of eigenvectors of the Buckling Beam
+         problem. If the data required is not generated, it will use the
+         BucklingBeam program to create a suitable data set. \\
+    -c : Plot the number of iterations required for JacobiEigSolver to
          converge on the desired results logarithmically, using the
          BucklingBeam data as reference. A linear fit is also made on the
-         data, to determine the convergence rate.
-    - t : Plot the time performance of our JacobiEigSolver versus the
+         data, to determine the convergence rate. \\
+    -t : Plot the time performance of our JacobiEigSolver versus the
          Armadillo library's eig_sym-function to find eigenvalues and
          eigenvectors of a symmetric matrix. It will automatically
-         generate the appropriate dataset if not already generated.
-    - r : Plot a 3D plot of the maximum error in the four first
+         generate the appropriate dataset if not already generated. \\
+    -r : Plot a 3D plot of the maximum error in the four first
          eigenvalues for the QuantumOscillator for a single electron
          system. The data set is generated automatically if not already
-         present.
-    - q : Plot the specified (arg 2) eigenvector of data from the
+         present. \\
+    -q : Plot the specified (arg 2) eigenvector of data from the
          QuantumOscillator of the electron system specified (arg 1).
          If the two-electron system is specified, the remaining arguments
          specify what dataset to generate, before plotting the specifed
          eigenvector. In this case, the data will automatically generate
-         using omega_r [0.01, 0.5, 1, 5].
-         args:
-            no_electrons (str) - either 'one' or 'two', specifying for
-                what system to plot.
-            n (int) - must be greater than 0. Cannot exceed the smallest
+         using omega_r [0.01, 0.5, 1, 5]. \\
+         args: \\
+            - no_electrons (str) - either 'one' or 'two', specifying for
+                what system to plot. \\
+            - n (int) - must be greater than 0. Cannot exceed the smallest
                 N used for generating the data. Specifies the energy
-                level for which to plot the eigenfunction.
-            N (int) : only for 'two'-electron plotting. Specifies the
-                N used for generating the data to plot.
-            rho_max_list (float) : the last 4 arguments must be a list
+                level for which to plot the eigenfunction. \\
+            - N (int) : only for 'two'-electron plotting. Specifies the
+                N used for generating the data to plot. \\
+            - rho_max_list (float) : the last 4 arguments must be a list
                 of rho_maxes to use for the omega_rs, in the order as
-                above.
-    - e : Print a LaTeX table of the data from the QuantumOscillator for
+                above. \\
+    -e : Print a LaTeX table of the data from the QuantumOscillator for
          the specified system. It will only inlcude the eigenvalues
          specified in the args, but will not run any program to generate
-         the data (yet).
-         args:
-            no_electrons (str) - either 'one' or 'two', specifying for
+         the data (yet). \\
+         args: \\
+            - no_electrons (str) - either 'one' or 'two', specifying for
                 what system to print values.
-            start_idx (int) - the index value for the first eigenvalue to
+            - start_idx (int) - the index value for the first eigenvalue to
                 print.
-            stop_idx (idx) - the index value for the last eigenvalue to
+            - stop_idx (idx) - the index value for the last eigenvalue to
                 print.
