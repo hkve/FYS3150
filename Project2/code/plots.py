@@ -16,6 +16,8 @@ def run_bb(slash):
 	for n in N:
 		os.system(slash + "BucklingBeam.exe " + str(n))
 
+
+
 def run_qo1(slash):
 	"""
 	If there is no data file for QuantumOscillator_one, run the code for rho_max and N values
@@ -26,6 +28,24 @@ def run_qo1(slash):
 	for rho in rho_max:
 		args = "1 " + str(N[0]) + " " + str(rho) + " 1"
 		os.system(slash + "QuantumOscillator.exe " + args)
+
+
+
+def run_qo2(slash, N, rho_max_list):
+	"""
+	Run the QuantumOscillator function for two electrons for the relevant omega_rs 
+	and the given parameters N and rho_max.s
+	"""
+	open("data/QuantumOscillator_two.dat", "w").close() # empty the contents of the .dat file
+	N = 150
+	omega_r_list = [0.01, 0.5, 1, 5]
+
+	for omega_r, rho_max in zip(omega_r_list, rho_max_list):
+		N = int(rho_max*20)
+		args = " ".join(["2", str(N), str(rho_max), str(omega_r)])
+		os.system(slash + "QuantumOscillator.exe " + args)
+
+
 
 def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0): 
 	"""
@@ -90,7 +110,7 @@ def plot_qo_groundstate(no_electrons, n):
 			lbl += r", $\rho_{max}$ = " + f"{rho_max}"
 			if no_electrons == 'two':
 				lbl += r", $\omega_r$ = " + f"{run('omega_r')}"
-			lbl += ", $E_{%i}$ = " % n + f"{run.vals[n-1]}"
+			lbl += ", $E_{%i}$ = " % n + f"{run.vals[n-1]:.2f}"
 
 			ground_state = run.vecs[:,n-1] # Getting the eigenvector corresponding to the lowest eigenvalue
 			ground_state *= np.sqrt((N+1)/rho_max) # Normalizing it
@@ -99,7 +119,8 @@ def plot_qo_groundstate(no_electrons, n):
 
 			ax.plot(rho, ground_state**2, label=lbl)
 
-		ax.set(xlabel=r"$\rho$", ylabel="$u_{%i,0}(r)$" % n)
+		ax.set_xlabel(r"$\rho$", fontsize=12)
+		ax.set_ylabel("$|u_{%i,0}(r)|^2$" % n, fontsize=12)
 		ax.legend()
 		plt.show()
 
@@ -183,7 +204,7 @@ def print_eigenvals(no_electrons, start_idx, stop_idx):
 	rows[0,0] = r"Parameters [$N, \rho_\text{max}$]"
 	rows[0,1:] = [r"$\lambda_" + f"{i}$" for i in np.arange(start=start_idx+1, stop=stop_idx+2)]
 	for i, run in enumerate(runs):
-		eigs = ["{:.3f}".format(eigval) for eigval in run.vals[start_idx:stop_idx+1]]
+		eigs = ["${:.4f}$".format(eigval) for eigval in run.vals[start_idx:stop_idx+1]]
 		rows[i+1,0] = f"${run('N')}$, ${run('rho_max')}$"
 		rows[i+1,1:] = eigs
 
@@ -254,7 +275,7 @@ def parse_flags(flags):
 		flags: Takes a list of of flags and parses them to choose what plots to show
 	"""
 	slash = "./"
-	if platform.platform() == "Windows":
+	if platform.system() == "Windows":
 		slash = ".\\"
 
 	files = os.listdir("data/")
@@ -281,7 +302,7 @@ def parse_flags(flags):
 		plot_convergence()
 
 	if "r" in flags:
-		plot_rho_max("one", 10)
+		plot_rho_max('one', 10)
 
 	if "q" in flags:
 		try:
@@ -291,6 +312,8 @@ def parse_flags(flags):
 			raise Exception("Using the quantum flag q requires the second argument to specify whether to plot "\
 							+ "for 'one' electron or 'two' and that the third argument specifies the energy level" \
 							" to plot for (1, 2, ...).")
+		if no_electrons == 'two':
+			run_qo2(slash, N=150, rho_max_list=[12.5, 5, 4, 3])
 		plot_qo_groundstate(no_electrons, n)
 
 	if "e" in flags:
