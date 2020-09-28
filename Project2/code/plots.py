@@ -151,11 +151,11 @@ def plot_time_difference(slash):
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 		ax.set(yscale="log")
-		ax.set_xlabel("N", fontsize=12)
-		ax.set_ylabel(r"$t_{i}/t_{a}$", fontsize=12)
+		ax.set_xlabel("N", fontsize=17)
+		ax.set_ylabel(r"$t_{i}/t_{a}$", fontsize=17)
 		ax.hlines(relative[line_i], N[0], N[-1], linestyle="dashed", label=r"$t_{j} \approx t_{a}$")
 		ax.plot(N, relative)
-		ax.legend(fontsize=12)
+		ax.legend(fontsize=14)
 		plt.show()
 
 def plot_convergence():
@@ -175,8 +175,8 @@ def plot_convergence():
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 		ax.set(xscale="log", yscale="log")
-		ax.set_xlabel("N", fontsize=12)
-		ax.set_ylabel("Iterations before $\epsilon$", fontsize=12)
+		ax.set_xlabel("N", fontsize=14)
+		ax.set_ylabel("Iterations before $\epsilon$", fontsize=14)
 		ax.plot(N, 10**const * N**slope, c="k" ,linestyle="dashed",\
 				label=f"Linear fit, slope = {slope:.2f}$\pm${std_err:.2f}",marker='o', markersize=3)
 		ax.scatter(N, n_iter)
