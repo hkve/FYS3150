@@ -37,11 +37,9 @@ def run_qo2(slash, N, rho_max_list):
 	and the given parameters N and rho_max.s
 	"""
 	open("data/QuantumOscillator_two.dat", "w").close() # empty the contents of the .dat file
-	N = 150
 	omega_r_list = [0.01, 0.5, 1, 5]
 
 	for omega_r, rho_max in zip(omega_r_list, rho_max_list):
-		N = int(rho_max*20)
 		args = " ".join(["2", str(N), str(rho_max), str(omega_r)])
 		os.system(slash + "QuantumOscillator.exe " + args)
 
@@ -91,7 +89,7 @@ def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0):
 
 
 
-def plot_qo_groundstate(no_electrons, n): 
+def plot_qo_eigvecs(no_electrons, n): 
 	"""
 	args:
 		no_electrons: either 'one' or 'two', specifying whether to plot data from
@@ -111,7 +109,7 @@ def plot_qo_groundstate(no_electrons, n):
 			lbl += r", $\rho_{max}$ = " + f"{rho_max}"
 			if no_electrons == 'two':
 				lbl += r", $\omega_r$ = " + f"{run('omega_r')}"
-			lbl += ", $E_{%i}$ = " % n + f"{run.vals[n-1]:.2f}"
+			lbl += ", $\lambda_{%i}$ = " % n + f"{run.vals[n-1]:.2f}"
 
 			ground_state = run.vecs[:,n-1] # Getting the eigenvector corresponding to the lowest eigenvalue
 			ground_state *= np.sqrt((N+1)/rho_max) # Normalizing it
@@ -154,6 +152,8 @@ def plot_rho_max(no_electrons, n):
 		
 	plt.legend()
 	plt.show()
+
+
 
 def plot_time_difference(slash):
 	filename = "data/time.dat"
@@ -334,13 +334,18 @@ def parse_flags(flags):
 		try:
 			no_electrons = sys.argv[2]
 			n = int(sys.argv[3])
+
 		except IndexError:
-			raise Exception("Using the quantum flag q requires the second argument to specify whether to plot "\
-							+ "for 'one' electron or 'two' and that the third argument specifies the energy level" \
-							" to plot for (1, 2, ...).")
+			raise Exception("Using the quantum flag q requires args as: type of system ('one' or 'two'), eigvec-level (1,2,...)")
 		if no_electrons == 'two':
-			run_qo2(slash, N=150, rho_max_list=[12.5, 5, 4, 3])
-		plot_qo_groundstate(no_electrons, n)
+			try:
+				N = int(sys.argv[4])
+				rho_max_list = [float(arg) for arg in sys.argv[5:9]]
+			except IndexError:
+				raise Exception("For the two-electron system further args are required as:\n" + \
+								"N (number of integration points), rho_maxes (4 rho_maxes to run with omega_r = 0.01, 0.5, 1, 5)")
+			run_qo2(slash, N, rho_max_list)
+		plot_qo_eigvecs(no_electrons, n)
 
 	if "e" in flags:
 		try:
