@@ -90,10 +90,9 @@ sign. The available flags are:
          specified in the args, but will not run any program to generate
          the data (yet).  
          args:  
-        <pre> - no_electrons (str) - either 'one' or 'two', specifying for
+        --- no_electrons (str) - either 'one' or 'two', specifying for
                 what system to print values.  
-            - start_idx (int) - the index value for the first eigenvalue to
+        --- start_idx (int) - the index value for the first eigenvalue to
                 print.  
-            - stop_idx (idx) - the index value for the last eigenvalue to
+        --- stop_idx (idx) - the index value for the last eigenvalue to
                 print.  
-        </pre>
