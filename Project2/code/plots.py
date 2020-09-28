@@ -174,7 +174,9 @@ def plot_convergence():
 	slope, const, r_value, p_value, std_err = stats.linregress(np.log10(N), np.log10(n_iter))
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
-		ax.set(xscale="log", yscale="log", xlabel="N", ylabel="Iterations before $\epsilon$")
+		ax.set(xscale="log", yscale="log")
+		ax.set_xlabel("N", fontsize=12)
+		ax.set_ylabel("Iterations before $\epsilon$", fontsize=12)
 		ax.plot(N, 10**const * N**slope, c="k" ,linestyle="dashed",\
 				label=f"Linear fit, slope = {slope:.2f}$\pm${std_err:.2f}",marker='o', markersize=3)
 		ax.scatter(N, n_iter)
@@ -185,7 +187,8 @@ def plot_convergence():
 		ax.set_yticks([7e2, 2.6e3, 1e4 ,3e4, 8.8e4])
 		ax.set_yticklabels([r"$7 \times 10^2$", r"$2.6 \times 10^3$", "$10^4$", r"$3 \times 10^4$", r"$8.8 \times 10^4$"])
 		"""
-	ax.legend()
+		ax.legend(fontsize=12)
+	
 	plt.show()
 
 
