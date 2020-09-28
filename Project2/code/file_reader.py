@@ -32,7 +32,7 @@ class Run():
 
 
 
-def read_data_file(filename):
+def read_data_file(filename, drop_vecs=False):
 	"""
 	Definitely one of the worst functions I have written, but it works. 
 	Im sorry Carl
@@ -70,7 +70,8 @@ def read_data_file(filename):
 						vals[line_counter] = float(line[0])
 					else:
 						# the following are the eigenvectors
-						vecs[line_counter,j-1] = float(line[j])
+						if drop_vecs == False:
+							vecs[line_counter,j-1] = float(line[j])
 
 				if line_counter == N-1:
 					prop_line = True

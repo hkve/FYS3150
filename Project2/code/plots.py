@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
 import numpy as np
 import seaborn as sns
 import os as os
@@ -18,19 +20,6 @@ def run_bb(slash):
 
 
 
-def run_qo1(slash):
-	"""
-	If there is no data file for QuantumOscillator_one, run the code for rho_max and N values
-	"""
-	N = [100, 150, 200]
-	rho_max = [4 + 0.1*i for i in range(21)]
-
-	for rho in rho_max:
-		args = "1 " + str(N[0]) + " " + str(rho) + " 1"
-		os.system(slash + "QuantumOscillator.exe " + args)
-
-
-
 def run_qo2(slash, N, rho_max_list):
 	"""
 	Run the QuantumOscillator function for two electrons for the relevant omega_rs 
@@ -44,6 +33,51 @@ def run_qo2(slash, N, rho_max_list):
 		os.system(slash + "QuantumOscillator.exe " + args)
 
 
+def plot_error_vs_rho_N(slash):
+	filename = "data/QuantumOscillator_one.dat"
+	"""
+	if filename.replace("data/", "") in os.listdir("data/"):
+		os.remove(filename)
+	"""
+	N_start, N_end = 100, 200
+	rho_max_start, rho_max_end = 3.5, 6.5
+	dN = 5
+	dRho_max = 0.1
+
+	N = np.arange(N_start, N_end+dN, dN)
+	Rho_max = np.arange(rho_max_start, rho_max_end+dRho_max, dRho_max)
+	error = np.zeros((len(N), len(Rho_max)))
+	"""
+	for n in N:
+		for rho_max in Rho_max:
+			args = "1 " + str(n) + " " + str(rho_max) + " 1"
+			os.system(slash + "QuantumOscillator.exe " + args)
+	"""
+	
+	runs = read_data_file(filename, drop_vecs=True)
+	ana_val = np.array([3, 7, 11, 15])
+	
+	i, j = 0, 0
+	for run in runs:
+		num_val = run.vals[:4]
+		err = np.max(np.abs(num_val-ana_val))
+		error[i,j] = err
+
+		j += 1
+		if j == len(Rho_max):
+			j = 0
+			i += 1
+	
+	Rho_max, N = np.meshgrid(Rho_max, N)
+	error = np.log10(error)
+
+	fig = plt.figure()
+	ax = fig.gca(projection='3d')
+	surf = ax.plot_surface(N, Rho_max, error,cmap=cm.coolwarm)
+	ax.set_xlabel("N", fontsize=13)
+	ax.set_ylabel(r"$\rho_{max}$", fontsize=13)
+	ax.set_zlabel("log10($|\lambda_{num}-\lambda_{ana}|$)", fontsize=13)
+	plt.show()
 
 def plot_bb_eigvectors(run_index=0, vec_start=0, vec_end=0): 
 	"""
@@ -122,36 +156,6 @@ def plot_qo_eigvecs(no_electrons, n):
 		ax.set_ylabel("$|u_{%i,0}(r)|^2$" % n, fontsize=12)
 		ax.legend()
 		plt.show()
-
-
-
-def plot_rho_max(no_electrons, n):
-	runs = read_data_file("data/QuantumOscillator_" + no_electrons + ".dat")
-
-	analytical_eig = np.array([3, 7, 11]) # Analytical result for 3 lowest eigenvalues
-	n_runs = len(runs)
-	max_error = np.zeros(n_runs)
-	rho_max = np.zeros(n_runs)
-
-	for i in range(n_runs):
-		error = abs(runs[i].vals[0:3]-analytical_eig)
-		max_error[i] = np.max(error)	
-		rho_max[i] = runs[i]("rho_max")
-
-	with sns.axes_style("darkgrid"):
-		fig, ax = plt.subplots()
-		ax.set(xlabel=r"$\rho_{max}$", ylabel="$|\lambda_{num}-\lambda_{ana}|$")
-		ax.plot(rho_max, max_error, c="k", linestyle="dashed")
-
-		ideal_rho_i = np.argmin(max_error)
-		ideal_rho = abs(rho_max[ideal_rho_i])
-		ideal_error = abs(max_error[ideal_rho_i])
-		ideal_rho_error = abs(ideal_rho-rho_max[ideal_rho_i+1])
-		plt.scatter(ideal_rho, ideal_error, c="r", s=100, \
-					label=r"$\rho_{ideal} = $" + f"{ideal_rho} $\pm$ {ideal_rho_error:.1f}")
-		
-	plt.legend()
-	plt.show()
 
 
 
@@ -317,9 +321,6 @@ def parse_flags(flags):
 	if "v" in flags or "c" in flags: 
 		if not "BucklingBeam.dat" in files:
 			run_bb(slash)
-	if "r" in flags:
-		if not "QuantumOscillator_one.dat" in files:
-			run_qo1(slash)
 
 	if "v" in flags:
 		plot_bb_eigvectors(4, vec_start=0, vec_end=1)
@@ -327,8 +328,11 @@ def parse_flags(flags):
 	if "c" in flags:
 		plot_convergence()
 
+	if "t" in flags: 
+		plot_time_difference(slash)
+	
 	if "r" in flags:
-		plot_rho_max('one', 10)
+		plot_error_vs_rho_N(slash)
 
 	if "q" in flags:
 		try:
@@ -358,8 +362,8 @@ def parse_flags(flags):
 								and last eigenvalue to plot.")
 		print_eigenvals(no_electrons, start_idx, stop_idx)
 
-	if "t" in flags: 
-		plot_time_difference(slash)
+
+
 
 
 if __name__ == "__main__":
