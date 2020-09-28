@@ -1,13 +1,13 @@
 **This folder contains all the programs used to solve project 2.**  
 It should contain the following:  
-JacobiEigSolver.cpp  
-JacobiEigSolver.hpp  
-WriteEigs.cpp  
-WriteEigs.hpp  
-BucklingBeam.cpp  
-QuantumOscillator.cpp  
-file_reader.py  
-plots.py
+*JacobiEigSolver.cpp*  
+*JacobiEigSolver.hpp*  
+*WriteEigs.cpp*  
+*WriteEigs.hpp*  
+*BucklingBeam.cpp*  
+*QuantumOscillator.cpp*  
+*file_reader.py*  
+*plots.py*  
 
 ## C++ programs
 - JacobiEigSolver
@@ -44,7 +44,7 @@ point for the discretization of rho), and optionally omega_r (required
 for the 2-electron system,is set to 1.0 by default)
 
 
-## python programs
+## Python programs
 - plots.py
 This file contains the functions used for all the data representation in
 the project. It will check if there are uncompiled C++-files and compile
