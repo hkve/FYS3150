@@ -2,13 +2,14 @@
 #include <cmath>
 #include <string>
 #include <armadillo>
+#include <chrono>
 #include "JacobiEigSolver.hpp"
 
 using namespace std;
 
 void setA(double** A, int N);
-void armadilloEig(double** A, int N);
-void write_time()
+double armadilloEig(double** A, int N);
+void write_time(double time_jacobi, double time_arma);
 
 int main(int argc, char** argv)
 {
@@ -29,16 +30,23 @@ int main(int argc, char** argv)
 	
 	setA(A, N);
 
+	// Only run for time taking 
+	
+	double time_arma;
 	if(time == 1) {
-		armadilloEig(A, N);
+		time_arma = armadilloEig(A, N);
 	}
 
 	JacobiEigSolver* problem = new JacobiEigSolver(A, N);
 
+	auto start_jacobi = chrono::steady_clock::now();
 	problem -> Solve();
+	auto end_jacobi = chrono::steady_clock::now();
+	double time_jacobi = chrono::duration_cast<chrono::nanoseconds>(end_jacobi - start_jacobi).count();
+
 	
 	if (time == 1) {
-		cout << "Nå skriver jeg tid";
+		write_time(time_jacobi, time_arma);
 	}
 	else {
 		string filename = "BucklingBeam";
@@ -65,7 +73,7 @@ void setA(double** A, int N) {
 	}
 }
 
-void armadilloEig(double **A, int N) {
+double armadilloEig(double **A, int N) {
 	// Takes a copy of A and stores in armadillo matrix
 	// Must be run BEFORE solve (since solve changes the matrix A)
 	arma::mat A_ = arma::zeros(N,N);
@@ -80,10 +88,18 @@ void armadilloEig(double **A, int N) {
 	arma::vec eigval;
 	arma::mat eigvec;
 
+	auto start_arma = chrono::steady_clock::now();
 	// Armadillo calculating eigenvalues and eigenvectors
 	arma::eig_sym(eigval, eigvec, A_);
+	auto end_arma = chrono::steady_clock::now();
+	double time_arma = chrono::duration_cast<chrono::nanoseconds>(end_arma - start_arma).count();
 
-	eigval.print();
+	return time_arma;
 }
 
- 
+void write_time(double time_jacobi, double time_arma) {
+	string filename = "data/time.dat";
+	ofstream outfile (filename, ios_base::app); // Create file
+	outfile << time_jacobi << " " << time_arma <<endl;
+	outfile.close();
+}
