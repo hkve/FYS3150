@@ -75,14 +75,14 @@ sign. The available flags are:
          eigenvector. In this case, the data will automatically generate
          using omega_r [0.01, 0.5, 1, 5].  
          args:  
-            - no_electrons (str) - either 'one' or 'two', specifying for
+        - no_electrons (str) - either 'one' or 'two', specifying for
                 what system to plot.  
-            - n (int) - must be greater than 0. Cannot exceed the smallest
+        - n (int) - must be greater than 0. Cannot exceed the smallest
                 N used for generating the data. Specifies the energy
                 level for which to plot the eigenfunction.  
-            - N (int) : only for 'two'-electron plotting. Specifies the
+        - N (int) : only for 'two'-electron plotting. Specifies the
                 N used for generating the data to plot.  
-            - rho_max_list (float) : the last 4 arguments must be a list
+        - rho_max_list (float) : the last 4 arguments must be a list
                 of rho_maxes to use for the omega_rs, in the order as
                 above.  
     * -e : Print a LaTeX table of the data from the QuantumOscillator for
