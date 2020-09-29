@@ -1,23 +1,24 @@
 **This folder contains all the programs used to solve project 2.**  
 It should contain the following:  
+*BucklingBeam.cpp*  
 *JacobiEigSolver.cpp*  
 *JacobiEigSolver.hpp*  
+*QuantumOscillator.cpp*  
+*UnitTests.cpp*
 *WriteEigs.cpp*  
 *WriteEigs.hpp*  
-*BucklingBeam.cpp*  
-*QuantumOscillator.cpp*  
 *file_reader.py*  
 *plots.py*  
 
 ## C++ programs
-- JacobiEigSolver
-The central algorithm for this project is the Jacobi Rotation method for
+- *JacobiEigSolver*
+The central class for this project is the Jacobi Rotation method for
 solving eigenvalue problems. This is implemented with the
 JacobiEigSolver class which takes an NxN symmetric matrix A as input.
 The solver runs until all the diagonal elements are less than a
 tolerance, which can be set with the setTolerance method.
 
-- WriteEigs
+- *WriteEigs*
 This program implements a bit of a modular file writing algorithm to
 write the eigenvalues and eigenvectors of a solved problem to a
 specified filename in the data-folder. Each data entry contains the
@@ -26,14 +27,14 @@ necessary to solve it. Since the Quantum problems require a greater
 amount of parameters, this function was necessary, as a means to write
 the appropriate number of header values in the appropriate places.
 
-- BucklingBeam
+- *BucklingBeam*
 This implements the specific problem for solving the buckling beam
 differential equation. When running the program it requires an argument
 which it uses as the N, to set up the NxN matrix representation of the
 differential equation. It then uses JacobiEigSolver to solve the
 equation and WriteEigs to write these to a data file.
 
-- QuantumOscillator
+- *QuantumOscillator*
 Same as for BucklingBeam, this program implements the specific matrices
 for the differential equations relevant to the harmonic oscillator
 potential with either one or two electrons. It uses the JacobiEigSolver
@@ -43,9 +44,14 @@ It requires three arguments when run as: number_of_electrons (1 or 2), N
 point for the discretization of rho), and optionally omega_r (required
 for the 2-electron system,is set to 1.0 by default)
 
+- *UnitTests*  
+This program does a couple of tests on the algorithms in the
+JacobiEigSolver-class to check whether it is exhibiting the properties
+desired to work properly. Running the program automatically does all the
+tests and specifies what went right or wrong.
 
 ## Python programs
-- plots.py
+- *plots*
 This file contains the functions used for all the data representation in
 the project. It will check if there are uncompiled C++-files and compile
 them, and has functionality to run the files for certain parameters if
@@ -96,3 +102,8 @@ sign. The available flags are:
                 print.  
         - stop_idx (idx) - the index value for the last eigenvalue to
                 print.  
+
+- *file_reader*  
+This program reads the data output from QuantumOscillator and
+BucklingBeam and stores the data in Run-class instances that are
+accessible to the data representation functions in plots.
