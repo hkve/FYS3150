@@ -8,15 +8,24 @@
 
 using namespace std;
 
-JacobiEigSolver::JacobiEigSolver(double** A, int N) {
+JacobiEigSolver::JacobiEigSolver(double** A, int N, bool silent) {
 	A_ = A; // The symmetric square matrix for which to solve
 	N_ = N; // The dimension of the above square matrix
 	U_ = new double* [N]; // Setting an identity matrix, to get the final eigenvectors
-	for (int i=0; i<N; i++) {
+	for (int i = 0; i < N; i++) {
 		U_[i] = new double [N];
-		U_[i][i] = 1.0;
+		for (int j = 0; j < N; j++) {
+			if (i == j) {
+				U_[i][j] = 1.0;
+			} else {
+				U_[i][j] = 0.0;
+			}
+		}
 	}
 	tolerance_ = 1e-10; // Tolerance for what to interpret as 0
+	if (silent) {
+		LOUD = false;
+	}
 }
 
 void JacobiEigSolver::setTolerance(double tolerance) {
@@ -28,6 +37,10 @@ void JacobiEigSolver::setA(double** A, int N) {
 	// Manually set matrix A.
 	A_ = A;
 	N_ = N;
+}
+
+double** JacobiEigSolver::getA() {
+	return A_;
 }
 
 void JacobiEigSolver::CleanMatrix(double** Matrix,double tolerance) {
@@ -57,7 +70,6 @@ void JacobiEigSolver::getMax_(double* pmax, int* pk, int* pl) {
 	}
 	if (fabs(*pmax) < tolerance_) {
 		RUN = false;
-		//cout <<"shutting down, max = " << fabs(*pmax) << endl;
 	}
 }
 
@@ -129,7 +141,9 @@ double** JacobiEigSolver::Solve() {
 	
 	this->CleanMatrix(A_, tolerance_);
 	this->CleanMatrix(U_, tolerance_);
-	cout << "Done N = " << N_ << " number of iterations = " << iterations_ <<endl;
+	if (LOUD) {
+		cout << "Done N = " << N_ << " number of iterations = " << iterations_ <<endl;
+	}
 	SOLVED = true;
 	return A_;
 }

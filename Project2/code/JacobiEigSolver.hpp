@@ -7,6 +7,7 @@ class JacobiEigSolver
 {
 private:
 	bool SOLVED = false;
+	bool LOUD = true;
 	double** A_;
 	double** U_;
 	int N_;
@@ -16,7 +17,7 @@ private:
 	int iterations_ = 0;
 	
 public:
-	JacobiEigSolver(double** A, int N);
+	JacobiEigSolver(double** A, int N, bool silent=false);
 
 	void setA(double** A, int N);
 	void setTolerance(double tolerance);
@@ -26,6 +27,7 @@ public:
 	
 	void writeToFile(std::string filename);
 	double** Solve();
+	double** getA();
 	double* getEigvals();
 	double ** getEigvecs();
 	int getIterations();
