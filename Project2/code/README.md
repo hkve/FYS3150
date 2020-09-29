@@ -73,7 +73,7 @@ sign. The available flags are:
     * -r : Plot a 3D plot of the maximum error in the four first
          eigenvalues for the QuantumOscillator for a single electron
          system. The data set is generated automatically if not already
-         present.  
+         present. DANGER: This plot requires a lot of datapoints and will take some time to generate.  
     * -q : Plot the specified (arg 2) eigenvector of data from the
          QuantumOscillator of the electron system specified (arg 1).
          If the two-electron system is specified, the remaining arguments
