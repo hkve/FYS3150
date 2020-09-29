@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-from matplotlib import cm
 import numpy as np
 import seaborn as sns
 import os as os
@@ -34,46 +33,51 @@ def run_qo2(slash, N, rho_max_list):
 
 
 def plot_error_vs_rho_N(slash):
+	"""
+	Code to produce 3D plot of error vs rho_max and N
+	Demonstrates how the error (in this case 4 lowest eigenvalues)
+	is dependent on both rho_max and N
+	"""
 	filename = "data/QuantumOscillator_one.dat"
-	"""
-	if filename.replace("data/", "") in os.listdir("data/"):
+	
+	if filename.replace("data/", "") in os.listdir("data/"): # If a file is already there, delete it
 		os.remove(filename)
-	"""
-	N_start, N_end = 100, 200
-	rho_max_start, rho_max_end = 3.5, 6.5
-	dN = 5
-	dRho_max = 0.1
+	
+	N_start, N_end = 100, 200 				# start and stop for the matrix sices
+	rho_max_start, rho_max_end = 3.5, 6.5   # start and stop for the rho_maxes to test
+	dN = 5 									# space between each matrix sice
+	dRho_max = 0.1							# space between each rho_max
 
-	N = np.arange(N_start, N_end+dN, dN)
-	Rho_max = np.arange(rho_max_start, rho_max_end+dRho_max, dRho_max)
-	error = np.zeros((len(N), len(Rho_max)))
-	"""
-	for n in N:
+	N = np.arange(N_start, N_end+dN, dN) 								# array of all Ns
+	Rho_max = np.arange(rho_max_start, rho_max_end+dRho_max, dRho_max)  # array of all rho_maxes
+	error = np.zeros((len(N), len(Rho_max)))							# grid to hold error
+	
+	for n in N: # Run the c++ code
 		for rho_max in Rho_max:
 			args = "1 " + str(n) + " " + str(rho_max) + " 1"
 			os.system(slash + "QuantumOscillator.exe " + args)
-	"""
 	
-	runs = read_data_file(filename, drop_vecs=True)
-	ana_val = np.array([3, 7, 11, 15])
 	
-	i, j = 0, 0
+	runs = read_data_file(filename, drop_vecs=True) # Read .dat file, excluding eigenvectors due to memory
+	ana_val = np.array([3, 7, 11, 15])              # 4 lowest analytical eigenvalues
+	
+	i, j = 0, 0 # i is the index for each N, j is index for each rho_max
 	for run in runs:
-		num_val = run.vals[:4]
-		err = np.max(np.abs(num_val-ana_val))
-		error[i,j] = err
+		num_val = run.vals[:4] # Get 4 lowest eigenvalues
+		err = np.max(np.abs(num_val-ana_val)) # Calc max error of the 4 eigenvalues
+		error[i,j] = err # Store in error grid
 
-		j += 1
-		if j == len(Rho_max):
+		j += 1 # Go to next rhomax for a N 
+		if j == len(Rho_max): # If we have done all rhomax for this N
 			j = 0
-			i += 1
+			i += 1 # Go to next N
 	
-	Rho_max, N = np.meshgrid(Rho_max, N)
-	error = np.log10(error)
+	Rho_max, N = np.meshgrid(Rho_max, N) 
+	error = np.log10(error) # Log10 of error due to visibility
 
 	fig = plt.figure()
 	ax = fig.gca(projection='3d')
-	surf = ax.plot_surface(N, Rho_max, error,cmap=cm.coolwarm)
+	surf = ax.plot_surface(N, Rho_max, error,cmap="gnuplot")
 	ax.set_xlabel("N", fontsize=13)
 	ax.set_ylabel(r"$\rho_{max}$", fontsize=13)
 	ax.set_zlabel("log10($|\lambda_{num}-\lambda_{ana}|$)", fontsize=13)
@@ -162,18 +166,23 @@ def plot_qo_eigvecs(no_electrons, n):
 
 
 def plot_time_difference(slash):
+	"""
+	Plotting the relationship of Jacobi time and Armadillo time vs matrix sizes (N)
+	y-axis is logarithmic to show more details for low N
+	"""
 	filename = "data/time.dat"
-	N = np.array([i*2 for i in range(1,101)])
+	N = np.array([i*2 for i in range(1,101)]) # Testing Ns from 2 to 200 with dN = 2
 
-	if  not filename.replace("data/", "") in os.listdir("data/"):
+	if  not filename.replace("data/", "") in os.listdir("data/"): # if the file is not there
 		for n in N:
-			os.system(slash + "BucklingBeam.exe " + str(n) + " 1")
+			os.system(slash + "BucklingBeam.exe " + str(n) + " 1") # "1" to indicate that we want to run timing
 
-	data = np.loadtxt(filename)
-	time_jacobi, time_arma = data[:,0]/1e9, data[:,1]/1e9
+	data = np.loadtxt(filename) # Load from .dat file
+	time_jacobi, time_arma = data[:,0], data[:,1] 
 	relative = time_jacobi/time_arma
 
-	line_i = np.argmin(np.abs(relative-1))
+	line_i = np.argmin(np.abs(relative-1)) # The index where the relationship is closest to 1 
+										   # I.e. the matrix size where the two methods are approx equal
 	
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
