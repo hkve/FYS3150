@@ -12,15 +12,14 @@
 ### SolarSystem: ###
 - [ ] Lese init, bruker data til å lage body-instanser
 - [ ] w2f: per kjøring
-[UUID] [x y z] [vx vy vz] [m]
-en kompoenent per linje
+- [ ] [UUID] [x y z] [vx vy vz] [m] en kompoenent per linje
 
 ### Solver: ###
 - [ ] Må kunne bruke FWeuler + vv
 - [ ] For øyeblikket i SolarSystem, men kan lage egen ODE-klasse
 
 ### Bror: ###
-- [ ] NBody
+- [ ] Nbody 
 - [ ] Solar system 
 
 ### Carl: ###
