@@ -26,6 +26,6 @@
 - [ ] Skrive introduksjon og metode ting
 
 ### Håkon: ###	
-- [ ] Nasa API,
+- [x] Nasa API,
 - [ ] python w2f
 - [ ] Instanse i python for hvert legme 
