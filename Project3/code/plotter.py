@@ -2,13 +2,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 import subprocess
 import sys
-dt = float(sys.argv[1])
-N = int(sys.argv[2])
-method = int(sys.argv[3])
-subprocess.run(f"./main.out sys1.txt {dt} {N} {method}".split())
-with open("data/TEMPNAME.dat", "r+") as file:
+
+filename = sys.argv[1]
+dt = float(sys.argv[2])
+N = int(sys.argv[3])
+method = int(sys.argv[4])
+beta = float(sys.argv[5])
+GR = int(sys.argv[6])
+
+# filename = "sys1"
+# dt = 0.1
+# N = 10000
+# method = 1
+# beta = 2
+# GR = 1
+
+subprocess.run(f'./main.out {filename} {dt} {N} {method} {beta} {GR}'.split())
+with open(f"data/{filename}.dat", "r+") as file:
     data = file.readlines()
-planets = 3
+planets = 4
 dat0 = []
 for i in range(planets):
     dat0.append(data[i*8+1])
@@ -23,5 +35,5 @@ for i in range(planets):
 
 plt.grid()
 plt.legend()
-plt.title(f"dt: {dt}, N: {N}, method: {method}")
+plt.title(f"dt: {dt}, N: {N}, method: {method}, beta: {beta}, GR: {GR}")
 plt.show()
