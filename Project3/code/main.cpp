@@ -231,10 +231,11 @@ int main(int argc, char** argv){
     Arguments:
         
     */
-    double dt = atof(argv[1]);
-    int N = atoi(argv[2]);
-    int method = atoi(argv[3]);
+    string filename = (string)argv[1];
+    double dt = atof(argv[2]);
+    int N = atoi(argv[3]);
+    int method = atoi(argv[4]);
     
-    System A("sys1_mod.txt", dt, N, method) ;
+    System A(filename, dt, N, method) ;
     return 0;
 }
