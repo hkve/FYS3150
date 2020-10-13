@@ -21,12 +21,25 @@ class System{
     Body *bodies;
     string bodyfile;
     int bodyCount, N;
-    double ***pos, ***vel;
+    double ***pos, ***vel, **a, **a_next, **a_dummy;
+    intptr_t a_ptr;
+    intptr_t a_next_ptr;
     System(string _bodyfile, double dt, int N, int method){
         bodyfile = _bodyfile;
         readData();
+        double *MASTER_a_ptr = new double[bodyCount];
+        double *MASTER_a_next_ptr = new double[bodyCount];
+        double *MASTER_a_dummy_ptr = new double[bodyCount];
+        a = &MASTER_a_ptr;
+        a_next = &MASTER_a_next_ptr;
+        a_dummy = &MASTER_a_dummy_ptr;
         
-        
+       
+        for(int i = 0; i < bodyCount; i ++){
+            a[i] = new double[3];
+            a_next[i] = new double[3];
+            a_dummy[i] = new double[3];
+        }
         solve(dt, N, method);
         write();
     }
@@ -88,15 +101,15 @@ class System{
         }
 
     }
-    void VelVerStep(double **a, double dt){
+    void VelVerStep( double dt){
         
         for(int i = 0; i < bodyCount; i ++){
             for (int j = 0; j < 3; j ++){
                 bodies[i].pos[j] = bodies[i].pos[j] +bodies[i].vel[j]*dt +0.5*a[i][j]*dt*dt;
             }
         }
-        double *a_next[bodyCount]; 
-        for(int i = 0; i < bodyCount; i ++){a_next[i] = new double[3];}
+        //double *a_next[bodyCount]; 
+        //for(int i = 0; i < bodyCount; i ++){a_next[i] = new double[3];}
 
         updateAcceleration(a_next);  
         for(int i = 0; i < bodyCount; i ++){
@@ -109,21 +122,25 @@ class System{
                 a[i][j] = a_next[i][j];
             }
         }
-      
-
-    // stuff
-        delete[] *a_next;
+        a_dummy = a;
+        a = a_next;
+        a_next = a_dummy;
+        // a_ptr = reinterpret_cast<intptr_t>(a);
+        // a_next_ptr = reinterpret_cast<intptr_t>(a_next);
+        // a_dummy = a;
+        // a = reinterpret_cast<double**>(a_next_ptr);
+        // a_next = reinterpret_cast<double**>(a_dummy);
         
        
 
 
     }
 
-    void updateAcceleration(double **a){
+    void updateAcceleration(double **A){
         double C,d;
          for(int i = 0; i < bodyCount; i ++){
             for (int j = 0; j < 3; j ++){
-                a[i][j] = 0;
+                A[i][j] = 0;
             }
          }
         // Calculate a on bodies
@@ -137,15 +154,15 @@ class System{
                 d = pow(d,3/2);
                 C = G*bodies[i].m*bodies[j].m;
                 for(int k = 0; k < 3; k++){
-                    a[i][k] -= C/d*(bodies[i].pos[k]- bodies[j].pos[k]);
-                    a[j][k] -= a[i][k]; // lookup is faster than doing the math
+                    A[i][k] -= C/d*(bodies[i].pos[k]- bodies[j].pos[k]);
+                    A[j][k] -= A[i][k]; // lookup is faster than doing the math
                 }
             }
         }
         // Convert a into accelerations (still under name a, though)
         for(int i = 0; i < bodyCount; i++){
             for(int j = 0; j < 3; j++){
-                a[i][j] /= bodies[i].m;
+                A[i][j] /= bodies[i].m;
             }
         }
 
@@ -162,17 +179,19 @@ class System{
             pos[i] = new double*[bodyCount]; 
             vel[i] = new double*[bodyCount]; 
         }
-        double *a[bodyCount]; 
-        for(int i = 0; i < bodyCount; i ++){a[i] = new double[3];}
-   
+
         for(int t = 0; t < N; t ++){
-            updateAcceleration(a);
+
+            
             if(method == 0){
+                updateAcceleration(a);
                 FwdEulerStep(a, dt);
             }
             else if(method == 1) {
-
-                VelVerStep(a, dt);
+                if(t==0){
+                    updateAcceleration(a);
+                }
+                VelVerStep(dt);
             }
            
           
@@ -220,12 +239,9 @@ int main(int argc, char** argv){
     Arguments:
         
     */
-    System A("sys1_mod.txt") ;
-
     double dt = atof(argv[1]);
     int N = atoi(argv[2]);
     int method = atoi(argv[3]);
-    
     System A("sys1.txt", dt, N, method) ;
     return 0;
 }
