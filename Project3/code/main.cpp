@@ -50,32 +50,43 @@ class System{
         ifstream data;
         data.open(bodyfile);
         int k = 0;
+
         while( data.good()){
             string UUID, x,y,z,vx,vy,vz,m;
             
-            getline(data, UUID, data.widen(','));
-            getline(data, x, data.widen(','));
-            getline(data, y, data.widen(','));
-            getline(data, z, data.widen(','));
-            getline(data, vx, data.widen(','));
-            getline(data, vy, data.widen(','));
-            getline(data, vz, data.widen(','));
-            getline(data, m, data.widen('\n'));
+            try{
+                getline(data, UUID, data.widen(','));
+                getline(data, x, data.widen(','));
+                getline(data, y, data.widen(','));
+                getline(data, z, data.widen(','));
+                getline(data, vx, data.widen(','));
+                getline(data, vy, data.widen(','));
+                getline(data, vz, data.widen(','));
+                getline(data, m, data.widen('\n'));
+                
+                double *pos = new double[3] {stod(x), stod(y), stod(z)};
+                double *vel = new double[3] {stod(vx), stod(vy), stod(vz)};
+                double *pos0 = new double[3] {stod(x), stod(y), stod(z)};
+                double *vel0 = new double[3] {stod(vx), stod(vy), stod(vz)};
             
-            double *pos = new double[3] {stod(x), stod(y), stod(z)};
-            double *vel = new double[3] {stod(vx), stod(vy), stod(vz)};
-            double *pos0 = new double[3] {stod(x), stod(y), stod(z)};
-            double *vel0 = new double[3] {stod(vx), stod(vy), stod(vz)};
-           
-            bodies[k].UUID = stoi(UUID);
-            bodies[k].pos = pos;
-            bodies[k].pos0 = pos0; // might not work
-            bodies[k].vel = vel;
-            bodies[k].vel0 = vel0; // same as above
-            bodies[k].m = stod(m);
-            k ++;
+                bodies[k].UUID = stoi(UUID);
+                bodies[k].pos = pos;
+                bodies[k].pos0 = pos0; // might not work
+                bodies[k].vel = vel;
+                bodies[k].vel0 = vel0; // same as above
+                bodies[k].m = stod(m);
+                k ++;
+                } 
+            catch (const std::invalid_argument)     {
+                bodyCount--;
+                break;
+            }
+
         }
+        
+
         data.close();
+        
     }
 
     void FwdEulerStep(double *a[3], double dt){
@@ -224,6 +235,6 @@ int main(int argc, char** argv){
     int N = atoi(argv[2]);
     int method = atoi(argv[3]);
     
-    System A("sys1.txt", dt, N, method) ;
+    System A("sys1_mod.txt", dt, N, method) ;
     return 0;
 }
