@@ -22,10 +22,12 @@ class System{
     string bodyfile;
     int bodyCount, N;
     double ***pos, ***vel;
-    System(string _bodyfile){
+    System(string _bodyfile, double dt, int N, int method){
         bodyfile = _bodyfile;
         readData();
-        solve();
+        
+        
+        solve(dt, N, method);
         write();
     }
  
@@ -76,70 +78,104 @@ class System{
         data.close();
     }
 
-    void FwdEulerStep(double *forces[3], double dt){
+    void FwdEulerStep(double *a[3], double dt){
         for(int i = 0; i < bodyCount; i ++){
             for (int j = 0; j < 3; j ++){
-                bodies[i].vel[j] = forces[i][j]*dt + bodies[i].vel[j];
+                bodies[i].vel[j] = a[i][j]*dt + bodies[i].vel[j];
                 bodies[i].pos[j] = bodies[i].vel[j]*dt + bodies[i].pos[j];
-                forces[i][j] = 0;
+                //a[i][j] = 0;
             }
         }
 
-    };
-    void VelVerStep(double *forces[3]){};
+    }
+    void VelVerStep(double **a, double dt){
+        
+        for(int i = 0; i < bodyCount; i ++){
+            for (int j = 0; j < 3; j ++){
+                bodies[i].pos[j] = bodies[i].pos[j] +bodies[i].vel[j]*dt +0.5*a[i][j]*dt*dt;
+            }
+        }
+        double *a_next[bodyCount]; 
+        for(int i = 0; i < bodyCount; i ++){a_next[i] = new double[3];}
+
+        updateAcceleration(a_next);  
+        for(int i = 0; i < bodyCount; i ++){
+            for (int j = 0; j < 3; j ++){
+                bodies[i].vel[j] = bodies[i].vel[j] + (a[i][j]+ a_next[i][j])/2*dt;
+            }
+        }
+        for(int i = 0; i < bodyCount; i++){
+            for(int j = 0; j < 3; j++){
+                a[i][j] = a_next[i][j];
+            }
+        }
+      
+
+    // stuff
+        delete[] *a_next;
+        
+       
 
 
-    void solve(double _dt = 0.1, int _N = 10000, int _method= 0){
+    }
+
+    void updateAcceleration(double **a){
+        double C,d;
+         for(int i = 0; i < bodyCount; i ++){
+            for (int j = 0; j < 3; j ++){
+                a[i][j] = 0;
+            }
+         }
+        // Calculate a on bodies
+        for(int i = 0; i <bodyCount-1; i++){
+            d = 0;
+            
+            for(int j = i+1; j<bodyCount; j++){
+                for(int k = 0; k < 3; k++){
+                    d += pow(bodies[i].pos[k]- bodies[j].pos[k],2);
+                }
+                d = pow(d,3/2);
+                C = G*bodies[i].m*bodies[j].m;
+                for(int k = 0; k < 3; k++){
+                    a[i][k] -= C/d*(bodies[i].pos[k]- bodies[j].pos[k]);
+                    a[j][k] -= a[i][k]; // lookup is faster than doing the math
+                }
+            }
+        }
+        // Convert a into accelerations (still under name a, though)
+        for(int i = 0; i < bodyCount; i++){
+            for(int j = 0; j < 3; j++){
+                a[i][j] /= bodies[i].m;
+            }
+        }
+
+    }
+
+    void solve(double _dt = 0.1, int _N = 10000, int _method = 1){
+        int method = _method;
         double dt = _dt;
         N = _N;
-
+        
         pos = new double**[N];
         vel = new double**[N];
         for(int i=0; i < N; i++){
             pos[i] = new double*[bodyCount]; 
             vel[i] = new double*[bodyCount]; 
         }
+        double *a[bodyCount]; 
+        for(int i = 0; i < bodyCount; i ++){a[i] = new double[3];}
    
-
-        double *forces[bodyCount]; 
-        for(int i = 0; i < bodyCount; i ++){
-            forces[i] = new double[3];
-        }
-        double C, d; //force const. , distance
-
-
-        // void(System::*step)(double*[3]);
-        // if (_method == 0){
-        //     step = &System::FwdEulerStep;
-        // }
-        // else{
-        //     step = &System::VelVerStep;
-        // }
-
         for(int t = 0; t < N; t ++){
-            // Calculate forces on bodies
-            for(int i = 0; i <bodyCount-1; i++){
-                d = 0;
-                
-                for(int j = i+1; j<bodyCount; j++){
-                    for(int k = 0; k < 3; k++){
-                        d += pow(bodies[i].pos[k]- bodies[j].pos[k],2);
-                    }
-                    d = pow(d,3/2);
-                    C = G*bodies[i].m*bodies[j].m;
-                    for(int k = 0; k < 3; k++){
-                        forces[i][k] -= C/d*(bodies[i].pos[k]- bodies[j].pos[k]);
-                        forces[j][k] -= forces[i][k];
-                    }
-                }
+            updateAcceleration(a);
+            if(method == 0){
+                FwdEulerStep(a, dt);
             }
-            // Convert forces into accelerations (still under name forces, though)
-            for(int i = 0; i < bodyCount; i++){
-                for(int j = 0; j < 3; j++){
-                    forces[i][j] /= bodies[i].m;
-                }
+            else if(method == 1) {
+
+                VelVerStep(a, dt);
             }
-            FwdEulerStep(forces, dt=dt);
+           
+          
             
             // store positions / velocity updates
             for(int i = 0 ; i < bodyCount; i ++){
@@ -184,6 +220,10 @@ int main(int argc, char** argv){
     Arguments:
         
     */
-    System A("sys1.txt") ;
+    double dt = atof(argv[1]);
+    int N = atoi(argv[2]);
+    int method = atoi(argv[3]);
+    
+    System A("sys1.txt", dt, N, method) ;
     return 0;
 }
