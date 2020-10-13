@@ -184,6 +184,6 @@ int main(int argc, char** argv){
     Arguments:
         
     */
-    System A("sys1.txt") ;
+    System A("sys1_mod.txt") ;
     return 0;
 }
