@@ -19,12 +19,10 @@ struct Body {
 class System{
     public:
     Body *bodies;
-    string bodyfile;
     int bodyCount, N;
     double ***pos, ***vel;
-    System(string _bodyfile, double dt, int N, int method){
-        bodyfile = _bodyfile;
-        readData();
+    System(string initfile, double dt, int N, int method){
+        readData(initfile);
         
         
         solve(dt, N, method);
@@ -32,28 +30,27 @@ class System{
     }
  
 
-    void readData(){
+    void readData(string initfile){
+        /* 
+        Reads the data from given initfile and fills the class variable bodies with 
+        instances of the planetary bodies in the initfile. Also sets the value of bodyCount (no. of bodies in system)
+        */
+
+
         // first count number of bodies in body file to properly init array lengths
         bodyCount = 0;
+        string dummy;
+        ifstream lineCounterFile(initfile);
 
-        ifstream datacount;
-        datacount.open(bodyfile);
-        while(datacount.good()){
-            string foo;
-            getline(datacount, foo);
-            bodyCount ++;
-        }
-        datacount.close();
-
-        // then init bodies array
+        while (getline(lineCounterFile, dummy))
+            bodyCount++;
+      
         bodies = new Body[bodyCount];
-        ifstream data;
-        data.open(bodyfile);
+        
+        ifstream data(initfile);
         int k = 0;
-
+        string UUID, x,y,z,vx,vy,vz,m;
         while( data.good()){
-            string UUID, x,y,z,vx,vy,vz,m;
-            
             try{
                 getline(data, UUID, data.widen(','));
                 getline(data, x, data.widen(','));
@@ -78,6 +75,7 @@ class System{
                 k ++;
                 } 
             catch (const std::invalid_argument)     {
+                // Avoids parsing trouble if initfile has newline at eof
                 bodyCount--;
                 break;
             }
@@ -229,13 +227,19 @@ class System{
 int main(int argc, char** argv){
     /*
     Arguments:
-        
+        4 required arguments in the following order:
+        filename (string): name of file where initial planet data is read from
+        dt (float): time step size (in days) of integration loop
+        N (int): number of integration steps
+        method (int): 0 or 1. Which method of integration to use
+            - 0: Forward Euler
+            - 1: Velocity Verlet
     */
     string filename = (string)argv[1];
     double dt = atof(argv[2]);
     int N = atoi(argv[3]);
     int method = atoi(argv[4]);
     
-    System A(filename, dt, N, method) ;
+    System A(filename, dt, N, method);
     return 0;
 }
