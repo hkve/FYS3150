@@ -4,6 +4,7 @@
 #include <vector>
 #include <functional>
 #include <math.h>
+#include "time.h"
 using namespace std;
 
 double G_ = 6.67408e-11;
@@ -312,6 +313,7 @@ int main(int argc, char** argv){
         beta (float): number between 2 and 3. Used for 3e). beta = 2 results in normal Newtonian gravity
         GR (bool/int): 0 or 1. Decides if the general relativity correction term should be included
     */
+    clock_t start = clock();
     string initfile = (string)argv[1];
     string outfile = (string)argv[2];
     double dt = atof(argv[3]);
@@ -321,6 +323,12 @@ int main(int argc, char** argv){
     bool GR = (bool)atoi(argv[7]);
     System simple(initfile);
     simple.solve(dt, N, method, beta, GR);
+    clock_t stop= clock();
+    cout << "Solving done in " << ((stop - start) / (double)CLOCKS_PER_SEC) << "s " << endl;
+    start = clock();
+    cout << "Writing..." << endl;
     simple.write(outfile);
+    stop = clock();
+    cout << "Writing done in " << ((stop - start) / (double)CLOCKS_PER_SEC) << "s " << endl;
     return 0;
 }

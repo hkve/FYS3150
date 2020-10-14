@@ -14,8 +14,8 @@ parser.add_argument('-method', metavar='METHOD', type=str, help='Integration met
 parser.add_argument('-beta', type=float, default=2.0,help='Variable for 3e. Must be in range [2,3]. Default = 2')
 parser.add_argument('-sys', metavar="file", default="sys.dat",help="Name of file where initial system is stored. Default: sys.dat")
 parser.add_argument('-out', metavar="file", default="sys.out",help="Name of file where simulation results are stored. Default: sys.out")
-parser.add_argument('-GR', action='store_true', help='Do simulation with general relativity correction term.')
-parser.add_argument('-compile', action='store_true', help='Compile main.cpp to "main.exe" before running')
+parser.add_argument('--GR', action='store_true', help='Do simulation with general relativity correction term.')
+parser.add_argument('--compile', action='store_true', help='Compile main.cpp to "main.exe" before running')
 
 
 args = parser.parse_args()
