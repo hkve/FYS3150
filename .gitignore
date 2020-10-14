@@ -1,7 +1,9 @@
 .code/
 .data/
+.vscode/
 __pycache__/
 
 *.dat
 *.txt
 *.exe
+*.out
