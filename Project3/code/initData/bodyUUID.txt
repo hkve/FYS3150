@@ -1,0 +1,17 @@
+Sun,10,1.989E30
+Mercury,199,3.285E23                                                                
+Venus,299,4.867E24                                                             
+Moon,301,7.34767309E22                                                             
+Earth,399,5.972E24                                                       
+Mars,499,6.39E23                                                                 
+Phobos,401,1.08e16                                                             
+Deimos,402,2.0e15                                                           
+Io,501,8.9319e22                                                                  
+Europa,502,4.799844e22                                                            
+Ganymede,503,1.4819e23                                                         
+Callisto,504,1.075938e23
+Jupiter,599,1.898e27
+Saturn,699,5.683e26  
+Uranus,799,8.681e25 
+Neptune,899,1.024e26  
+Pluto,999,1.30900e22     
