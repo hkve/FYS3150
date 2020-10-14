@@ -301,21 +301,26 @@ int main(int argc, char** argv){
     /*
     Arguments:
         4 required arguments in the following order:
-        filename (string): name of file where initial planet data is read from
+
+        systemInit (string): name of the file where initial planet data is read from
+        systemOut (string): name of the file (in the data/ dir) where the data will be stored
         dt (float): time step size (in days) of integration loop
         N (int): number of integration steps
         method (int): 0 or 1. Which method of integration to use
             - 0: Forward Euler
             - 1: Velocity Verlet
+        beta (float): number between 2 and 3. Used for 3e). beta = 2 results in normal Newtonian gravity
+        GR (bool/int): 0 or 1. Decides if the general relativity correction term should be included
     */
     string initfile = (string)argv[1];
-    double dt = atof(argv[2]);
-    int N = atoi(argv[3]);
-    int method = atoi(argv[4]);
-    double beta = atof(argv[5]);
-    bool GR = (bool)atoi(argv[6]);
-    System simple(initfile+".txt");
+    string outfile = (string)argv[2];
+    double dt = atof(argv[3]);
+    int N = atoi(argv[4]);
+    int method = atoi(argv[5]);
+    double beta = atof(argv[6]);
+    bool GR = (bool)atoi(argv[7]);
+    System simple(initfile);
     simple.solve(dt, N, method, beta, GR);
-    simple.write(initfile+".dat");
+    simple.write(outfile);
     return 0;
 }
