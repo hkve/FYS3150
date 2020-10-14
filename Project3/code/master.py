@@ -15,7 +15,7 @@ parser.add_argument('-beta', type=float, default=2.0,help='Variable for 3e. Must
 parser.add_argument('-sys', metavar="file", default="sys.dat",help="Name of file where initial system is stored. Default: sys.dat")
 parser.add_argument('-out', metavar="file", default="sys.out",help="Name of file where simulation results are stored. Default: sys.out")
 parser.add_argument('-GR', action='store_true', help='Do simulation with general relativity correction term.')
-parser.add_argument('-compile', action='store_true', help='Compile main.cpp to "main.out" before running')
+parser.add_argument('-compile', action='store_true', help='Compile main.cpp to "main.exe" before running')
 
 
 args = parser.parse_args()
@@ -30,11 +30,11 @@ if __name__ == "__main__":
         sys.exit()
     if args.compile:
         print("Compiling...")
-        subprocess.run(f"g++ -o main.out main.cpp -O3".split())
+        subprocess.run(f"g++ -o main.exe main.cpp -O3".split())
     print(f"Solving for dt:{args.dt}, N:{args.N}, method:{args.method}, beta:{args.beta}, GR:{args.GR}")
     print(f"read: {args.sys}, write: {args.out}")
     GR = {True: 1, False: 0}[args.GR]
     method = {"euler":0,"verlet":1}[args.method]
-    subprocess.run(f"./main.out {args.sys} {args.out} {args.dt} {args.N} {method} {args.beta} {GR}".split())
+    subprocess.run(f"./main.exe {args.sys} {args.out} {args.dt} {args.N} {method} {args.beta} {GR}".split())
     print("Done!")
     

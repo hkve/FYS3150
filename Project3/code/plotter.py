@@ -17,7 +17,7 @@ GR = int(sys.argv[6])
 # beta = 2
 # GR = 1
 
-subprocess.run(f'./main.out {filename} {dt} {N} {method} {beta} {GR}'.split())
+subprocess.run(f'./main.exe {filename} {dt} {N} {method} {beta} {GR}'.split())
 with open(f"data/{filename}.dat", "r+") as file:
     data = file.readlines()
 planets = 4
