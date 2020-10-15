@@ -52,6 +52,11 @@ def read_data_file(filename):
 	
 	return system
 		
-system = read_data_file("sys.out")
+if __name__ == "__main__":
+	"""
+	Enter filename of data file (stored in data folder) and a dictionary containg all information is returned
+	"""
+	# If filename dump has Sun, Earth
+	system = read_data_file("dump.dat")
+	print(system["Sun"].m, system["Earth"].r, system["dt"])
 
-print(system)
