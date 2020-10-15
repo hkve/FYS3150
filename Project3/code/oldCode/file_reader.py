@@ -42,7 +42,6 @@ def read_data_file(filename):
 			LINE = line.rstrip().split(",")
 
 			if is_first_line == True:
-				print(name)
 				system[name].set_cords(body_data[0:3, :], body_data[3:, :]) 
 				
 				UUID = int(LINE[0])
