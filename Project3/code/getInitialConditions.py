@@ -36,6 +36,7 @@ def grabBody(UUID, date=None):
 	Returns:
 		init:     String of UUID and initial conditions (UUID,x,y,z,vx,vy,vz)
 	"""
+
 	obj = Horizons(id=UUID, location="500@0", epochs=date,  id_type="majorbody")
 	v = obj.vectors()
 	
@@ -55,6 +56,7 @@ def getInitialCondition(filename, bodies=None, date=None):
 		date: 	  String, YYYY-MM-DD, Date for intial conditions, default is todays date
 
 	"""
+	
 	DIR2SAVE = "initData"
 	UUIDs, Masses  = getUUIDs(DIR2SAVE+"/bodyUUID.txt")
 
@@ -119,8 +121,8 @@ if __name__ == "__main__":
 	# All planets, Earth moon, Mars moons and Jupiters 4 most massive moons (and Pluto <3)
 	filename = "SolarSystem_init.dat"
 	getInitialCondition(filename)
-	"""
 	# Manual
 	body_dict = {"Sun": [0,0,0,0,0,0],
 				 "Earth": [1,0,0,6.28318530718,0,0]}
 	setInitialConditions("test.dat", body_dict)
+	"""
