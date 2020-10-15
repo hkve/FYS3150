@@ -55,10 +55,10 @@ def getInitialCondition(filename, bodies=None, date=None):
 		date: 	  String, YYYY-MM-DD, Date for intial conditions, default is todays date
 
 	"""
-	UUIDs, Masses  = getUUIDs("initData/bodyUUID.txt")
+	DIR2SAVE = "initData"
+	UUIDs, Masses  = getUUIDs(DIR2SAVE+"/bodyUUID.txt")
 
 	DIR = os.listdir()
-	DIR2SAVE = "initData"
 
 	if not DIR2SAVE in DIR: # Check for missing directory to store datafiles
 		os.mkdir(DIR2SAVE)
@@ -81,7 +81,36 @@ def getInitialCondition(filename, bodies=None, date=None):
 
 	print(f"Saved to {filename}, wrote {len(bodies)} bodies")
 
+def setInitialConditions(filename, body_dict):
+	"""
+	For manuel setting of initial conditions
+
+	Args:
+		filename: String, name of file to write to
+		body_dict: Dictionary {bodyname: [x,,y,z,vx,vy,vz]}
+	"""
+
+	DIR2SAVE = "initData"
+	UUIDs, Masses  = getUUIDs(DIR2SAVE+"/bodyUUID.txt")
+
+	for body in body_dict:
+		init_len = len(body_dict[body])
+		if init_len != 6: 
+			print(f"Body {body} has wrong init condtions, excepted 6 got {init_len}")
+			exit()
+
+		for i in range(6):
+			body_dict[body][i] = str(body_dict[body][i])
+
+	with open(DIR2SAVE+ "/" + filename, "w+") as file:
+		for body in body_dict:
+			line = ",".join(body_dict[body])
+			line = str(UUIDs[body]) + "," + line + "," +str(Masses[body]) + "\n"
+			file.write(line)
+			
+
 if __name__ == "__main__":
+	"""	
 	# Examples
 	filename = "SunEarthJupiter_init.dat"
 	bodies = ["Sun", "Earth", "Jupiter"]
@@ -90,3 +119,8 @@ if __name__ == "__main__":
 	# All planets, Earth moon, Mars moons and Jupiters 4 most massive moons (and Pluto <3)
 	filename = "SolarSystem_init.dat"
 	getInitialCondition(filename)
+	"""
+	# Manual
+	body_dict = {"Sun": [0,0,0,0,0,0],
+				 "Earth": [1,0,0,6.28318530718,0,0]}
+	setInitialConditions("test.dat", body_dict)
