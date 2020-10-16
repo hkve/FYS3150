@@ -34,6 +34,7 @@ def read_data_file(filename):
 
 				system["dt"] = float(LINE[1])
 				system["N"] = int(LINE[2])
+				system["method"] = int(LINE[3])
 
 				system[name] = Body(m, UUID, system["N"])
 
@@ -49,7 +50,7 @@ def read_data_file(filename):
 						system[name].r[k, j] = float(LINE[j])
 					else:
 						system[name].v[k-3, j] = float(LINE[j])
-	
+
 	return system
 		
 if __name__ == "__main__":

@@ -79,7 +79,7 @@ def getInitialCondition(filename, bodies=None, date=None):
 
 			UUID = UUIDs[body]
 			str2write = grabBody(UUID) # Gets x and v values
-			str2write =  str2write + "," + str(Masses[body]) 
+			str2write =  str2write + "," + str(Masses[body]/Masses["Earth"]) 
 
 			if i < n_bodies-1:
 				str2write += "\n"
@@ -113,7 +113,7 @@ def setInitialConditions(filename, body_dict):
 	with open(DIR2SAVE+ "/" + filename, "w+") as file:
 		for i, body in enumerate(body_dict):
 			line = ",".join(body_dict[body])
-			line = str(UUIDs[body]) + "," + line + "," +str(Masses[body]) 
+			line = str(UUIDs[body]) + "," + line + "," +str(Masses[body]/Masses["Earth"]) 
 			
 			if i < dict_len-1:
 				line += "\n"
