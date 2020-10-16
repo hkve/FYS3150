@@ -70,15 +70,20 @@ def getInitialCondition(filename, bodies=None, date=None):
 	if bodies == None:
 		bodies = UUIDs.keys() # If None is given, wrirte alle bodies
 
+	n_bodies = len(bodies)
 	with open(filename, "w+") as file:
-		for body in bodies:
+		for i, body in enumerate(bodies):
 			if body not in UUIDs.keys():
 				print(f"{body} not available, skips")
 				continue
 
 			UUID = UUIDs[body]
 			str2write = grabBody(UUID) # Gets x and v values
-			str2write =  str2write + "," + str(Masses[body]) + "\n" # writes
+			str2write =  str2write + "," + str(Masses[body]) 
+
+			if i < n_bodies-1:
+				str2write += "\n"
+			
 			file.write(str2write)
 
 	print(f"Saved to {filename}, wrote {len(bodies)} bodies")
@@ -104,16 +109,21 @@ def setInitialConditions(filename, body_dict):
 		for i in range(6):
 			body_dict[body][i] = str(body_dict[body][i])
 
+	dict_len = len(body_dict)
 	with open(DIR2SAVE+ "/" + filename, "w+") as file:
-		for body in body_dict:
+		for i, body in enumerate(body_dict):
 			line = ",".join(body_dict[body])
-			line = str(UUIDs[body]) + "," + line + "," +str(Masses[body]) + "\n"
+			line = str(UUIDs[body]) + "," + line + "," +str(Masses[body]) 
+			
+			if i < dict_len-1:
+				line += "\n"
+
 			file.write(line)
 			
 
 if __name__ == "__main__":
-	"""	
 	# Examples
+	"""	
 	filename = "SunEarthJupiter_init.dat"
 	bodies = ["Sun", "Earth", "Jupiter"]
 	getInitialCondition(filename, bodies)
@@ -124,5 +134,5 @@ if __name__ == "__main__":
 	# Manual
 	body_dict = {"Sun": [0,0,0,0,0,0],
 				 "Earth": [1,0,0,6.28318530718,0,0]}
-	setInitialConditions("test.dat", body_dict)
+	setInitialConditions("SunEarth_init.dat", body_dict)
 	"""

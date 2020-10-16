@@ -56,7 +56,8 @@ if __name__ == "__main__":
 	"""
 	Enter filename of data file (stored in data folder) and a dictionary containg all information is returned
 	"""
-	# If filename dump has Sun, Earth
-	system = read_data_file("dump.dat")
-	print(system["Sun"].m, system["Earth"].r, system["dt"])
-
+	# If file has has Sun, Earth, Jupiter
+	"""
+	system = read_data_file("SunEarthJupiter.dat")
+	print(system["Sun"].m, system["Earth"].r, system["dt"], system["Jupiter"].v[0])
+	"""
