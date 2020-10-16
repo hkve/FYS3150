@@ -12,9 +12,11 @@ double AU = 1.496e+11;
 double ME = 5.972e+24; 
 double G = G_/pow(AU,3)*pow(3600*24,2)*ME;
 double c = 299792458/AU*3600*24;
+
+
 struct Body {
   int UUID;
-  double *pos, *pos0, *vel, *vel0, m;  
+  double *pos, *vel, m;  
 };
 
 
@@ -34,14 +36,6 @@ class System{
     }
  
 
-    void ac(double **a){
-        cout << "classic" << endl;
-    };
-
-    void agr(double **a){
-        cout << "GR" << endl;
-    };
-
     void solve(double _dt = 0.1, int _N = 10000, int _method = 1, double _beta=2, bool _GR = false){
         /*
         Solves the solar system positions for time resolution dt and N steps.
@@ -56,7 +50,6 @@ class System{
         beta = _beta;
         GR = _GR;
         
-
 
         pos = new double**[N];
         vel = new double**[N];
@@ -90,11 +83,11 @@ class System{
     }
     
 
-    void write(string filename){
+    void write(string filename, int fpy){
         /*
         Writes solved values + simulation specs to the file data/filename for each of the planets in the following way:
         
-        UUID,dt,N,method
+        UUID,dt,N,method,fpy
         x0,x1,x2,...,xN,
         y0,y1,y2,...,yN,
         z0,z1,z2,...,zN,
@@ -106,20 +99,27 @@ class System{
         the * is a separator for easier parsing in python
 
         */
-
+        double fpd = fpy/365;
+        int noOfDpts = (int)N*dt*fpd;
+        int dptsDist = (int)(1/(dt*fpd));
+        if (dptsDist == 0){
+            dptsDist= 1;
+            noOfDpts = N;
+        }
+        
         ofstream dataout;
         dataout.open("data/"+filename);
         for(int i = 0; i < bodyCount; i ++){
-            dataout << bodies[i].UUID << "," << dt << "," << N << "," << method << endl;
+            dataout << bodies[i].UUID << "," << dt << "," << N << "," << method << "," <<fpy<< endl;
             for(int j = 0; j < 3; j++){
-                for(int k = 0; k < N; k ++){
-                    dataout << pos[k][i][j] << ",";
+                for(int k = 0; k < noOfDpts; k ++){
+                    dataout << pos[k*dptsDist][i][j] << ",";
                 }
                 dataout << endl;
             }  
             for(int j = 0; j < 3; j++){
-                for(int k = 0; k < N; k ++){
-                    dataout << vel[k][i][j] << ",";
+                for(int k = 0; k < noOfDpts; k ++){
+                    dataout << vel[k*dptsDist][i][j] << ",";
                 }
                 dataout << endl;
             }  
@@ -131,7 +131,6 @@ class System{
 
     private:
 
-   
 
     void readData(string initfile){
         /* 
@@ -166,14 +165,10 @@ class System{
                 
                 double *pos = new double[3] {stod(x), stod(y), stod(z)};
                 double *vel = new double[3] {stod(vx), stod(vy), stod(vz)};
-                double *pos0 = new double[3] {stod(x), stod(y), stod(z)};
-                double *vel0 = new double[3] {stod(vx), stod(vy), stod(vz)};
             
                 bodies[k].UUID = stoi(UUID);
                 bodies[k].pos = pos;
-                bodies[k].pos0 = pos0; // might not work
                 bodies[k].vel = vel;
-                bodies[k].vel0 = vel0; // same as above
                 bodies[k].m = stod(m);
                 k ++;
                 } 
@@ -184,8 +179,6 @@ class System{
             }
 
         }
-        
-
         data.close();
         
     }
@@ -228,9 +221,6 @@ class System{
         }
 
         delete[] *a_old; // old one is no longer needed. Makes sure to remove it from heap
-        
-       
-
 
     }
 
@@ -305,6 +295,7 @@ int main(int argc, char** argv){
 
         systemInit (string): name of the file where initial planet data is read from
         systemOut (string): name of the file (in the data/ dir) where the data will be stored
+        fpy (int): Numbers of datapoints per year to be stored
         dt (float): time step size (in days) of integration loop
         N (int): number of integration steps
         method (int): 0 or 1. Which method of integration to use
@@ -316,18 +307,19 @@ int main(int argc, char** argv){
     clock_t start = clock();
     string initfile = (string)argv[1];
     string outfile = (string)argv[2];
-    double dt = atof(argv[3]);
-    int N = atoi(argv[4]);
-    int method = atoi(argv[5]);
-    double beta = atof(argv[6]);
-    bool GR = (bool)atoi(argv[7]);
+    int fpy = atoi(argv[3]);
+    double dt = atof(argv[4]);
+    int N = atoi(argv[5]);
+    int method = atoi(argv[6]);
+    double beta = atof(argv[7]);
+    bool GR = (bool)atoi(argv[8]);
     System simple(initfile);
     simple.solve(dt, N, method, beta, GR);
     clock_t stop= clock();
     cout << "Solving done in " << ((stop - start) / (double)CLOCKS_PER_SEC) << "s " << endl;
     start = clock();
     cout << "Writing..." << endl;
-    simple.write(outfile);
+    simple.write(outfile, fpy);
     stop = clock();
     cout << "Writing done in " << ((stop - start) / (double)CLOCKS_PER_SEC) << "s " << endl;
     return 0;
