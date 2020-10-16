@@ -1,10 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
+
 import subprocess
 import os
 
 from getInitialConditions import setInitialConditions
 from file_reader import read_data_file
+
 
 def plot_circular_orbit(dt, T_end, method):
 	"""
@@ -20,7 +23,7 @@ def plot_circular_orbit(dt, T_end, method):
 	N = int(T_end*d2y/dt)
 
 	body_dict = {"Sun": [0,0,0,0,0,0],
-				 "Earth": [1,0,0,2*np.pi/d2y,0,0]}
+				 "Earth": [1,0,0,0,2*np.pi/d2y,0]}
 	
 	initFilename = "SunEarthStable_init.dat"
 	outFilename = "SunEarthStable_" + str(T_end) + "_" + str(N)  + ".dat"
@@ -40,7 +43,16 @@ def plot_circular_orbit(dt, T_end, method):
 	system = read_data_file(outFilename)
 
 	r = system["Earth"].r
-	plt.plot(r[0],r[1])
-	plt.show()
+	with sns.axes_style("darkgrid"):
+		fig, ax = plt.subplots()
+
+		l = 1.5
+		ax.set(xlim=(-l,l), ylim=(-l,l), xlabel="[AU]", ylabel="[AU]")
+		ax.axis("equal")
+		
+		ax.plot(r[0], r[1], c="k", label="Earth") # Earth
+		ax.scatter(0,0, c="r", s=150, label="Sun") # Sun
+		ax.legend()
+		plt.show()
 	
 plot_circular_orbit(dt=0.1, T_end=1, method="euler")
