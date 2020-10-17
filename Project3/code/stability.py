@@ -9,7 +9,7 @@ from getInitialConditions import setInitialConditions
 from file_reader import read_data_file
 
 
-def plot_circular_orbit(dt, T_end, method, N_write=None):
+def plot_circular_orbit(dt=0.001, T_end=1, method="verlet", N_write=1000):
 	"""
 	Makes plot of stable Sun/Earth orbit
 	Sun at origin no init vel, earth x = 1 AU vx = 2pi * AU/yr
@@ -26,12 +26,11 @@ def plot_circular_orbit(dt, T_end, method, N_write=None):
 	if N_write == None:
 		N_write = N
 
-	print(N/N_write)
 	body_dict = {"Sun": [0,0,0,0,0,0],
 				 "Earth": [1,0,0,0,2*np.pi/d2y,0]}
 	
 	initFilename = "SunEarthStable_init.dat"
-	outFilename = "SunEarthStable_" + "_".join([str(T_end), str(N), str(N_write)])  + ".dat"
+	outFilename = "SunEarthStable_" + "_".join([str(method), str(T_end), str(N), str(N_write)])  + ".dat"
 
 	initDataDIR = os.listdir("initData")
 	if not initFilename in initDataDIR: 				# Check if init file exists
@@ -61,4 +60,4 @@ def plot_circular_orbit(dt, T_end, method, N_write=None):
 		ax.legend()
 		plt.show()
 	
-plot_circular_orbit(dt=0.01, T_end=1, method="euler", N_write=100)
+plot_circular_orbit()
