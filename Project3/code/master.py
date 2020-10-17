@@ -17,6 +17,7 @@ parser.add_argument('-out', metavar="file", default="sys.out",help="Name of file
 parser.add_argument('-dpts', metavar='DPTS', type=int, help='Numbers of data points to be stored. Default: same as N', default=-1)
 parser.add_argument('--GR', action='store_true', help='Do simulation with general relativity correction term.')
 parser.add_argument('--compile', action='store_true', help='Compile main.cpp to "main.exe" before running')
+parser.add_argument('--q', action='store_true', help='Run quiet')
 
 
 args = parser.parse_args()
@@ -26,20 +27,25 @@ args = parser.parse_args()
 
 
 if __name__ == "__main__":
+    
     if not (2<= args.beta <= 3):
-        print(f"ERROR; beta = {args.beta} is not in range [2,3]. Terminating.")
+        if not args.q:
+            print(f"ERROR; beta = {args.beta} is not in range [2,3]. Terminating.")
         sys.exit()
     if args.compile:
-        print("Compiling...")
+        if not args.q:
+            print("Compiling...")
         subprocess.run(f"g++ -o main.exe main.cpp -O3".split())
     dpts = args.dpts
     if not (0 < args.dpts <= args.N):
         dpts = args.N
-    
-    print(f"Solving for dt:{args.dt}, N:{args.N}, method:{args.method}, beta:{args.beta}, GR:{args.GR}")
-    print(f"read: {args.sys}, write: {args.out}")
+    if not args.q:
+        print(f"Solving for dt:{args.dt}, N:{args.N}, method:{args.method}, beta:{args.beta}, GR:{args.GR}")
+        print(f"read: {args.sys}, write: {args.out}")
     GR = {True: 1, False: 0}[args.GR]
+    q = {True: 1, False: 0}[args.q]
     method = {"euler":0,"verlet":1}[args.method]
-    subprocess.run(f"./main.exe {args.sys} {args.out} {dpts} {args.dt} {args.N} {method} {args.beta} {GR}".split())
-    print("Done!")
+    subprocess.run(f"./main.exe {args.sys} {args.out} {dpts} {args.dt} {args.N} {method} {args.beta} {GR} {q}".split())
+    if not args.q:
+        print("Done!")
     

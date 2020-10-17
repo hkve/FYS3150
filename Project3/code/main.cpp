@@ -301,6 +301,7 @@ int main(int argc, char** argv){
             - 1: Velocity Verlet
         beta (float): number between 2 and 3. Used for 3e). beta = 2 results in normal Newtonian gravity
         GR (bool/int): 0 or 1. Decides if the general relativity correction term should be included
+        q (bool/int): 0 or 1. Run program quietly
     */
     clock_t start = clock();
 
@@ -312,15 +313,22 @@ int main(int argc, char** argv){
     int method = atoi(argv[6]);
     double beta = atof(argv[7]);
     bool GR = (bool)atoi(argv[8]);
+    bool q = (bool)atoi(argv[9]);
     
     System simple(initfile);
     simple.solve(dt, N, method, beta, GR);
     clock_t stop= clock();
+    if(not q){
     cout << "Solving done in " << ((stop - start) / (double)CLOCKS_PER_SEC) << "s " << endl;
+    }
     start = clock();
+    if(not q){
     cout << "Writing..." << endl;
+    }
     simple.write(outfile, dpts);
     stop = clock();
+    if(not q){
     cout << "Writing done in " << ((stop - start) / (double)CLOCKS_PER_SEC) << "s " << endl;
+    }
     return 0;
 }
