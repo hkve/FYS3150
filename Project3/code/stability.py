@@ -9,7 +9,7 @@ from getInitialConditions import setInitialConditions
 from file_reader import read_data_file
 
 
-def plot_circular_orbit(dt, T_end, method, N_write):
+def plot_circular_orbit(dt, T_end, method, N_write=None):
 	"""
 	Makes plot of stable Sun/Earth orbit
 	Sun at origin no init vel, earth x = 1 AU vx = 2pi * AU/yr
@@ -17,16 +17,21 @@ def plot_circular_orbit(dt, T_end, method, N_write):
 	Args:
 		dt: (float) time step in days
 		T_end: (int/float) end time in years
-		method: "euler" or "verlet"
+		method: (string) "euler" or "verlet"
+		N_write: (int) number of points to write to file
 	"""
 	d2y = 365  	# Day to year conversion
 	N = int(T_end*d2y/dt)
+	
+	if N_write == None:
+		N_write = N
 
+	print(N/N_write)
 	body_dict = {"Sun": [0,0,0,0,0,0],
 				 "Earth": [1,0,0,0,2*np.pi/d2y,0]}
 	
 	initFilename = "SunEarthStable_init.dat"
-	outFilename = "SunEarthStable_" + str(T_end) + "_" + str(N)  + ".dat"
+	outFilename = "SunEarthStable_" + "_".join([str(T_end), str(N), str(N_write)])  + ".dat"
 
 	initDataDIR = os.listdir("initData")
 	if not initFilename in initDataDIR: 				# Check if init file exists
@@ -43,6 +48,7 @@ def plot_circular_orbit(dt, T_end, method, N_write):
 	system = read_data_file(outFilename)	
 
 	r = system["Earth"].r
+
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 
@@ -55,4 +61,4 @@ def plot_circular_orbit(dt, T_end, method, N_write):
 		ax.legend()
 		plt.show()
 	
-plot_circular_orbit(dt=0.1, T_end=1, method="euler", N_write=1000)
+plot_circular_orbit(dt=0.01, T_end=1, method="euler", N_write=100)

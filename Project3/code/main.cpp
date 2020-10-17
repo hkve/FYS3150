@@ -108,18 +108,18 @@ class System{
         ofstream dataout;
         dataout.open("data/"+filename);
         for(int i = 0; i < bodyCount; i ++){
-            dataout << bodies[i].UUID << "," << dt << "," << N << "," << method << "," <<dpts<< endl;
+            dataout << bodies[i].UUID << "," << dt << "," << N << "," << method << "," <<dpts+1<< endl;
             for(int j = 0; j < 3; j++){
                 for(int k = 0; k < dpts; k ++){
                     dataout << pos[k*dptsDist][i][j] << ",";
                 }
-                dataout << endl;
+                dataout << pos[N-1][i][j] <<endl;
             }  
             for(int j = 0; j < 3; j++){
                 for(int k = 0; k < dpts; k ++){
                     dataout << vel[k*dptsDist][i][j] << ",";
                 }
-                dataout << endl;
+                dataout << pos[N-1][i][j] << endl;
             }  
             dataout << "*" << endl;
         }

@@ -46,7 +46,7 @@ def read_data_file(filename):
 				skipper += 8
 			else:
 				k = i-skipper			
-				for j in range(len(LINE[:-1])):
+				for j in range(len(LINE)):
 					if k < 3:
 						system[name].r[k, j] = float(LINE[j])
 					else:
