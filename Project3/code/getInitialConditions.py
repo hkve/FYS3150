@@ -94,7 +94,7 @@ def setInitialConditions(filename, body_dict):
 
 	Args:
 		filename: String, name of file to write to
-		body_dict: Dictionary {bodyname: [x,,y,z,vx,vy,vz]} OBS: v in AU/yr
+		body_dict: Dictionary {bodyname: [x,,y,z,vx,vy,vz]} 
 	"""
 
 	DIR2SAVE = "initData"
@@ -108,9 +108,6 @@ def setInitialConditions(filename, body_dict):
 			exit()
 
 		for i in range(6):
-			if i >= 3:
-				body_dict[body][i] /= 365
-				 
 			body_dict[body][i] = str(body_dict[body][i])
 
 	dict_len = len(body_dict)
