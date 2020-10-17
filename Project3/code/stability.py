@@ -9,7 +9,7 @@ from getInitialConditions import setInitialConditions
 from file_reader import read_data_file
 
 
-def plot_circular_orbit(dt, T_end, method):
+def plot_circular_orbit(dt, T_end, method, N_write):
 	"""
 	Makes plot of stable Sun/Earth orbit
 	Sun at origin no init vel, earth x = 1 AU vx = 2pi * AU/yr
@@ -36,11 +36,11 @@ def plot_circular_orbit(dt, T_end, method):
 	dataDIR = os.listdir("data")
 	if not outFilename in dataDIR: 						# Check if data file exists
 		master_call = f"python3 master.py -method {method} -sys {initFilename} \
-						-out {outFilename} {dt} {N}" 
+						-out {outFilename} -dpts {N_write} {dt} {N}" 
 		subprocess.call(master_call.split())
 
 	
-	system = read_data_file(outFilename)
+	system = read_data_file(outFilename)	
 
 	r = system["Earth"].r
 	with sns.axes_style("darkgrid"):
@@ -55,4 +55,4 @@ def plot_circular_orbit(dt, T_end, method):
 		ax.legend()
 		plt.show()
 	
-plot_circular_orbit(dt=0.1, T_end=1, method="euler")
+plot_circular_orbit(dt=0.1, T_end=1, method="euler", N_write=1000)

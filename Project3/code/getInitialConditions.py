@@ -94,11 +94,12 @@ def setInitialConditions(filename, body_dict):
 
 	Args:
 		filename: String, name of file to write to
-		body_dict: Dictionary {bodyname: [x,,y,z,vx,vy,vz]}
+		body_dict: Dictionary {bodyname: [x,,y,z,vx,vy,vz]} OBS: v in AU/yr
 	"""
 
 	DIR2SAVE = "initData"
 	UUIDs, Masses  = getUUIDs(DIR2SAVE+"/bodyUUID.txt")
+
 
 	for body in body_dict:
 		init_len = len(body_dict[body])
@@ -107,6 +108,9 @@ def setInitialConditions(filename, body_dict):
 			exit()
 
 		for i in range(6):
+			if i >= 3:
+				body_dict[body][i] /= 365
+				 
 			body_dict[body][i] = str(body_dict[body][i])
 
 	dict_len = len(body_dict)
@@ -132,7 +136,7 @@ if __name__ == "__main__":
 	filename = "SolarSystem_init.dat"
 	getInitialCondition(filename)
 	# Manual
+	"""
 	body_dict = {"Sun": [0,0,0,0,0,0],
 				 "Earth": [1,0,0,6.28318530718,0,0]}
 	setInitialConditions("SunEarth_init.dat", body_dict)
-	"""
