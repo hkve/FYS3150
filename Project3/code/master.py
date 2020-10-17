@@ -33,7 +33,7 @@ if __name__ == "__main__":
             print(f"ERROR; beta = {args.beta} is not in range [2,3]. Terminating.")
         sys.exit()
     if args.compile:
-        if not pargs..q:
+        if not args.q:
             print("Compiling...")
         subprocess.run(f"g++ -o main.exe main.cpp -O3".split())
     dpts = args.dpts
