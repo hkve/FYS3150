@@ -83,7 +83,7 @@ class System{
     }
     
 
-    void write(string filename, int fpy){
+    void write(string filename, int dpts){
         /*
         Writes solved values + simulation specs to the file data/filename for each of the planets in the following way:
         
@@ -99,26 +99,24 @@ class System{
         the * is a separator for easier parsing in python
 
         */
-        double fpd = fpy/365;
-        int noOfDpts = (int)N*dt*fpd;
-        int dptsDist = (int)(1/(dt*fpd));
+       
+        int dptsDist = (int)(N/(dpts));
         if (dptsDist == 0){
             dptsDist= 1;
-            noOfDpts = N;
         }
         
         ofstream dataout;
         dataout.open("data/"+filename);
         for(int i = 0; i < bodyCount; i ++){
-            dataout << bodies[i].UUID << "," << dt << "," << N << "," << method << "," <<fpy<< endl;
+            dataout << bodies[i].UUID << "," << dt << "," << N << "," << method << "," <<dpts<< endl;
             for(int j = 0; j < 3; j++){
-                for(int k = 0; k < noOfDpts; k ++){
+                for(int k = 0; k < dpts; k ++){
                     dataout << pos[k*dptsDist][i][j] << ",";
                 }
                 dataout << endl;
             }  
             for(int j = 0; j < 3; j++){
-                for(int k = 0; k < noOfDpts; k ++){
+                for(int k = 0; k < dpts; k ++){
                     dataout << vel[k*dptsDist][i][j] << ",";
                 }
                 dataout << endl;
@@ -295,7 +293,7 @@ int main(int argc, char** argv){
 
         systemInit (string): name of the file where initial planet data is read from
         systemOut (string): name of the file (in the data/ dir) where the data will be stored
-        fpy (int): Numbers of datapoints per year to be stored
+        dpts (int): Numbers of datapoints per to be stored (default is N)
         dt (float): time step size (in days) of integration loop
         N (int): number of integration steps
         method (int): 0 or 1. Which method of integration to use
@@ -305,21 +303,23 @@ int main(int argc, char** argv){
         GR (bool/int): 0 or 1. Decides if the general relativity correction term should be included
     */
     clock_t start = clock();
+
     string initfile = (string)argv[1];
     string outfile = (string)argv[2];
-    int fpy = atoi(argv[3]);
+    int dpts = atoi(argv[3]);
     double dt = atof(argv[4]);
     int N = atoi(argv[5]);
     int method = atoi(argv[6]);
     double beta = atof(argv[7]);
     bool GR = (bool)atoi(argv[8]);
+    
     System simple(initfile);
     simple.solve(dt, N, method, beta, GR);
     clock_t stop= clock();
     cout << "Solving done in " << ((stop - start) / (double)CLOCKS_PER_SEC) << "s " << endl;
     start = clock();
     cout << "Writing..." << endl;
-    simple.write(outfile, fpy);
+    simple.write(outfile, dpts);
     stop = clock();
     cout << "Writing done in " << ((stop - start) / (double)CLOCKS_PER_SEC) << "s " << endl;
     return 0;
