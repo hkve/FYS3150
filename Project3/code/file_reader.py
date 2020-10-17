@@ -35,8 +35,9 @@ def read_data_file(filename):
 				system["dt"] = float(LINE[1])
 				system["N"] = int(LINE[2])
 				system["method"] = int(LINE[3])
+				system["N_write"] = int(LINE[4])
 
-				system[name] = Body(m, UUID, system["N"])
+				system[name] = Body(m, UUID, system["N_write"])
 
 				info_line = False
 			
@@ -58,7 +59,7 @@ if __name__ == "__main__":
 	Enter filename of data file (stored in data folder) and a dictionary containg all information is returned
 	"""
 	# If file has has Sun, Earth, Jupiter
+	system = read_data_file("SunEarthStable.dat")
+	print(len(system["Earth"].r[0]))
 	"""
-	system = read_data_file("SunEarthJupiter.dat")
-	print(system["Sun"].m, system["Earth"].r, system["dt"], system["Jupiter"].v[0])
 	"""
