@@ -48,9 +48,9 @@ def read_data_file(filename):
 				k = i-skipper			
 				for j, value in enumerate(LINE[:-1]):
 					if k < 3:
-						system[name].r[k, j] = float(LINE[j])
+						system[name].r[k, j] = float(value)
 					else:
-						system[name].v[k-3, j] = float(LINE[j])
+						system[name].v[k-3, j] = float(value)
 
 	return system
 		
