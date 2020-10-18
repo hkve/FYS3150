@@ -87,7 +87,7 @@ class System{
         /*
         Writes solved values + simulation specs to the file data/filename for each of the planets in the following way:
         
-        UUID,dt,N,method,fpy
+        UUID,dt,N,method,dpts
         x0,x1,x2,...,xN,
         y0,y1,y2,...,yN,
         z0,z1,z2,...,zN,
@@ -108,7 +108,7 @@ class System{
         ofstream dataout;
         dataout.open("data/"+filename);
         for(int i = 0; i < bodyCount; i ++){
-            dataout << bodies[i].UUID << "," << dt << "," << N << "," << method << "," <<dpts+1<< endl;
+            dataout << bodies[i].UUID << "," << dt << "," << N << "," << method << "," <<dpts<< endl;
             for(int j = 0; j < 3; j++){
                 for(int k = 0; k < dpts; k ++){
                     dataout << pos[k*dptsDist][i][j] << ",";
@@ -217,7 +217,9 @@ class System{
                 bodies[i].vel[j] = bodies[i].vel[j] + (a_old[i][j]+ a[i][j])/2*dt;
             }
         }
-
+        for(int i = 0; i < bodyCount; i++){
+            delete[] a_old[i];
+        }
         delete[] *a_old; // old one is no longer needed. Makes sure to remove it from heap
 
     }
@@ -233,11 +235,18 @@ class System{
         // calculates the GR term used in 3i)
         double relpos[3] = {b1.pos[0]-b2.pos[0],b1.pos[1]-b2.pos[1], b1.pos[2]-b2.pos[2]};
         double relvel[3] = {b1.vel[0]-b2.vel[0],b1.vel[1]-b2.vel[1], b1.vel[2]-b2.vel[2]};
-
+        //cout << relpos[0] << " relpos[0] " << endl;
         double l = (pow(relpos[0],2) + pow(relpos[1],2) + pow(relpos[2],2))
                  * (pow(relvel[0],2) + pow(relvel[1],2) + pow(relvel[2],2))
-                 - pow(relpos[0]*relvel[0] + relpos[1]*relvel[1] + relpos[2]*relvel[2], 2);  
-        
+                 - pow(relpos[0]*relvel[0] + relpos[1]*relvel[1] + relpos[2]*relvel[2], 2);
+        // double l = (pow(relpos[0],2) + pow(relpos[1],2) + pow(relpos[2],2))
+        //         * (pow(b2.vel[0],2) + pow(b2.vel[1],2) + pow(b2.vel[2],2))
+        //         - pow(relpos[0]*b2.vel[0] + relpos[1]*b2.vel[1] + relpos[2]*b2.vel[2], 2);    
+        // cout << l <<" l" << endl;
+        // cout << dist <<" dist" << endl;
+        // cout << c <<" c" << endl;
+
+
         return 3*l/(dist *c*c);
     }
 
@@ -251,9 +260,12 @@ class System{
          }
         // Calculate a on bodies
         for(int i = 0; i <bodyCount-1; i++){
+          
             dist = 0;
             
-            for(int j = i+1; j<bodyCount; j++){
+            for( int j = i+1; j<bodyCount; j++){
+                
+
                 for(int k = 0; k < 3; k++){
                     dist += pow(bodies[i].pos[k]- bodies[j].pos[k],2);
                 }
@@ -262,15 +274,20 @@ class System{
                 if(GR){
                     // add some terms if the system is to be solved with general relativity approximation
                     GRterm = getGRterm(bodies[i], bodies[j], dist);
+                    //cout << GRterm << " GRterm" <<endl;
                 }
 
 
                 dist = pow(dist,(beta +1)/2);
                 GMm = G*bodies[i].m*bodies[j].m;
                 for(int k = 0; k < 3; k++){
+                    //cout << GMm/dist*(bodies[i].pos[k]- bodies[j].pos[k]) << endl;
+                    
                     a[i][k] -= GMm/dist*(bodies[i].pos[k]- bodies[j].pos[k])*(1+GRterm);
                     a[j][k] -= a[i][k]; // lookup is faster than doing the math
+                    //a[j][k] += GMm/dist*(bodies[i].pos[k]- bodies[j].pos[k])*(1+GRterm);
                 }
+                //cout << endl;
             }
         }
         // Convert a into accelerations (still under name a, though)
