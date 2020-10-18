@@ -26,6 +26,17 @@ def has_data(filenames):
 
 	return True
 
+def energy(body):
+	m = body.m
+
+	R = np.linalg.norm(body.r, axis=0)
+	V = np.linalg.norm(body.v, axis=0)
+	
+	K = 0.5*V**2
+	P = 1/R
+
+	return K,P
+
 def plot_circular_orbit(dt=0.001, T_end=1, method="verlet", N_write=1000):
 	"""
 	Makes plot of stable Sun/Earth orbit
@@ -130,4 +141,45 @@ def plot_error(dt_start=10, dt_end=0.0001, n_tests=10):
 	ax.legend()
 	plt.show()
 
-plot_error(dt_start=0.1, dt_end=0.0001, n_tests=20)
+
+def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
+	d2y = 365
+	dt = T_end*d2y/N
+	
+	methods = ["euler", "verlet"]
+	initFilename = "SunEarthStable_init.dat"
+
+	body_dict = {"Sun": [0,0,0,0,0,0],
+				 "Earth": [1,0,0,0,2*np.pi/d2y,0]}
+
+	check_init(initFilename, body_dict)
+
+	outFilenames = []
+	for method in methods:
+		outFilenames.append(f"SunEarthStable_{method}_{T_end}_{np.log10(N):.0f}_{N_write}.dat")
+
+	exists = has_data(outFilenames)
+
+	i = 0
+	if exists == False:
+		for method in methods:
+			master_call = f"python3 master.py -method {method} -sys initData/{initFilename} \
+							 -out {outFilenames[i]} -dpts {N_write} {dt} {N}" 
+			subprocess.call(master_call.split())
+			i += 1
+
+	fig, ax = plt.subplots()
+	ax.set(yscale="log")
+	c = ["k","r"]
+
+	for i, method in enumerate(methods):
+		system = read_data_file(outFilenames[i])
+		K, P = energy(system["Earth"])
+		rel_K = np.abs((K-K[0])/K[0])
+		rel_P = np.abs((P-P[0])/P[0])
+		ax.plot(rel_K, label=f"K {method}", c=c[i])
+		ax.plot(rel_P, label=f"P {method}", c=c[i], linestyle="dashed")
+	ax.legend()
+	plt.show()
+
+plot_energy(T_end=50, N=int(1e7))
