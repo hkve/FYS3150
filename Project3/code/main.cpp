@@ -184,8 +184,8 @@ class System{
     void FwdEulerStep(double **a, double dt){
         for(int i = 0; i < bodyCount; i ++){
             for (int j = 0; j < 3; j ++){
-                bodies[i].vel[j] = a[i][j]*dt + bodies[i].vel[j];
                 bodies[i].pos[j] = bodies[i].vel[j]*dt + bodies[i].pos[j];
+                bodies[i].vel[j] = a[i][j]*dt + bodies[i].vel[j];
                 //a[i][j] = 0;
             }
         }
