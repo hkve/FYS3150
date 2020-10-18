@@ -301,6 +301,7 @@ int main(int argc, char** argv){
             - 1: Velocity Verlet
         beta (float): number between 2 and 3. Used for 3e). beta = 2 results in normal Newtonian gravity
         GR (bool/int): 0 or 1. Decides if the general relativity correction term should be included
+        timeFormat (string): "days" or "years". Which time format to use. "days" means all times are in days, while "years" means all times are in years
         q (bool/int): 0 or 1. Run program quietly
     */
     clock_t start = clock();
@@ -313,8 +314,20 @@ int main(int argc, char** argv){
     int method = atoi(argv[6]);
     double beta = atof(argv[7]);
     bool GR = (bool)atoi(argv[8]);
-    bool q = (bool)atoi(argv[9]);
+    string timeFormat = (string)argv[9];
+    bool q = (bool)atoi(argv[10]);
+
     
+     
+    
+    if (timeFormat == "years") {
+        G = G_/pow(AU,3)*pow(3600*24*365,2)*ME;
+        c = 299792458/AU*3600*24*365;
+    }
+    else if( timeFormat != "days"){
+        cout << "Error, unrecognized time format '" << timeFormat << "'. Proceeding with day-format" << endl; 
+    }
+
     System simple(initfile);
     simple.solve(dt, N, method, beta, GR);
     clock_t stop= clock();
