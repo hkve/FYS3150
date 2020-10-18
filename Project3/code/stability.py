@@ -32,10 +32,7 @@ def energy(body):
 	R = np.linalg.norm(body.r, axis=0)
 	V = np.linalg.norm(body.v, axis=0)
 	
-	K = 0.5*V**2
-	P = 1/R
-
-	return K,P
+	return 0.5*V**2 - 1/R**2
 
 def plot_circular_orbit(dt=0.001, T_end=1, method="verlet", N_write=1000):
 	"""
@@ -74,7 +71,6 @@ def plot_circular_orbit(dt=0.001, T_end=1, method="verlet", N_write=1000):
 
 	r = system["Earth"].r
 
-	print(r[0])
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 
@@ -88,12 +84,13 @@ def plot_circular_orbit(dt=0.001, T_end=1, method="verlet", N_write=1000):
 		plt.show()
 	
 
-def plot_error(dt_start=10, dt_end=0.0001, n_tests=10):
+def plot_error(N_start=3, N_end=7, n_tests=30):
 	d2y = 365
 
-	log_start, log_end = np.log10(dt_start), np.log10(dt_end)
-	DT = np.logspace(log_start, log_end, n_tests)
-
+	log_start, log_end = np.log10(N_start), np.log10(N_end)
+	N = np.logspace(log_start, log_end, n_tests)
+	N = (10**N).astype(int)
+	
 	methods = ["euler", "verlet"]
 
 	initFilename = "SunEarthStable_init.dat"
@@ -101,24 +98,26 @@ def plot_error(dt_start=10, dt_end=0.0001, n_tests=10):
 	outFilenames = []
 	for method in methods:
 		for i in range(n_tests):
-			outFilenames.append(f"SunEarthStable_{method}_{log_start:.0f}_{log_end:.0f}_{i+1}") 
+			outFilenames.append(f"SunEarthStable_{method}_{N_start}_{N_end}_{i+1}.dat") 
 
 	body_dict = {"Sun": [0,0,0,0,0,0],
 				 "Earth": [1,0,0,0,2*np.pi/d2y,0]}
 	
+
 	check_init(initFilename, body_dict)
 	exists = has_data(outFilenames)
 	i = 0
 	if exists == False:
 		for method in methods:
-			for dt in DT:
-				N = int(365/dt)
-				
+			for n in N:
+				dt = 365/n
+
 				master_call = f"python3 master.py -method {method} -sys initData/{initFilename} \
-						    	-out {outFilenames[i]} -dpts {1} {dt} {N}" 
+						    	-out {outFilenames[i]} -dpts {1} {dt} {n}" 
 				subprocess.call(master_call.split())
 				i += 1
 
+	
 	systems = []
 	eulerError = []
 	verletError = []
@@ -132,15 +131,15 @@ def plot_error(dt_start=10, dt_end=0.0001, n_tests=10):
 			eulerError.append(error)
 		if system["method"] == 1:
 			verletError.append(error)
-		
-	print(DT)
-	fix, ax = plt.subplots()
-	ax.set(xscale="log", yscale="log")
-	ax.scatter(DT, eulerError, label="euler")
-	ax.scatter(DT, verletError, label="verlet")
-	ax.legend()
-	plt.show()
-
+	
+	with sns.axes_style("darkgrid"):
+		fix, ax = plt.subplots()
+		ax.set(xscale="log", yscale="log", xlabel="N", ylabel="Relative error")
+		ax.scatter(N, eulerError, label="Euler")
+		ax.scatter(N, verletError, label="Verlet")
+		ax.legend()
+		plt.show()
+	
 
 def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 	d2y = 365
@@ -156,7 +155,7 @@ def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 
 	outFilenames = []
 	for method in methods:
-		outFilenames.append(f"SunEarthStable_{method}_{T_end}_{np.log10(N):.0f}_{N_write}.dat")
+		outFilenames.append(f"SunEarthStable_{method}_{T_end}_{N}_{N_write}.dat")
 
 	exists = has_data(outFilenames)
 
@@ -168,18 +167,18 @@ def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 			subprocess.call(master_call.split())
 			i += 1
 
-	fig, ax = plt.subplots()
-	ax.set(yscale="log")
-	c = ["k","r"]
 
-	for i, method in enumerate(methods):
-		system = read_data_file(outFilenames[i])
-		K, P = energy(system["Earth"])
-		rel_K = np.abs((K-K[0])/K[0])
-		rel_P = np.abs((P-P[0])/P[0])
-		ax.plot(rel_K, label=f"K {method}", c=c[i])
-		ax.plot(rel_P, label=f"P {method}", c=c[i], linestyle="dashed")
+	with sns.axes_style("darkgrid"):
+		t = np.linspace(0, T_end, N_write+1)
+		fig, ax = plt.subplots()
+		ax.set(yscale="log", ylim=(1e-4, 1))
+		c = ["k","r"]
+		for i, method in enumerate(methods):
+			system = read_data_file(outFilenames[i])
+			E = energy(system["Earth"])
+			E = np.abs((E-E[0])/E[0])
+			ax.plot(t[:-1], E[:-1], label=r"$E_{tot} $ " + method.capitalize(), c=c[i])
 	ax.legend()
 	plt.show()
 
-plot_energy(T_end=50, N=int(1e7))
+plot_error()
