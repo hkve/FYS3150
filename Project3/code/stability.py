@@ -85,7 +85,7 @@ def plot_circular_orbit(dt=0.001, T_end=1, method="verlet", N_write=1000):
 	
 
 def plot_error(N_start=3, N_end=7, n_tests=30):
-	d2y = 365
+	d2y = 365.25
 
 	log_start, log_end = np.log10(N_start), np.log10(N_end)
 	N = np.logspace(log_start, log_end, n_tests)
@@ -110,7 +110,7 @@ def plot_error(N_start=3, N_end=7, n_tests=30):
 	if exists == False:
 		for method in methods:
 			for n in N:
-				dt = 365/n
+				dt = d2y/n
 
 				master_call = f"python3 master.py -method {method} -sys initData/{initFilename} \
 						    	-out {outFilenames[i]} -dpts {1} {dt} {n}" 
