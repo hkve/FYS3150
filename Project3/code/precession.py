@@ -9,7 +9,7 @@ def forward_simulation(dt, N, system_dict, GR=" --GR"):
     # forwards the simulation according to dt and N
     # only initial and final datapoints are stored
     setInitialConditions("precession_init.dat", system_dict)
-    run(f'python master.py {dt} {N} -sys initData/precession_init.dat -out precession.dat -dpts 1 -time years -method verlet --q{GR}'.split() )
+    run(f'python master.py {dt} {N} -sys initData/precession_init.dat -out precession.dat -Nwrite 2 -time years -method verlet --q{GR}'.split() )
 
 
 
@@ -36,7 +36,7 @@ def getPerihelionAngle(dt, system_dict, GR=" --GR"):
     else:
         dpts = N
 
-    run(f'python master.py {dt} {N} -sys initData/precession_orbit_init.dat -out precession_orbit.dat -dpts {dpts} -time years -method verlet --q{GR}'.split() )
+    run(f'python master.py {dt} {N} -sys initData/precession_orbit_init.dat -out precession_orbit.dat -Nwrite {dpts} -time years -method verlet --q{GR}'.split() )
 
     system = read_data_file("precession_orbit.dat")
     rM = system['Mercury'].r
@@ -59,11 +59,11 @@ if __name__ == '__main__':
     dt = float(1e-6)
     N = int(1e7) # 1e7 is the largest array memory can handle
 
-    for i in range(10):
+    for i in range(1):
         # simulates 10 years at a time
         forward_simulation(dt, N, system_dict, GR="")
         system_dict = read_final_state()
 
-    precession_per_century = getPerihelionAngle(float(1e-6), system_dict, GR="")
+    # precession_per_century = getPerihelionAngle(float(1e-6), system_dict, GR="")
 
-    print(f"The precession over one century was {precession_per_century} arcseconds.")
+    # print(f"The precession over one century was {precession_per_century} arcseconds.")
