@@ -107,8 +107,8 @@ class System{
     
         ofstream dataout;
         dataout.open("data/"+filename);
-        for(int i = 0; i < bodyCount; i ++){
-            dataout << bodies[i].UUID << "," << dt << "," << N << "," << method << "," <<time<< endl;
+        for(int i = 0; i <= bodyCount; i ++){
+            dataout << bodies[i].UUID << "," << dt << "," << N << "," << Nwrite << "," << method << "," <<time<< endl;
             for(int j = 0; j < 3; j++){
                 for(int k = 0; k < Nwrite; k ++){
                     dataout << setprecision(18) << pos[k][i][j] << ",";

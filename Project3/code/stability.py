@@ -45,7 +45,6 @@ def plot_circular_orbit(dt=0.000001, T_end=1, method="verlet", N_write=1000):
 		method: (string) "euler" or "verlet"
 		N_write: (int) number of points to write to file
 	"""
-	#d2y = 365  	# Day to year conversion
 	N = int(T_end/dt)
 	
 	if N_write == None:
@@ -63,7 +62,7 @@ def plot_circular_orbit(dt=0.000001, T_end=1, method="verlet", N_write=1000):
 
 	if exists == False:
 		master_call = f"python3 master.py -method {method} -sys initData/{initFilename} \
-						-out {outFilename} -dpts {N_write} -time years {dt} {N}" 
+						-out {outFilename} -Nwrite {N_write} -time years {dt} {N}" 
 		subprocess.call(master_call.split())
 
 	
@@ -84,7 +83,7 @@ def plot_circular_orbit(dt=0.000001, T_end=1, method="verlet", N_write=1000):
 		plt.show()
 	
 
-def plot_error(N_start=3, N_end=7, n_tests=30):
+def plot_error(N_start=3, N_end=7, n_tests=10):
 	log_start, log_end = np.log10(N_start), np.log10(N_end)
 	N = np.logspace(log_start, log_end, n_tests)
 	N = (10**N).astype(int)

@@ -34,8 +34,9 @@ def read_data_file(filename):
 
 				system["dt"] = float(LINE[1])
 				system["N"] = int(LINE[2])
-				system["method"] = int(LINE[3])
-				system["N_write"] = int(LINE[4]) + 1
+				system["N_write"] = int(LINE[3])
+				system["method"] = int(LINE[4])
+				system["time"] = float(LINE[5])
 
 				system[name] = Body(m, UUID, system["N_write"])
 
@@ -46,7 +47,7 @@ def read_data_file(filename):
 				skipper += 8
 			else:
 				k = i-skipper			
-				for j in range(len(LINE)):
+				for j in range(len(LINE[:-1])):
 					if k < 3:
 						system[name].r[k, j] = float(LINE[j])
 					else:
@@ -60,6 +61,6 @@ if __name__ == "__main__":
 	"""
 	# If file has has Sun, Earth, Jupiter
 	system = read_data_file("SunEarthStable.dat")
-	print(len(system["Earth"].r[0]))
+	print(system["Earth"].r)
 	"""
 	"""

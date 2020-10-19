@@ -124,16 +124,16 @@ def setInitialConditions(filename, body_dict):
 
 if __name__ == "__main__":
 	# Examples
-	"""	
 	filename = "SunEarthJupiter_init.dat"
 	bodies = ["Sun", "Earth", "Jupiter"]
 	getInitialCondition(filename, bodies)
+	"""	
 	
 	# All planets, Earth moon, Mars moons and Jupiters 4 most massive moons (and Pluto <3)
 	filename = "SolarSystem_init.dat"
 	getInitialCondition(filename)
 	# Manual
-	"""
 	body_dict = {"Sun": [0,0,0,0,0,0],
 				 "Earth": [1,0,0,6.28318530718,0,0]}
 	setInitialConditions("SunEarth_init.dat", body_dict)
+	"""
