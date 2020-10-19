@@ -325,9 +325,10 @@ int main(int argc, char** argv){
 
     string initfile = (string)argv[1];
     string outfile = (string)argv[2];
-    int Nwrite = atoi(argv[3]);
+    int Nwrite = pow(10, atof(argv[3]));
     double dt = pow(10.0, stod((string)argv[4]));
-    int N = pow(10, atoi(argv[5]));
+    int N = pow(10, atof(argv[5]));
+    if (Nwrite > N) {Nwrite = N;}
     int method = atoi(argv[6]);
     double beta = atof(argv[7]);
     bool GR = (bool)atoi(argv[8]);

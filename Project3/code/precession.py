@@ -61,7 +61,7 @@ if __name__ == '__main__':
     '''
     '''
 
-    for i in range(1):
+    for i in range(100):
         # simulates 10 years at a time
         forward_simulation(dt, N, system_dict)
         system_dict = read_final_state()
