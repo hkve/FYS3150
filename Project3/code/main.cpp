@@ -235,10 +235,10 @@ class System{
                 bodies[i].vel[j] = bodies[i].vel[j] + (a_old[i][j]+ a[i][j])/2*dt;
             }
         }
-        // for(int i = 0; i < bodyCount; i++){
-        //     delete[] a_old[i];
-        // }
-        delete[] *a_old; // old one is no longer needed. Makes sure to remove it from heap
+        for(int i = 0; i < bodyCount; i++){
+            delete a_old[i];
+        }
+        //delete[] *a_old; // old one is no longer needed. Makes sure to remove it from heap
 
     }
 
