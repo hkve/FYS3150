@@ -54,7 +54,8 @@ class System{
         N = _N;
         beta = _beta;
         GR = _GR;
-        int writeInterval = (int)N/Nwrite;
+        int writeInterval = (int)(N)/(Nwrite-1);
+        int writeIdx;
         pos = new double**[Nwrite];
         vel = new double**[Nwrite];
         for(int i=0; i < Nwrite; i++){
@@ -71,6 +72,7 @@ class System{
 
         for(int t = 1; t < N; t ++){
             
+            //cout << t << endl;
             if(method == 0){ 
                 FwdEulerStep(a, dt);
                 updateAcceleration(a); // calculates the acceleration on each body (i.e fills array a)
@@ -79,8 +81,12 @@ class System{
                 // No need to update acceleration each step here, as it is already dynamically done within the Velocity verlet integrtaion loop
                 VelVerStep(a, dt); 
                 }
-            if(t%writeInterval == 0){
-                storePosVel((int)(t/writeInterval));  // store positions / velocity updates
+            if((N-1 -t)%(writeInterval) == 0){
+                writeIdx = (int)t/writeInterval;
+                if(writeIdx>0){
+                    //cout << t << " " << writeInterval << " " << t/writeInterval  <<" " << Nwrite << " " << floor((N-1)/Nwrite)<<endl;
+                    storePosVel(writeIdx);  // store positions / velocity updates
+                }
             }
         }
         
@@ -91,7 +97,7 @@ class System{
         /*
         Writes solved values + simulation specs to the file data/filename for each of the planets in the following way:
         
-        UUID,dt,N,method,time
+        UUID,dt,N,Nwrite,method,time
         x0,x1,x2,...,xN,
         y0,y1,y2,...,yN,
         z0,z1,z2,...,zN,
@@ -107,8 +113,8 @@ class System{
     
         ofstream dataout;
         dataout.open("data/"+filename);
-        for(int i = 0; i <= bodyCount; i ++){
-            dataout << bodies[i].UUID << "," << dt << "," << N << "," << Nwrite << "," << method << "," <<time<< endl;
+        for(int i = 0; i < bodyCount; i ++){
+            dataout << bodies[i].UUID << "," << dt << "," << N << "," << Nwrite<<"," << method << "," <<time<< endl;
             for(int j = 0; j < 3; j++){
                 for(int k = 0; k < Nwrite; k ++){
                     dataout << setprecision(18) << pos[k][i][j] << ",";
