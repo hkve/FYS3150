@@ -34,7 +34,7 @@ def energy(body):
 	
 	return 0.5*V**2 - 1/R**2
 
-def plot_circular_orbit(dt=0.001, T_end=1, method="verlet", N_write=1000):
+def plot_circular_orbit(dt=0.000001, T_end=1, method="verlet", N_write=1000):
 	"""
 	Makes plot of stable Sun/Earth orbit
 	Sun at origin no init vel, earth x = 1 AU vx = 2pi * AU/yr
@@ -45,14 +45,14 @@ def plot_circular_orbit(dt=0.001, T_end=1, method="verlet", N_write=1000):
 		method: (string) "euler" or "verlet"
 		N_write: (int) number of points to write to file
 	"""
-	d2y = 365  	# Day to year conversion
-	N = int(T_end*d2y/dt)
+	#d2y = 365  	# Day to year conversion
+	N = int(T_end/dt)
 	
 	if N_write == None:
 		N_write = N
 
 	body_dict = {"Sun": [0,0,0,0,0,0],
-				 "Earth": [1,0,0,0,2*np.pi/d2y,0]}
+				 "Earth": [1,0,0,0,2*np.pi,0]}
 	
 	initFilename = "SunEarthStable_init.dat"
 	outFilename = "SunEarthStable_" + "_".join([str(method), str(T_end), str(N), str(N_write)])  + ".dat"
@@ -63,7 +63,7 @@ def plot_circular_orbit(dt=0.001, T_end=1, method="verlet", N_write=1000):
 
 	if exists == False:
 		master_call = f"python3 master.py -method {method} -sys initData/{initFilename} \
-						-out {outFilename} -dpts {N_write} {dt} {N}" 
+						-out {outFilename} -dpts {N_write} -time years {dt} {N}" 
 		subprocess.call(master_call.split())
 
 	
@@ -85,8 +85,6 @@ def plot_circular_orbit(dt=0.001, T_end=1, method="verlet", N_write=1000):
 	
 
 def plot_error(N_start=3, N_end=7, n_tests=30):
-	d2y = 365.25
-
 	log_start, log_end = np.log10(N_start), np.log10(N_end)
 	N = np.logspace(log_start, log_end, n_tests)
 	N = (10**N).astype(int)
@@ -101,7 +99,7 @@ def plot_error(N_start=3, N_end=7, n_tests=30):
 			outFilenames.append(f"SunEarthStable_{method}_{N_start}_{N_end}_{i+1}.dat") 
 
 	body_dict = {"Sun": [0,0,0,0,0,0],
-				 "Earth": [1,0,0,0,2*np.pi/d2y,0]}
+				 "Earth": [1,0,0,0,2*np.pi,0]}
 	
 
 	check_init(initFilename, body_dict)
@@ -110,10 +108,10 @@ def plot_error(N_start=3, N_end=7, n_tests=30):
 	if exists == False:
 		for method in methods:
 			for n in N:
-				dt = d2y/n
+				dt = 1/n
 
 				master_call = f"python3 master.py -method {method} -sys initData/{initFilename} \
-						    	-out {outFilenames[i]} -dpts {1} {dt} {n}" 
+						    	-out {outFilenames[i]} -dpts {1} -time years {dt} {n}" 
 				subprocess.call(master_call.split())
 				i += 1
 
@@ -181,4 +179,4 @@ def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 	ax.legend()
 	plt.show()
 
-plot_error()
+plot_circular_orbit()
