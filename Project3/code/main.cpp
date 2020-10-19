@@ -5,6 +5,7 @@
 #include <functional>
 #include <math.h>
 #include "time.h"
+#include <iomanip>
 using namespace std;
 
 double G_ = 6.67408e-11;
@@ -111,15 +112,15 @@ class System{
             dataout << bodies[i].UUID << "," << dt << "," << N << "," << method << "," <<dpts<< endl;
             for(int j = 0; j < 3; j++){
                 for(int k = 0; k < dpts; k ++){
-                    dataout << pos[k*dptsDist][i][j] << ",";
+                    dataout << setprecision(18) << pos[k*dptsDist][i][j] << ",";
                 }
-                dataout << pos[N-1][i][j] <<endl;
+                dataout << setprecision(18) << pos[N-1][i][j] <<endl;
             }  
             for(int j = 0; j < 3; j++){
                 for(int k = 0; k < dpts; k ++){
-                    dataout << vel[k*dptsDist][i][j] << ",";
+                    dataout << setprecision(18) << vel[k*dptsDist][i][j] << ",";
                 }
-                dataout << pos[N-1][i][j] << endl;
+                dataout << setprecision(18) << vel[N-1][i][j] << endl;
             }  
             dataout << "*" << endl;
         }
