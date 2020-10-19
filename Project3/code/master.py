@@ -14,7 +14,7 @@ parser.add_argument('-method', metavar='METHOD', type=str, help='Integration met
 parser.add_argument('-beta', type=float, default=2.0,help='Variable for 3e. Must be in range [2,3]. Default = 2')
 parser.add_argument('-sys', metavar="file", default="sys.dat",help="Name of file where initial system is stored. Default: sys.dat")
 parser.add_argument('-out', metavar="file", default="sys.out",help="Name of file where simulation results are stored. Default: sys.out")
-parser.add_argument('-dpts', metavar='DPTS', type=int, help='Numbers of data points to be stored. Default: same as N', default=-1)
+parser.add_argument('-Nwrite', metavar='points', type=int, help='Numbers of data points to be stored/written. Default: same as N', default=-1)
 parser.add_argument('-time', metavar='TYPE', type=str, choices =["days", "years"] ,help='Decide if the time units of dt and init vel are in days or years. Default: days', default="days")
 parser.add_argument('--GR', action='store_true', help='Do simulation with general relativity correction term.')
 parser.add_argument('--compile', action='store_true', help='Compile main.cpp to "main.exe" before running')
@@ -37,17 +37,17 @@ if __name__ == "__main__":
         if not args.q:
             print("Compiling...")
         subprocess.run(f"g++ -o main.exe main.cpp -O3".split())
-    dpts = args.dpts
-    if not (0 < args.dpts <= args.N):
-        dpts = args.N
+    Nwrite = args.Nwrite
+    if not (0 < args.Nwrite <= args.N):
+        Nwrite = args.N
     if not args.q:
         print(f"Solving for dt:{args.dt}, N:{args.N}, method:{args.method}, beta:{args.beta}, GR:{args.GR}")
         print(f"read: {args.sys}, write: {args.out}")
     GR = {True: 1, False: 0}[args.GR]
     q = {True: 1, False: 0}[args.q]
     method = {"euler":0,"verlet":1}[args.method]
-    print(f"./main.exe {args.sys} {args.out} {dpts} {'%f' %args.dt} {args.N} {method} {args.beta} {GR} {args.time} {q}")
-    subprocess.run(f"./main.exe {args.sys} {args.out} {dpts} {'%f' %args.dt} {args.N} {method} {args.beta} {GR} {args.time} {q}".split())
+    print(f"./main.exe {args.sys} {args.out} {Nwrite} {'%f' %args.dt} {args.N} {method} {args.beta} {GR} {args.time} {q}")
+    subprocess.run(f"./main.exe {args.sys} {args.out} {Nwrite} {'%f' %args.dt} {args.N} {method} {args.beta} {GR} {args.time} {q}".split())
     if not args.q:
         print("Done!")
     

@@ -9,10 +9,14 @@
 using namespace std;
 
 double G_ = 6.67408e-11;
-double AU = 1.496e+11;
-double ME = 5.972e+24; 
-double G = G_/pow(AU,3)*pow(3600*24,2)*ME;
-double c = 299792458/AU*3600*24;
+//double AU = 1.496e+11; // m
+double AU = 149597870700;
+double ME = 5.972e+24; //kg
+double MS = 332946; //sun mass in earth masses
+double G, c;
+
+//double G = G_/pow(AU,3)*pow(3600*24,2)*ME;
+//double c = 299792458/AU*3600*24;
 
 
 struct Body {
@@ -26,7 +30,7 @@ struct Body {
 class System{
     public:
     Body *bodies;
-    int bodyCount, N, method;
+    int bodyCount, N, method, Nwrite;
     double ***pos, ***vel, dt, beta;
     bool GR;
 
@@ -37,24 +41,23 @@ class System{
     }
  
 
-    void solve(double _dt = 0.1, int _N = 10000, int _method = 1, double _beta=2, bool _GR = false){
+    void solve(double _dt = 0.1, int _N = 10000, int _method = 1, double _beta=2, bool _GR = false, int _Nwrite=10){
         /*
         Solves the solar system positions for time resolution dt and N steps.
         Method 0 is Forward Euler, Method 1 is Velocity Verlet (default)
         beta is the varying scalar in project 3e),
         if GR is true, the general relativity equation in 3i) will be used
         */
-
+        Nwrite = _Nwrite;
         method = _method;
         dt = _dt;
         N = _N;
         beta = _beta;
         GR = _GR;
-        
-
-        pos = new double**[N];
-        vel = new double**[N];
-        for(int i=0; i < N; i++){
+        int writeInterval = (int)N/Nwrite;
+        pos = new double**[Nwrite];
+        vel = new double**[Nwrite];
+        for(int i=0; i < Nwrite; i++){
             pos[i] = new double*[bodyCount]; 
             vel[i] = new double*[bodyCount]; 
         }
@@ -76,19 +79,19 @@ class System{
                 // No need to update acceleration each step here, as it is already dynamically done within the Velocity verlet integrtaion loop
                 VelVerStep(a, dt); 
                 }
-           
-            storePosVel(t);  // store positions / velocity updates
-
+            if(t%writeInterval == 0){
+                storePosVel((int)(t/writeInterval));  // store positions / velocity updates
+            }
         }
         
     }
     
 
-    void write(string filename, int dpts){
+    void write(string filename, double time){
         /*
         Writes solved values + simulation specs to the file data/filename for each of the planets in the following way:
         
-        UUID,dt,N,method,dpts
+        UUID,dt,N,method,time
         x0,x1,x2,...,xN,
         y0,y1,y2,...,yN,
         z0,z1,z2,...,zN,
@@ -101,26 +104,22 @@ class System{
 
         */
        
-        int dptsDist = (int)(N/(dpts));
-        if (dptsDist == 0){
-            dptsDist= 1;
-        }
-        
+    
         ofstream dataout;
         dataout.open("data/"+filename);
         for(int i = 0; i < bodyCount; i ++){
-            dataout << bodies[i].UUID << "," << dt << "," << N << "," << method << "," <<dpts<< endl;
+            dataout << bodies[i].UUID << "," << dt << "," << N << "," << method << "," <<time<< endl;
             for(int j = 0; j < 3; j++){
-                for(int k = 0; k < dpts; k ++){
-                    dataout << setprecision(18) << pos[k*dptsDist][i][j] << ",";
+                for(int k = 0; k < Nwrite; k ++){
+                    dataout << setprecision(18) << pos[k][i][j] << ",";
                 }
-                dataout << setprecision(18) << pos[N-1][i][j] <<endl;
+                dataout << endl;
             }  
             for(int j = 0; j < 3; j++){
-                for(int k = 0; k < dpts; k ++){
-                    dataout << setprecision(18) << vel[k*dptsDist][i][j] << ",";
+                for(int k = 0; k < Nwrite; k ++){
+                    dataout << setprecision(18) << vel[k][i][j] << ",";
                 }
-                dataout << setprecision(18) << vel[N-1][i][j] << endl;
+                dataout << endl;
             }  
             dataout << "*" << endl;
         }
@@ -187,7 +186,6 @@ class System{
             for (int j = 0; j < 3; j ++){
                 bodies[i].pos[j] = bodies[i].vel[j]*dt + bodies[i].pos[j];
                 bodies[i].vel[j] = a[i][j]*dt + bodies[i].vel[j];
-                //a[i][j] = 0;
             }
         }
 
@@ -236,17 +234,9 @@ class System{
         // calculates the GR term used in 3i)
         double relpos[3] = {b1.pos[0]-b2.pos[0],b1.pos[1]-b2.pos[1], b1.pos[2]-b2.pos[2]};
         double relvel[3] = {b1.vel[0]-b2.vel[0],b1.vel[1]-b2.vel[1], b1.vel[2]-b2.vel[2]};
-        //cout << relpos[0] << " relpos[0] " << endl;
         double l = (pow(relpos[0],2) + pow(relpos[1],2) + pow(relpos[2],2))
                  * (pow(relvel[0],2) + pow(relvel[1],2) + pow(relvel[2],2))
                  - pow(relpos[0]*relvel[0] + relpos[1]*relvel[1] + relpos[2]*relvel[2], 2);
-        // double l = (pow(relpos[0],2) + pow(relpos[1],2) + pow(relpos[2],2))
-        //         * (pow(b2.vel[0],2) + pow(b2.vel[1],2) + pow(b2.vel[2],2))
-        //         - pow(relpos[0]*b2.vel[0] + relpos[1]*b2.vel[1] + relpos[2]*b2.vel[2], 2);    
-        // cout << l <<" l" << endl;
-        // cout << dist <<" dist" << endl;
-        // cout << c <<" c" << endl;
-
 
         return 3*l/(dist *c*c);
     }
@@ -311,7 +301,7 @@ int main(int argc, char** argv){
 
         systemInit (string): name of the file where initial planet data is read from
         systemOut (string): name of the file (in the data/ dir) where the data will be stored
-        dpts (int): Numbers of datapoints per to be stored (default is N)
+        Nwrite (int): Numbers of datapoints per to be stored and written (default is N)
         dt (float): time step size (in days) of integration loop
         N (int): number of integration steps
         method (int): 0 or 1. Which method of integration to use
@@ -326,7 +316,7 @@ int main(int argc, char** argv){
 
     string initfile = (string)argv[1];
     string outfile = (string)argv[2];
-    int dpts = atoi(argv[3]);
+    int Nwrite = atoi(argv[3]);
     double dt = atof(argv[4]);
     int N = atoi(argv[5]);
     int method = atoi(argv[6]);
@@ -339,24 +329,27 @@ int main(int argc, char** argv){
      
     
     if (timeFormat == "years") {
-        G = G_/pow(AU,3)*pow(3600*24*365,2)*ME;
-        c = 299792458/AU*3600*24*365;
+        G = 4*pow(M_PI,2)/MS;// yields G in units AU^3 yr^-2 ME^-1 (ME is earth mass) 
+        c = 299792458/AU*3600*24*365.25;
     }
-    else if( timeFormat != "days"){
-        cout << "Error, unrecognized time format '" << timeFormat << "'. Proceeding with day-format" << endl; 
+    
+    else{
+        G = G_/pow(AU,3)*pow(3600*24,2)*ME;
+        c = 299792458/AU*3600*24;
     }
 
     System simple(initfile);
-    simple.solve(dt, N, method, beta, GR);
+    simple.solve(dt, N, method, beta, GR, Nwrite);
     clock_t stop= clock();
+    double time = ((stop - start) / (double)CLOCKS_PER_SEC);
     if(not q){
-    cout << "Solving done in " << ((stop - start) / (double)CLOCKS_PER_SEC) << "s " << endl;
+    cout << "Solving done in " <<  time << "s " << endl;
     }
     start = clock();
     if(not q){
     cout << "Writing..." << endl;
     }
-    simple.write(outfile, dpts);
+    simple.write(outfile, time);
     stop = clock();
     if(not q){
     cout << "Writing done in " << ((stop - start) / (double)CLOCKS_PER_SEC) << "s " << endl;
