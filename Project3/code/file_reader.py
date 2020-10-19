@@ -35,7 +35,7 @@ def read_data_file(filename):
 				system["dt"] = float(LINE[1])
 				system["N"] = int(LINE[2])
 				system["method"] = int(LINE[3])
-				system["N_write"] = int(LINE[4])
+				system["N_write"] = int(LINE[4]) + 1
 
 				system[name] = Body(m, UUID, system["N_write"])
 
