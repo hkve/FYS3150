@@ -62,5 +62,4 @@ if __name__ == "__main__":
 	# If file has has Sun, Earth, Jupiter
 	system = read_data_file("SunEarthStable.dat")
 	print(system["Earth"].r)
-	"""
-	"""
+	

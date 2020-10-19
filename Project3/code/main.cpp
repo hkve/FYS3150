@@ -24,7 +24,15 @@ struct Body {
   double *pos, *vel, m;  
 };
 
-
+void fill_linspace(int a, int b, int c,double *L){
+    //for indexing when writing
+    double delta =ceil((b-a)/(c-1));
+    L[c-1] = b-1;
+    for (int i=2; i<c; ++i){
+            L[c-i]=b-1 -((i-1)*delta);
+    }
+}
+  
 
 
 class System{
@@ -48,6 +56,7 @@ class System{
         beta is the varying scalar in project 3e),
         if GR is true, the general relativity equation in 3i) will be used
         */
+        
         Nwrite = _Nwrite;
         method = _method;
         dt = _dt;
@@ -56,6 +65,12 @@ class System{
         GR = _GR;
         int writeInterval = (int)(N)/(Nwrite-1);
         int writeIdx;
+        
+        double *L = new double[Nwrite];
+        L[0] = 0;
+        int ctr = 1;
+        fill_linspace(0,N, Nwrite, L);
+
         pos = new double**[Nwrite];
         vel = new double**[Nwrite];
         for(int i=0; i < Nwrite; i++){
@@ -72,7 +87,6 @@ class System{
 
         for(int t = 1; t < N; t ++){
             
-            //cout << t << endl;
             if(method == 0){ 
                 FwdEulerStep(a, dt);
                 updateAcceleration(a); // calculates the acceleration on each body (i.e fills array a)
@@ -81,12 +95,11 @@ class System{
                 // No need to update acceleration each step here, as it is already dynamically done within the Velocity verlet integrtaion loop
                 VelVerStep(a, dt); 
                 }
-            if((N-1 -t)%(writeInterval) == 0){
-                writeIdx = (int)t/writeInterval;
-                if(writeIdx>0){
-                    //cout << t << " " << writeInterval << " " << t/writeInterval  <<" " << Nwrite << " " << floor((N-1)/Nwrite)<<endl;
-                    storePosVel(writeIdx);  // store positions / velocity updates
-                }
+            if(t == L[ctr]){
+                //cout << t << " " << ctr << " " << L[ctr] << endl;
+                storePosVel(ctr);  // store positions / velocity updates
+                ctr ++;
+                               
             }
         }
         
@@ -222,10 +235,10 @@ class System{
                 bodies[i].vel[j] = bodies[i].vel[j] + (a_old[i][j]+ a[i][j])/2*dt;
             }
         }
-        for(int i = 0; i < bodyCount; i++){
-            delete[] a_old[i];
-        }
-        //delete[] *a_old; // old one is no longer needed. Makes sure to remove it from heap
+        // for(int i = 0; i < bodyCount; i++){
+        //     delete[] a_old[i];
+        // }
+        delete[] *a_old; // old one is no longer needed. Makes sure to remove it from heap
 
     }
 
@@ -257,12 +270,8 @@ class System{
          }
         // Calculate a on bodies
         for(int i = 0; i <bodyCount-1; i++){
-          
             dist = 0;
-            
             for( int j = i+1; j<bodyCount; j++){
-                
-
                 for(int k = 0; k < 3; k++){
                     dist += pow(bodies[i].pos[k]- bodies[j].pos[k],2);
                 }
@@ -271,20 +280,14 @@ class System{
                 if(GR){
                     // add some terms if the system is to be solved with general relativity approximation
                     GRterm = getGRterm(bodies[i], bodies[j], dist);
-                    //cout << GRterm << " GRterm" <<endl;
                 }
-
 
                 dist = pow(dist,(beta +1)/2);
                 GMm = G*bodies[i].m*bodies[j].m;
                 for(int k = 0; k < 3; k++){
-                    //cout << GMm/dist*(bodies[i].pos[k]- bodies[j].pos[k]) << endl;
-                    
                     a[i][k] -= GMm/dist*(bodies[i].pos[k]- bodies[j].pos[k])*(1+GRterm);
                     a[j][k] -= a[i][k]; // lookup is faster than doing the math
-                    //a[j][k] += GMm/dist*(bodies[i].pos[k]- bodies[j].pos[k])*(1+GRterm);
                 }
-                //cout << endl;
             }
         }
         // Convert a into accelerations (still under name a, though)
@@ -332,8 +335,6 @@ int main(int argc, char** argv){
     bool q = (bool)atoi(argv[10]);
 
     
-     
-    
     if (timeFormat == "years") {
         G = 4*pow(M_PI,2)/MS;// yields G in units AU^3 yr^-2 ME^-1 (ME is earth mass) 
         c = 299792458/AU*3600*24*365.25;
@@ -343,7 +344,6 @@ int main(int argc, char** argv){
         G = G_/pow(AU,3)*pow(3600*24,2)*ME;
         c = 299792458/AU*3600*24;
     }
-
     System simple(initfile);
     simple.solve(dt, N, method, beta, GR, Nwrite);
     clock_t stop= clock();

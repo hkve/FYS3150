@@ -46,7 +46,6 @@ if __name__ == "__main__":
     GR = {True: 1, False: 0}[args.GR]
     q = {True: 1, False: 0}[args.q]
     method = {"euler":0,"verlet":1}[args.method]
-    print(f"./main.exe {args.sys} {args.out} {Nwrite} {'%f' %args.dt} {args.N} {method} {args.beta} {GR} {args.time} {q}")
     subprocess.run(f"./main.exe {args.sys} {args.out} {Nwrite} {'%f' %args.dt} {args.N} {method} {args.beta} {GR} {args.time} {q}".split())
     if not args.q:
         print("Done!")
