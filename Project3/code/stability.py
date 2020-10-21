@@ -34,7 +34,16 @@ def energy(body):
 	
 	return 0.5*V**2 - 1/R**2
 
-def plot_circular_orbit(dt=0.000001, T_end=1, method="verlet", N_write=1000):
+def angular_momentum(body):
+	r = body.r
+	v = body.v
+
+	L = np.cross(r, v, axis=0)
+	L = np.linalg.norm(L, axis=0)
+
+	return L
+
+def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 	"""
 	Makes plot of stable Sun/Earth orbit
 	Sun at origin no init vel, earth x = 1 AU vx = 2pi * AU/yr
@@ -104,13 +113,14 @@ def plot_error(N_start=3, N_end=7, n_tests=10):
 	check_init(initFilename, body_dict)
 	exists = has_data(outFilenames)
 	i = 0
+	
 	if exists == False:
 		for method in methods:
 			for n in N:
 				dt = 1/n
 
 				master_call = f"python3 master.py -method {method} -sys initData/{initFilename} \
-						    	-out {outFilenames[i]} -dpts {1} -time years {dt} {n}" 
+						    	-out {outFilenames[i]} -Nwrite {2} -time years {dt} {n}" 
 				subprocess.call(master_call.split())
 				i += 1
 
@@ -139,14 +149,13 @@ def plot_error(N_start=3, N_end=7, n_tests=10):
 	
 
 def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
-	d2y = 365
-	dt = T_end*d2y/N
+	dt = T_end/N
 	
 	methods = ["euler", "verlet"]
 	initFilename = "SunEarthStable_init.dat"
 
 	body_dict = {"Sun": [0,0,0,0,0,0],
-				 "Earth": [1,0,0,0,2*np.pi/d2y,0]}
+				 "Earth": [1,0,0,0,2*np.pi,0]}
 
 	check_init(initFilename, body_dict)
 
@@ -160,22 +169,26 @@ def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 	if exists == False:
 		for method in methods:
 			master_call = f"python3 master.py -method {method} -sys initData/{initFilename} \
-							 -out {outFilenames[i]} -dpts {N_write} {dt} {N}" 
+							 -out {outFilenames[i]} -Nwrite {N_write} -time years {dt} {N}" 
 			subprocess.call(master_call.split())
 			i += 1
 
 
 	with sns.axes_style("darkgrid"):
-		t = np.linspace(0, T_end, N_write+1)
+		t = np.linspace(0, T_end, N_write)
 		fig, ax = plt.subplots()
-		ax.set(yscale="log", ylim=(1e-4, 1))
+		ax.set(yscale="log", ylim=(1e-10, 1))
 		c = ["k","r"]
 		for i, method in enumerate(methods):
 			system = read_data_file(outFilenames[i])
 			E = energy(system["Earth"])
+			L = angular_momentum(system["Earth"])
+			
 			E = np.abs((E-E[0])/E[0])
-			ax.plot(t[:-1], E[:-1], label=r"$E_{tot} $ " + method.capitalize(), c=c[i])
+			L = np.abs((L-L[0])/L[0])
+			ax.plot(t, E, label=r"$E_{tot} $ " + method.capitalize(), c=c[i])
+			ax.plot(t, L, label=r"$L$ " + method.capitalize())
 	ax.legend()
 	plt.show()
 
-plot_circular_orbit()
+plot_energy(T_end=100)
