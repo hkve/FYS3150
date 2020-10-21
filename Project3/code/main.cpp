@@ -27,8 +27,8 @@ struct Body {
 void fill_linspace(int a, int b, int c,double *L){
     //for indexing when writing
     double delta =ceil((b-a)/(c-1));
-    L[c-1] = b-1;
-    for (int i=2; i<c; ++i){
+    //L[c-1] = b-1;
+    for (int i=1; i<c; ++i){
             L[c-i]=b-1 -((i-1)*delta);
     }
 }
@@ -96,7 +96,7 @@ class System{
                 VelVerStep(a, dt); 
                 }
             if(t == L[ctr]){
-                //cout << t << " " << ctr << " " << L[ctr] << endl;
+                cout << t << " " << ctr << " " << L[ctr] << endl;
                 storePosVel(ctr);  // store positions / velocity updates
                 ctr ++;
                                
