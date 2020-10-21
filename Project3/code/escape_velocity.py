@@ -11,7 +11,7 @@ def run_simulation(dt, T, v):
 
     system_dict = {"Sun": [0,0,0,0,0,0], "Earth": [1,0,0,0,v,0]}
 
-    setInitialConditions("escape_init.dat", system_dict)
+    setInitialConditions("escape_init.dat", system_dict, fixedCoM = True)
 
     run(f'python master.py {dt} {N} -sys initData/escape_init.dat -out escape.dat -Nwrite 2 -time years -method verlet --q'.split() )
 
