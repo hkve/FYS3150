@@ -41,9 +41,14 @@ if __name__ == "__main__":
     if not args.log:
         args.N = np.log10(args.N)
         args.dt = np.log10(args.dt)
+    
     args.q = {True: 1, False: 0}[args.q]
     if not args.q:
-        print(f"Solving for dt: {'%e' %10**args.dt}, N: {'%i' %10**args.N}, method: {args.method}, time: {args.time}, beta: {args.beta}, GR:{args.GR}, hotel: Trivago, read: {args.sys}, write: {args.out}.")
+        if args.Nwrite == -1:
+            NwriteStr = "N"
+        else:
+            NwriteStr = str(args.Nwrite)
+        print(f"Solving for dt: {'%e' %10**args.dt}, N: {'%i' %10**args.N}, method: {args.method}, Nwrite: {NwriteStr}, time: {args.time}, beta: {args.beta}, GR:{args.GR}, hotel: Trivago, read: {args.sys}, write: {args.out}.")
     args.GR = {True: 1, False: 0}[args.GR]
     args.method = {"euler":0,"verlet":1}[args.method]
     subprocess.run(f"./main.exe {args.sys} {args.out} {args.Nwrite} {'%e' %args.dt} {'%e' %args.N} {args.method} {args.beta} {args.GR} {args.time} {args.q}".split())
