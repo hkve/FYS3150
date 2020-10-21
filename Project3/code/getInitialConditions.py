@@ -94,7 +94,8 @@ def setInitialConditions(filename, body_dict, fixedCoM = False):
 
 	Args:
 		filename: String, name of file to write to
-		body_dict: Dictionary {bodyname: [x,,y,z,vx,vy,vz]} 
+		body_dict: Dictionary, {bodyname: [x,y,z,vx,vy,vz]}
+		fixedCoM: Bool, whether to adjust the initial conditions such that the center of mass has no velocity
 	"""
 
 	DIR2SAVE = "initData"
