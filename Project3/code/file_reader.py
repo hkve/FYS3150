@@ -49,7 +49,7 @@ def read_data_file(filename):
 				k = i-skipper			
 				for j in range(len(LINE[:-1])):
 					if k < 3:
-						system[name].r[k, j] = float(LINE[j])
+						system[name].r[k, j] = np.float(LINE[j])
 					else:
 						system[name].v[k-3, j] = float(LINE[j])
 

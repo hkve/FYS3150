@@ -27,8 +27,8 @@ struct Body {
 void fill_linspace(int a, int b, int c,double *L){
     //for indexing when writing
     double delta =ceil((b-a)/(c-1));
-    L[c-1] = b-1;
-    for (int i=2; i<c; ++i){
+    //L[c-1] = b-1;
+    for (int i=1; i<c; ++i){
             L[c-i]=b-1 -((i-1)*delta);
     }
 }
@@ -65,7 +65,7 @@ class System{
         GR = _GR;
         int writeInterval = (int)(N)/(Nwrite-1);
         int writeIdx;
-        
+        //cout << "Nwrite: " << Nwrite << endl;
         double *L = new double[Nwrite];
         L[0] = 0;
         int ctr = 1;
@@ -93,7 +93,7 @@ class System{
                  }
             else if(method == 1) { 
                 // No need to update acceleration each step here, as it is already dynamically done within the Velocity verlet integrtaion loop
-                VelVerStep(a, dt); 
+                VelVerStep(a, dt);
                 }
             if(t == L[ctr]){
                 //cout << t << " " << ctr << " " << L[ctr] << endl;
@@ -325,8 +325,8 @@ int main(int argc, char** argv){
 
     string initfile = (string)argv[1];
     string outfile = (string)argv[2];
-    int Nwrite = pow(10, atof(argv[3]));
-    double dt = pow(10.0, stod((string)argv[4]));
+    int Nwrite = atoi(argv[3]);//pow(10, atof(argv[3]));
+    double dt = pow(10, atof(argv[4]));
     int N = pow(10, atof(argv[5]));
     if (Nwrite > N) {Nwrite = N;}
     int method = atoi(argv[6]);
@@ -334,8 +334,8 @@ int main(int argc, char** argv){
     bool GR = (bool)atoi(argv[8]);
     string timeFormat = (string)argv[9];
     bool q = (bool)atoi(argv[10]);
-
-    
+    cout << "N: " << N << " dt: " << dt << " Nwrite: " << Nwrite << endl;
+     
     if (timeFormat == "years") {
         G = 4*pow(M_PI,2)/MS;// yields G in units AU^3 yr^-2 ME^-1 (ME is earth mass) 
         c = 299792458/AU*3600*24*365.25;
@@ -354,7 +354,7 @@ int main(int argc, char** argv){
     }
     start = clock();
     if(not q){
-    cout << "Writing..." << endl;
+    //cout << "Writing..." << endl;
     }
     simple.write(outfile, time);
     stop = clock();

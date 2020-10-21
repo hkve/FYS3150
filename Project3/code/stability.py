@@ -92,11 +92,12 @@ def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 		plt.show()
 	
 
-def plot_error(N_start=3, N_end=7, n_tests=10):
+def plot_error(N_start=1, N_end=9, n_tests=10):
 	log_start, log_end = np.log10(N_start), np.log10(N_end)
-	N = np.logspace(log_start, log_end, n_tests)
+	N = np.logspace(log_start, log_end, n_tests, endpoint=True)
 	N = (10**N).astype(int)
 	
+
 	methods = ["euler", "verlet"]
 
 	initFilename = "SunEarthStable_init.dat"
@@ -109,39 +110,47 @@ def plot_error(N_start=3, N_end=7, n_tests=10):
 	body_dict = {"Sun": [0,0,0,0,0,0],
 				 "Earth": [1,0,0,0,2*np.pi,0]}
 	
+	setInitialConditions(initFilename, body_dict)
 
-	check_init(initFilename, body_dict)
+	#check_init(initFilename, body_dict)
 	exists = has_data(outFilenames)
 	i = 0
-	
-	if exists == False:
+
+	if not True:#exists == False:
 		for method in methods:
 			for n in N:
 				dt = 1/n
-
-				master_call = f"python3 master.py -method {method} -sys initData/{initFilename} \
-						    	-out {outFilenames[i]} -Nwrite {2} -time years {dt} {n}" 
+				master_call = f"python3 master.py {dt} {n} -method {method} -sys initData/{initFilename} -out {outFilenames[i]} -Nwrite {2} -time years --q" 
 				subprocess.call(master_call.split())
 				i += 1
 
-	
 	systems = []
 	eulerError = []
 	verletError = []
 
 	for outfile in outFilenames:
-		system = read_data_file(outfile)
-		rx = system["Earth"].r[0]
-		error = np.abs(rx[0]-rx[-1])
+		try:
+			system = read_data_file(outfile)
+			
+			r = system["Earth"].r
+			#print(r, "r", r[0,-1], r[1,-1])
+			error = np.abs(r[0,0] - r[0,-1])#np.abs(1-np.sqrt((r[0,-1])**2 + r[1,-1]**2))
+			print(error)
+			
 
-		if system["method"] == 0:
-			eulerError.append(error)
-		if system["method"] == 1:
-			verletError.append(error)
+			if system["method"] == 0:
+				# print("euler error: ", rx[0], rx[-1])
+				eulerError.append(error)
+			if system["method"] == 1:
+				# print("verlet error: ", rx[0], rx[-1])
+				verletError.append(error)
+		except:
+			verletError.append(1)
 	
 	with sns.axes_style("darkgrid"):
 		fix, ax = plt.subplots()
 		ax.set(xscale="log", yscale="log", xlabel="N", ylabel="Relative error")
+		
 		ax.scatter(N, eulerError, label="Euler")
 		ax.scatter(N, verletError, label="Verlet")
 		ax.legend()
@@ -177,7 +186,7 @@ def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 	with sns.axes_style("darkgrid"):
 		t = np.linspace(0, T_end, N_write)
 		fig, ax = plt.subplots()
-		ax.set(yscale="log", ylim=(1e-10, 1))
+		ax.set(yscale="log", ylim=(1e-4, 1))
 		c = ["k","r"]
 		for i, method in enumerate(methods):
 			system = read_data_file(outFilenames[i])
@@ -185,10 +194,10 @@ def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 			L = angular_momentum(system["Earth"])
 			
 			E = np.abs((E-E[0])/E[0])
-			L = np.abs((L-L[0])/L[0])
+			#L = np.abs((L-L[0])/L[0])
 			ax.plot(t, E, label=r"$E_{tot} $ " + method.capitalize(), c=c[i])
 			ax.plot(t, L, label=r"$L$ " + method.capitalize())
 	ax.legend()
 	plt.show()
 
-plot_energy(T_end=100)
+plot_error()
