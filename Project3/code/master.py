@@ -16,9 +16,10 @@ parser.add_argument('-sys', metavar="file", default="sys.dat",help="Name of file
 parser.add_argument('-out', metavar="file", default="sys.out",help="Name of file where simulation results are stored. Default: sys.out")
 parser.add_argument('-Nwrite', metavar='points', type=int, help='Numbers of data points to be stored/written. Default: same as N', default=-1)
 parser.add_argument('-time', metavar='TYPE', type=str, choices =["days", "years"] ,help='Decide if the time units of dt and init vel are in days or years. Default: days', default="days")
+parser.add_argument('--log', action='store_true', help="If passed, N and dt will be read in base-log10")
 parser.add_argument('--GR', action='store_true', help='Do simulation with general relativity correction term.')
 parser.add_argument('--compile', action='store_true', help='Compile main.cpp to "main.exe" before running')
-parser.add_argument('--q', action='store_true', help='Run quiet')
+parser.add_argument('--q', action='store_true', help='Run quietly')
 
 
 args = parser.parse_args()
@@ -37,16 +38,15 @@ if __name__ == "__main__":
         if not args.q:
             print("Compiling...")
         subprocess.run(f"g++ -o main.exe main.cpp -O3".split())
-    Nwrite = args.Nwrite
-    if not (0 < args.Nwrite <= args.N):
-        Nwrite = args.N
+    if not args.log:
+        args.N = np.log10(args.N)
+        args.dt = np.log10(args.dt)
+    args.q = {True: 1, False: 0}[args.q]
     if not args.q:
-        print(f"Solving for dt:{args.dt}, N:{args.N}, method:{args.method}, beta:{args.beta}, GR:{args.GR}")
-        print(f"read: {args.sys}, write: {args.out}")
-    GR = {True: 1, False: 0}[args.GR]
-    q = {True: 1, False: 0}[args.q]
-    method = {"euler":0,"verlet":1}[args.method]
-    subprocess.run(f"./main.exe {args.sys} {args.out} {Nwrite} {'%f' %np.log10(args.dt)} {np.log10(args.N):n} {method} {args.beta} {GR} {args.time} {q}".split())
+        print(f"Solving for dt: {'%e' %10**args.dt}, N: {'%i' %10**args.N}, method: {args.method}, time: {args.time}, beta: {args.beta}, GR:{args.GR}, hotel: Trivago, read: {args.sys}, write: {args.out}.")
+    args.GR = {True: 1, False: 0}[args.GR]
+    args.method = {"euler":0,"verlet":1}[args.method]
+    subprocess.run(f"./main.exe {args.sys} {args.out} {args.Nwrite} {'%e' %args.dt} {'%e' %args.N} {args.method} {args.beta} {args.GR} {args.time} {args.q}".split())
     if not args.q:
         print("Done!")
     
