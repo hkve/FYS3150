@@ -29,20 +29,25 @@ def check_escape():
     return escape
 
 
-def compute_escape_velocity(v_array, dt, T):
+def compute_escape_velocity(v0, dv, dt, T, max_iterations=1000):
     escape = False
-    for v in v_array:
+    iterations = 0
+    v = v0
+    while not escape:
         escape = run_simulation(dt, T, v)
-        if escape:
-            return v
-    raise Exception("Earth was not able to escape for any of the teste velocities.")
+        iterations += 1
+        if iterations == max_iterations:
+            raise Exception("Earth was not able to escape for any of the teste velocities.")
+        v += dv
+    return v
+    
 
 
 
 if __name__ == '__main__':
-    v_array = np.linspace(5, 15, 250)
-    dv = v_array[1] - v_array[0]
-    v_escape = compute_escape_velocity(v_array, dt=1e-4, T=100)
+    v0 = 2*np.pi
+    dv = 0.01
+    v_escape = compute_escape_velocity(v0, dv, dt=1e-4, T=100)
 
     print(f"The escape velocity was ({v_escape:.2f} +- {dv:.2f}) AU/yr.")
     print(f"The theoretical escape velocity is {np.sqrt(8*np.pi**2):.2f} AU/yr")
