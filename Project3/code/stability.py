@@ -97,6 +97,7 @@ def plot_error(N_start=3, N_end=7, n_tests=10):
 	N = np.logspace(log_start, log_end, n_tests)
 	N = (10**N).astype(int)
 	
+
 	methods = ["euler", "verlet"]
 
 	initFilename = "SunEarthStable_init.dat"
@@ -113,18 +114,16 @@ def plot_error(N_start=3, N_end=7, n_tests=10):
 	check_init(initFilename, body_dict)
 	exists = has_data(outFilenames)
 	i = 0
-	
+
 	if exists == False:
 		for method in methods:
 			for n in N:
 				dt = 1/n
-
 				master_call = f"python3 master.py -method {method} -sys initData/{initFilename} \
-						    	-out {outFilenames[i]} -Nwrite {2} -time years {dt} {n}" 
+						    	-out {outFilenames[i]} -Nwrite {10} -time years --GR {dt} {n}" 
 				subprocess.call(master_call.split())
 				i += 1
 
-	
 	systems = []
 	eulerError = []
 	verletError = []
@@ -177,7 +176,7 @@ def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 	with sns.axes_style("darkgrid"):
 		t = np.linspace(0, T_end, N_write)
 		fig, ax = plt.subplots()
-		ax.set(yscale="log", ylim=(1e-10, 1))
+		ax.set(yscale="log", ylim=(1e-4, 1))
 		c = ["k","r"]
 		for i, method in enumerate(methods):
 			system = read_data_file(outFilenames[i])
@@ -185,10 +184,10 @@ def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 			L = angular_momentum(system["Earth"])
 			
 			E = np.abs((E-E[0])/E[0])
-			L = np.abs((L-L[0])/L[0])
+			#L = np.abs((L-L[0])/L[0])
 			ax.plot(t, E, label=r"$E_{tot} $ " + method.capitalize(), c=c[i])
 			ax.plot(t, L, label=r"$L$ " + method.capitalize())
 	ax.legend()
 	plt.show()
 
-plot_energy(T_end=100)
+plot_error()
