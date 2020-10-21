@@ -88,7 +88,7 @@ def getInitialCondition(filename, bodies=None, date=None):
 
 	print(f"Saved to {filename}, wrote {len(bodies)} bodies")
 
-def setInitialConditions(filename, body_dict):
+def setInitialConditions(filename, body_dict, fixedCoM = False):
 	"""
 	For manuel setting of initial conditions
 
@@ -109,6 +109,22 @@ def setInitialConditions(filename, body_dict):
 
 		for i in range(6):
 			body_dict[body][i] = str(body_dict[body][i])
+
+
+	if fixedCoM:
+		# Disclaimer: this is slightly messy, but it works
+		P = [0,0,0] # total momentum of system
+		Mtot = 0 # total mass of system
+		for body, values in body_dict.items():
+			M = Masses[body] # mass of current body
+			P = [p + M * float(v) for p, v in zip(P, values[3:])] # adding momentum of current body to total
+			Mtot += M
+		V = [p/Mtot for p in P] # center of mass velocity
+
+		for body, values in body_dict.items():
+			# adjusting every initial velocity with the CoM velocity
+			values[3:] = [str(float(value) - v) for value, v in zip(values[3:], V)]
+
 
 	dict_len = len(body_dict)
 	with open(DIR2SAVE+ "/" + filename, "w+") as file:
