@@ -69,7 +69,7 @@ def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 
 	exists = has_data(outFilename)
 
-	if exists == False:
+	if not exists:
 		master_call = f"python3 master.py -method {method} -sys initData/{initFilename} \
 						-out {outFilename} -Nwrite {N_write} -time years {dt} {N}" 
 		subprocess.call(master_call.split())
@@ -116,7 +116,7 @@ def plot_error(N_start=1, N_end=9, n_tests=10):
 	exists = has_data(outFilenames)
 	i = 0
 
-	if not True:#exists == False:
+	if not exists:
 		for method in methods:
 			for n in N:
 				dt = 1/n
@@ -175,7 +175,7 @@ def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 	exists = has_data(outFilenames)
 
 	i = 0
-	if exists == False:
+	if not exists:
 		for method in methods:
 			master_call = f"python3 master.py -method {method} -sys initData/{initFilename} \
 							 -out {outFilenames[i]} -Nwrite {N_write} -time years {dt} {N}" 
