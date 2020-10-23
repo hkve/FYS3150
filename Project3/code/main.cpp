@@ -12,7 +12,7 @@ double G_ = 6.67408e-11;
 //double AU = 1.496e+11; // m
 double AU = 149597870700;
 double ME = 5.972e+24; //kg
-double MS = 332946; //sun mass in earth masses
+double MS = 332946.0487; //sun mass in earth masses
 double G, c;
 
 //double G = G_/pow(AU,3)*pow(3600*24,2)*ME;
@@ -82,8 +82,10 @@ class System{
         for(int i = 0; i < bodyCount; i ++){
             a[i] = new double[3];
         }
+        
         storePosVel(0); // store the initial pos/vel of bodies
         updateAcceleration(a); // calculate initial acceleration
+
 
         for(int t = 1; t < N; t ++){
             
@@ -93,7 +95,9 @@ class System{
                  }
             else if(method == 1) { 
                 // No need to update acceleration each step here, as it is already dynamically done within the Velocity verlet integrtaion loop
+                if (t < N-1){
                 VelVerStep(a, dt);
+                }
                 }
             if(t == L[ctr]){
                 //cout << t << " " << ctr << " " << L[ctr] << endl;
@@ -217,6 +221,7 @@ class System{
         for(int i = 0; i < bodyCount; i ++){
             for (int j = 0; j < 3; j ++){
                 bodies[i].pos[j] = bodies[i].pos[j] +bodies[i].vel[j]*dt +0.5*a[i][j]*dt*dt;
+                
             }
         }
     
@@ -230,19 +235,24 @@ class System{
             }
         }
         updateAcceleration(a);  
+        //cout << setprecision(18) << a_old[1][0] << " " << a[1][0] << endl;
+        
 
 
         for(int i = 0; i < bodyCount; i ++){
             for (int j = 0; j < 3; j ++){
-                bodies[i].vel[j] = bodies[i].vel[j] + (a_old[i][j]+ a[i][j])/2*dt;
+                //cout <<  bodies[i].vel[j] << ",";
+                bodies[i].vel[j] = bodies[i].vel[j] + 0.5*(a_old[i][j]+ a[i][j])*dt;
+                //cout <<  bodies[i].vel[j] << endl;
             }
         }
-        for(int i = 0; i < bodyCount; i++){
-            delete a_old[i];
-        }
+        //cout << "=="<<endl;
+        // for(int i = 0; i < bodyCount; i++){
+        //     delete a_old[i];
+        // }
     
 
-        //delete[] *a_old; // old one is no longer needed. Makes sure to remove it from heap
+        delete[] *a_old; // old one is no longer needed. Makes sure to remove it from heap
 
     }
 
@@ -273,9 +283,12 @@ class System{
             }
          }
         // Calculate a on bodies
-        for(int i = 0; i <bodyCount-1; i++){
+        for(int i = 0; i <bodyCount; i++){
             dist = 0;
-            for( int j = i+1; j<bodyCount; j++){
+            for( int j = 0; j<bodyCount; j++){
+                if( j== i){
+                    continue;
+                }
                 for(int k = 0; k < 3; k++){
                     dist += pow(bodies[i].pos[k]- bodies[j].pos[k],2);
                 }
@@ -287,19 +300,19 @@ class System{
                 }
 
                 dist = pow(dist,(beta +1)/2);
-                GMm = G*bodies[i].m*bodies[j].m;
+                GMm = G*bodies[j].m;
                 for(int k = 0; k < 3; k++){
                     a[i][k] -= GMm/dist*(bodies[i].pos[k]- bodies[j].pos[k])*(1+GRterm);
-                    a[j][k] -= a[i][k]; // lookup is faster than doing the math
+                    //a[j][k] -= a[i][k]; // lookup is faster than doing the math
                 }
             }
         }
         // Convert a into accelerations (still under name a, though)
-        for(int i = 0; i < bodyCount; i++){
-            for(int j = 0; j < 3; j++){
-                a[i][j] /= bodies[i].m;
-            }
-        }
+        // for(int i = 0; i < bodyCount; i++){
+        //     for(int j = 0; j < 3; j++){
+        //         a[i][j] /= bodies[i].m;
+        //     }
+        // }
 
     }
 
@@ -331,7 +344,7 @@ int main(int argc, char** argv){
     string outfile = (string)argv[2];
     int Nwrite = atoi(argv[3]);//pow(10, atof(argv[3]));
     double dt = pow(10, atof(argv[4]));
-    int N = pow(10, atof(argv[5]));
+    int N = (int)round(pow(10, atof(argv[5])));
     if ((Nwrite > N) || (Nwrite < 1)) {Nwrite = N;}
     int method = atoi(argv[6]);
     double beta = atof(argv[7]);

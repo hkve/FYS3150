@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser(description="""
 Solve a solar system simulation.
 """)
 parser.add_argument('dt', metavar='dt', type=float, help='Time step (in days) for simulation')
-parser.add_argument('N', metavar='N', type=int, help='Number of integration points')
+parser.add_argument('N', metavar='N', type=float, help='Number of integration points')
                 
 parser.add_argument('-method', metavar='METHOD', type=str, help='Integration method to use. Must be "euler" or "verlet". Default: "verlet".', choices=["euler", "verlet"], default="verlet")
 parser.add_argument('-beta', type=float, default=2.0,help='Variable for 3e. Must be in range [2,3]. Default = 2')
