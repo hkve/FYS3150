@@ -46,7 +46,7 @@ def grabBody(UUID, date=None):
 	
 	return init
 
-def getInitialCondition(filename, bodies=None, date=None):
+def getInitialCondition(filename, bodies=None, date=None, fixedCoM=False):
 	"""
 	Takes a list of bodies and writes initial condtions to filename
 
@@ -65,28 +65,35 @@ def getInitialCondition(filename, bodies=None, date=None):
 	if not DIR2SAVE in DIR: # Check for missing directory to store datafiles
 		os.mkdir(DIR2SAVE)
 	
-	filename = DIR2SAVE + "/" + filename
+	# filename = DIR2SAVE + "/" + filename
 
 	if bodies == None:
 		bodies = UUIDs.keys() # If None is given, wrirte alle bodies
 
-	n_bodies = len(bodies)
-	with open(filename, "w+") as file:
-		for i, body in enumerate(bodies):
-			if body not in UUIDs.keys():
-				print(f"{body} not available, skips")
-				continue
+	body_dict = {}
+	for body in bodies:
+		if body not in UUIDs.keys():
+			print(f"{body} not available, skipping")
+			continue
+		body_dict[body] = grabBody(UUIDs[body]).split(",")[1:]
+	setInitialConditions(filename, body_dict, fixedCoM)
+	# n_bodies = len(bodies)
+	# with open(filename, "w+") as file:
+	# 	for i, body in enumerate(bodies):
+	# 		if body not in UUIDs.keys():
+	# 			print(f"{body} not available, skips")
+	# 			continue
 
-			UUID = UUIDs[body]
-			str2write = grabBody(UUID) # Gets x and v values
-			str2write =  str2write + "," + str(Masses[body]/Masses["Earth"]) 
+	# 		UUID = UUIDs[body]
+	# 		str2write = grabBody(UUID) # Gets x and v values
+	# 		str2write =  str2write + "," + str(Masses[body]/Masses["Earth"]) 
 
-			if i < n_bodies-1:
-				str2write += "\n"
+	# 		if i < n_bodies-1:
+	# 			str2write += "\n"
 			
-			file.write(str2write)
+	# 		file.write(str2write)
 
-	print(f"Saved to {filename}, wrote {len(bodies)} bodies")
+	print(f"Saved to {filename}, wrote {len(body_dict)} bodies")
 
 def setInitialConditions(filename, body_dict, fixedCoM = False):
 	"""
