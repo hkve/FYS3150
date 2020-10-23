@@ -95,9 +95,9 @@ class System{
                  }
             else if(method == 1) { 
                 // No need to update acceleration each step here, as it is already dynamically done within the Velocity verlet integrtaion loop
-                if (t < N-1){
+                
                 VelVerStep(a, dt);
-                }
+                
                 }
             if(t == L[ctr]){
                 //cout << t << " " << ctr << " " << L[ctr] << endl;
