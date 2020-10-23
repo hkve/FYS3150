@@ -25,7 +25,7 @@ def check_escape():
 
     v_rad = np.dot(r, v) / np.linalg.norm(r)
 
-    escape = v_rad**2/np.dot(v, v) >= 0.99 # if the radial velocity is greater than the angular, Earth escaped
+    escape = v_rad**2/np.dot(v, v) >= 0.99 # if the velocity is almost solely radial, Earth escaped
     return escape
 
 
@@ -37,7 +37,7 @@ def compute_escape_velocity(v0, dv, dt, T, max_iterations=1000):
         escape = run_simulation(dt, T, v)
         iterations += 1
         if iterations == max_iterations:
-            raise Exception("Earth was not able to escape for any of the teste velocities.")
+            raise Exception(f"Earth was not able to escape within {max_iterations} iterations.")
         v += dv
     return v
     
