@@ -219,6 +219,8 @@ class System{
                 bodies[i].pos[j] = bodies[i].pos[j] +bodies[i].vel[j]*dt +0.5*a[i][j]*dt*dt;
             }
         }
+    
+
         // velocity verlet needs the acceleration at the next time step, so we update the acceleration array and store the old one
         double *a_old[bodyCount];
         for(int i = 0; i < bodyCount; i++){
@@ -238,6 +240,8 @@ class System{
         for(int i = 0; i < bodyCount; i++){
             delete a_old[i];
         }
+    
+
         //delete[] *a_old; // old one is no longer needed. Makes sure to remove it from heap
 
     }
@@ -334,7 +338,6 @@ int main(int argc, char** argv){
     bool GR = (bool)atoi(argv[8]);
     string timeFormat = (string)argv[9];
     bool q = (bool)atoi(argv[10]);
-    cout << "N: " << N << " dt: " << dt << " Nwrite: " << Nwrite << endl;
      
     if (timeFormat == "years") {
         G = 4*pow(M_PI,2)/MS;// yields G in units AU^3 yr^-2 ME^-1 (ME is earth mass) 
