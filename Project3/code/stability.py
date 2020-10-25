@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from scipy import stats
 
 import subprocess
 import os
@@ -9,9 +10,9 @@ from getInitialConditions import setInitialConditions
 from file_reader import read_data_file
 
 
-def check_init(filename, body_dict):	# Check if init file exists
+def check_init(filename, body_dict, fixedCoM):	# Check if init file exists
 	if not filename in os.listdir("initData"): 				
-		setInitialConditions(filename, body_dict, fixedCoM=True)
+		setInitialConditions(filename, body_dict, fixedCoM=fixedCoM)
 	else:
 		pass
 
@@ -235,5 +236,72 @@ def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 	ax.legend()
 	plt.show()
 
-# plot_error()
-plot_energy()
+def plot_time(N_start=2, N_end=8, n_tests=30):
+	N = np.logspace(N_start, N_end, n_tests, endpoint=True, dtype=int)
+	
+	methods = ["euler", "verlet"]
+
+	initFilename = "SunEarthStable_init.dat"
+
+	outFilenames = []
+	for method in methods:
+		for i in range(n_tests):
+			outFilenames.append(f"SunEarthStable_{method}_{N_start}_{N_end}_{i+1}.dat") 
+
+	body_dict = {"Sun": [0,0,0,0,0,0],
+				 "Earth": [1,0,0,0,2*np.pi,0]}
+	
+	check_init(initFilename, body_dict, fixedCoM=True)
+
+	exists = has_data(outFilenames)
+	i = 0
+
+	if not exists:
+		for method in methods:
+			for n_ in N:
+				dt_ = 1/n_
+				master_call = f"python3 master.py {dt_} {n_} -method {method} -sys initData/{initFilename} -out {outFilenames[i]} -Nwrite {2} -time years --q" 
+				subprocess.call(master_call.split())
+				i += 1
+
+	eulerTime = []
+	verletTime = []
+	for outfile in outFilenames:
+		system = read_data_file(outfile)
+		
+		if system["method"] == 0:
+			eulerTime.append(system["time"])
+		if system["method"] == 1:
+			verletTime.append(system["time"])
+
+
+	with sns.axes_style("darkgrid"):
+		fig, ax = plt.subplots()
+		ax.set(xscale="log", yscale="log")
+		ax.set_xlabel(xlabel="N", fontsize=13)
+		ax.set_ylabel(ylabel="Time [s]", fontsize=13)
+		ax.scatter(N, eulerTime, label="Euler")
+		ax.scatter(N, verletTime, label="Verlet")
+	
+		# Only linfit if standard params (as some points have to be excluded)
+		if all([val is plot_time.__defaults__[i] for i, val in enumerate([N_start,N_end,n_tests])]):
+			sE, eE = 15, len(N)
+			sV, eV = 15, len(N)
+
+			slopeE, constE, r_valueE, p_valueE, std_errE = \
+			stats.linregress(np.log10(N[sE:eE]), np.log10(eulerTime[sE:eE]))
+
+			# Linfit for Verlet
+			slopeV, constV, r_valueV, p_valueV, std_errV = \
+			stats.linregress(np.log10(N[sV:eV]), np.log10(verletTime[sV:eV]))
+
+			# Plot Euler and Verlet linfit
+			ax.plot(N[sE:eE], 10**constE * N[sE:eE]**slopeE, c="red",\
+					label=f"Slope Euler = {slopeE:.3f}$\pm${std_errE:.3f}", markersize=3)
+			ax.plot(N[sV:eV], 10**constV * N[sV:eV]**slopeV, c="k" ,\
+					label=f"Slope Verlet = {slopeV:.3f}$\pm${std_errV:.3f}", markersize=3)
+		
+	ax.legend(fontsize=13)
+	plt.show()
+
+plot_time()
