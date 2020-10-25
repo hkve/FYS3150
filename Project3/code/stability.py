@@ -56,9 +56,6 @@ def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 		N_write: (int) number of points to write to file
 	"""
 	N = int(T_end/dt)
-	N = int(1e5)
-	dt = 1e-5
-	N_write = 2
 	
 	if N_write == None:
 		N_write = N
@@ -67,38 +64,33 @@ def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 				 "Earth": [1,0,0,0,2*np.pi,0]}
 	
 	initFilename = "SunEarthStable_init.dat"
-	#initFilename = "FSS_init.dat"
 	outFilename = "SunEarthStable_" + "_".join([str(method), str(T_end), str(N), str(N_write)])  + ".dat"
 
-	#check_init(initFilename, body_dict)
-	setInitialConditions(initFilename, body_dict, fixedCoM=True)
+	check_init(initFilename, body_dict, fixedCoM=False)
+	setInitialConditions(initFilename, body_dict, fixedCoM=False)
 
-	#exists = has_data(outFilename)
+	exists = has_data(outFilename)
 
-	if True:#not exists:
+	if not exists:
 		master_call = f"python3 master.py -method {method} -sys initData/{initFilename} \
 						-out {outFilename} -Nwrite {N_write} -time years {dt} {N}" 
 		subprocess.call(master_call.split())
 
 	
 	system = read_data_file(outFilename)	
-	print(system)
 	r = system["Earth"].r
-	rs = system["Sun"].r
-	#rm = system["Mercury"].r
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
-
 		l = 1.5
-		ax.set(xlim=(-l,l), ylim=(-l,l), xlabel="[AU]", ylabel="[AU]")
+		ax.set(xlim=(-l,l), ylim=(-l,l))
 		ax.axis("equal")
-		
-		ax.plot(r[0], r[1], "-o", c="r", label="Earth") # Earth
-		ax.plot(rs[0], rs[1], "-o", c="k", label="Sun") # Earth
+		ax.set_xlabel("x [AU]", fontsize=13)
+		ax.set_ylabel("y [AU]", fontsize=13)
 
-		#ax.plot(rm[0], rm[1], c="b", label="Mercury") # Earth
+		ax.scatter(0,0, c="r", label="Sun")
+		ax.plot(r[0], r[1], c="b", label="Earth")
 
-		ax.legend()
+		ax.legend(fontsize=13)
 		plt.show()
 	
 
@@ -304,4 +296,4 @@ def plot_time(N_start=2, N_end=8, n_tests=30):
 	ax.legend(fontsize=13)
 	plt.show()
 
-plot_time()
+plot_circular_orbit()
