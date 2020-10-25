@@ -193,7 +193,7 @@ def plot_error(N_start=1, N_end=3, n_tests=20):
 
 def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 	dt = T_end/N
-	
+	print(dt)
 	methods = ["euler", "verlet"]
 	initFilename = "SunEarthStable_init.dat"
 
@@ -220,7 +220,7 @@ def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 	with sns.axes_style("darkgrid"):
 		t = np.linspace(0, T_end, N_write)
 		fig, ax = plt.subplots()
-		ax.set(yscale="log", ylim=(1e-4, 1))
+		ax.set(yscale="log", ylim=(1e-14, 1))
 		c = ["k","r"]
 		for i, method in enumerate(methods):
 			system = read_data_file(outFilenames[i])
@@ -228,11 +228,12 @@ def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 			L = angular_momentum(system["Earth"])
 			
 			E = np.abs((E-E[0])/E[0])
-			#L = np.abs((L-L[0])/L[0])
+			L = np.abs((L-L[0])/L[0])
+			print(L)
 			ax.plot(t, E, label=r"$E_{tot} $ " + method.capitalize(), c=c[i])
 			ax.plot(t, L, label=r"$L$ " + method.capitalize())
 	ax.legend()
 	plt.show()
 
 # plot_error()
-plot_circular_orbit()
+plot_energy()
