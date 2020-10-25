@@ -21,7 +21,7 @@ double G, c;
 
 struct Body {
   int UUID;
-  double *pos, *vel, m;  
+  double pos[3], vel[3], m;  
 };
 
 void fill_linspace(int a, int b, int c,double *L){
@@ -97,7 +97,7 @@ class System{
                 // No need to update acceleration each step here, as it is already dynamically done within the Velocity verlet integrtaion loop
                 
                 VelVerStep(a, dt);
-                
+
                 }
             if(t == L[ctr]){
                 //cout << t << " " << ctr << " " << L[ctr] << endl;
@@ -184,12 +184,20 @@ class System{
                 getline(data, vz, data.widen(','));
                 getline(data, m, data.widen('\n'));
                 
-                double *pos = new double[3] {stod(x), stod(y), stod(z)};
-                double *vel = new double[3] {stod(vx), stod(vy), stod(vz)};
+                //double *pos = new double[3] {stod(x), stod(y), stod(z)};
+                //double *vel = new double[3] {stod(vx), stod(vy), stod(vz)};
+                //double pos[3]= {stod(x), stod(y), stod(z)};
+                //double vel[3]= {stod(vx), stod(vy), stod(vz)};
+            
             
                 bodies[k].UUID = stoi(UUID);
-                bodies[k].pos = pos;
-                bodies[k].vel = vel;
+                bodies[k].pos[0] = stod(x);
+                bodies[k].pos[1] = stod(y);
+                bodies[k].pos[2] = stod(z);
+                bodies[k].vel[0] = stod(vx);
+                bodies[k].vel[1] = stod(vy);
+                bodies[k].vel[2] = stod(vz);
+                //bodies[k].vel = vel;
                 bodies[k].m = stod(m);
                 k ++;
                 } 
@@ -251,8 +259,9 @@ class System{
         //     delete a_old[i];
         // }
     
-
         delete[] *a_old; // old one is no longer needed. Makes sure to remove it from heap
+
+
 
     }
 
@@ -346,6 +355,7 @@ int main(int argc, char** argv){
     double dt = pow(10, atof(argv[4]));
     int N = (int)round(pow(10, atof(argv[5])));
     if ((Nwrite > N) || (Nwrite < 1)) {Nwrite = N;}
+    N ++;
     int method = atoi(argv[6]);
     double beta = atof(argv[7]);
     bool GR = (bool)atoi(argv[8]);
