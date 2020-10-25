@@ -17,13 +17,13 @@ def plot_Sun_Earth_Jupiter(dt=0.001, T = 10, jupiter_scale = 1):
 
 	initFilename = f"SunEarthJupiter_stable_{jupiter_scale}m.dat"
 	outFilename = f"SunEarthJupiter_stable_{jupiter_scale}m.dat"
-	setInitialConditions(initFilename, body_dict, fixedCoM=True)
+	setInitialConditions(initFilename, body_dict, fixedCoM=False)
 	
 	N = int(T/dt)
 	N_write = 10000
 	if True:
 		master_call = f"python3 master.py -method verlet -sys initData/{initFilename} \
-							-out {outFilename} -Nwrite {N_write} -time years {dt} {N}" 
+							-out {outFilename} -Nwrite {N_write} -time years --fixSun {dt} {N}" 
 		subprocess.call(master_call.split())
 
 	system = read_data_file(outFilename)
