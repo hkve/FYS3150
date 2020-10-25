@@ -38,7 +38,7 @@ void fill_linspace(int a, int b, int c,double *L){
 class System{
     public:
     Body *bodies;
-    int bodyCount, N, method, Nwrite;
+    int bodyCount, N, method, Nwrite, fixedSun;
     double ***pos, ***vel, dt, beta;
     bool GR;
 
@@ -49,7 +49,7 @@ class System{
     }
  
 
-    void solve(double _dt = 0.1, int _N = 10000, int _method = 1, double _beta=2, bool _GR = false, int _Nwrite=10){
+    void solve(double _dt = 0.1, int _N = 10000, int _method = 1, double _beta=2, bool _GR = false, int _Nwrite=10, int fixedSun_ = 0){
         /*
         Solves the solar system positions for time resolution dt and N steps.
         Method 0 is Forward Euler, Method 1 is Velocity Verlet (default)
@@ -63,6 +63,7 @@ class System{
         N = _N;
         beta = _beta;
         GR = _GR;
+        fixedSun = fixedSun_;
         int writeInterval = (int)(N)/(Nwrite-1);
         int writeIdx;
         //cout << "Nwrite: " << Nwrite << endl;
@@ -83,6 +84,12 @@ class System{
             a[i] = new double[3];
         }
         
+        if(fixedSun){
+            for(int i = 0; i < 3; i ++){
+                bodies[0].pos[i] = 0;
+                bodies[0].vel[i] = 0;
+            }
+        }
         storePosVel(0); // store the initial pos/vel of bodies
         updateAcceleration(a); // calculate initial acceleration
 
@@ -213,7 +220,7 @@ class System{
     }
 
     void FwdEulerStep(double **a, double dt){
-        for(int i = 0; i < bodyCount; i ++){
+        for(int i = fixedSun; i < bodyCount; i ++){
             for (int j = 0; j < 3; j ++){
                 bodies[i].pos[j] = bodies[i].vel[j]*dt + bodies[i].pos[j];
                 bodies[i].vel[j] = a[i][j]*dt + bodies[i].vel[j];
@@ -226,7 +233,7 @@ class System{
         /*
         Uses velocity Verlet to integrate
         */
-        for(int i = 0; i < bodyCount; i ++){
+        for(int i = fixedSun; i < bodyCount; i ++){
             for (int j = 0; j < 3; j ++){
                 bodies[i].pos[j] = bodies[i].pos[j] +bodies[i].vel[j]*dt +0.5*a[i][j]*dt*dt;
                 
@@ -247,7 +254,7 @@ class System{
         
 
 
-        for(int i = 0; i < bodyCount; i ++){
+        for(int i = fixedSun; i < bodyCount; i ++){
             for (int j = 0; j < 3; j ++){
                 //cout <<  bodies[i].vel[j] << ",";
                 bodies[i].vel[j] = bodies[i].vel[j] + 0.5*(a_old[i][j]+ a[i][j])*dt;
@@ -344,6 +351,7 @@ int main(int argc, char** argv){
             - 1: Velocity Verlet
         beta (float): number between 2 and 3. Used for 3e). beta = 2 results in normal Newtonian gravity
         GR (bool/int): 0 or 1. Decides if the general relativity correction term should be included
+        fixedSun (bool/int): 0 or 1. Forces the sun (must be first element in init file) to stay fixed at (0,0,0)
         timeFormat (string): "days" or "years". Which time format to use. "days" means all times are in days, while "years" means all times are in years
         q (bool/int): 0 or 1. Run program quietly
     */
@@ -359,8 +367,9 @@ int main(int argc, char** argv){
     int method = atoi(argv[6]);
     double beta = atof(argv[7]);
     bool GR = (bool)atoi(argv[8]);
-    string timeFormat = (string)argv[9];
-    bool q = (bool)atoi(argv[10]);
+    int fixedSun = atoi(argv[9]);
+    string timeFormat = (string)argv[10];
+    bool q = (bool)atoi(argv[11]);
      
     if (timeFormat == "years") {
         G = 4*pow(M_PI,2)/MS;// yields G in units AU^3 yr^-2 ME^-1 (ME is earth mass) 
@@ -372,7 +381,7 @@ int main(int argc, char** argv){
         c = 299792458/AU*3600*24;
     }
     System simple(initfile);
-    simple.solve(dt, N, method, beta, GR, Nwrite);
+    simple.solve(dt, N, method, beta, GR, Nwrite, fixedSun);
     clock_t stop= clock();
     double time = ((stop - start) / (double)CLOCKS_PER_SEC);
     if(not q){
