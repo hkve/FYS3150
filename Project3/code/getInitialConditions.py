@@ -46,7 +46,7 @@ def grabBody(UUID, date=None):
 	
 	return init
 
-def getInitialCondition(filename, bodies=None, date=None, fixedCoM=False):
+def getInitialCondition(filename, bodies=None, date=None, fixedCoM=False, scaled_mass=None):
 	"""
 	Takes a list of bodies and writes initial condtions to filename
 
@@ -76,26 +76,10 @@ def getInitialCondition(filename, bodies=None, date=None, fixedCoM=False):
 			print(f"{body} not available, skipping")
 			continue
 		body_dict[body] = grabBody(UUIDs[body]).split(",")[1:]
-	setInitialConditions(filename, body_dict, fixedCoM)
-	# n_bodies = len(bodies)
-	# with open(filename, "w+") as file:
-	# 	for i, body in enumerate(bodies):
-	# 		if body not in UUIDs.keys():
-	# 			print(f"{body} not available, skips")
-	# 			continue
-
-	# 		UUID = UUIDs[body]
-	# 		str2write = grabBody(UUID) # Gets x and v values
-	# 		str2write =  str2write + "," + str(Masses[body]/Masses["Earth"]) 
-
-	# 		if i < n_bodies-1:
-	# 			str2write += "\n"
-			
-	# 		file.write(str2write)
-
+	setInitialConditions(filename, body_dict, fixedCoM, scaled_mass)
 	print(f"Saved to {filename}, wrote {len(body_dict)} bodies")
 
-def setInitialConditions(filename, body_dict, fixedCoM = False):
+def setInitialConditions(filename, body_dict, fixedCoM = False, scaled_mass=None):
 	"""
 	For manuel setting of initial conditions
 
@@ -103,12 +87,18 @@ def setInitialConditions(filename, body_dict, fixedCoM = False):
 		filename: String, name of file to write to
 		body_dict: Dictionary, {bodyname: [x,y,z,vx,vy,vz]}
 		fixedCoM: Bool, whether to adjust the initial conditions such that the center of mass has no velocity
+		scaled_mass: Dictionary {bodyname: how much to scale mass} If you want to scale on or many masses
 	"""
 
 	DIR2SAVE = "initData"
 	UUIDs, Masses  = getUUIDs(DIR2SAVE+"/bodyUUID.txt")
 
+	# If some masses should be scaled
+	if scaled_mass != None:
+		for body in scaled_mass.keys():
+			Masses[body] *= scaled_mass[body]
 
+	# Checking if body is available and making x and v strings
 	for body in body_dict:
 		init_len = len(body_dict[body])
 		if init_len != 6: 
@@ -152,16 +142,17 @@ def setInitialConditions(filename, body_dict, fixedCoM = False):
 
 if __name__ == "__main__":
 	# Examples
+	"""	
 	filename = "SunEarthJupiter_init.dat"
 	bodies = ["Sun", "Earth", "Jupiter"]
 	getInitialCondition(filename, bodies)
-	"""	
 	
 	# All planets, Earth moon, Mars moons and Jupiters 4 most massive moons (and Pluto <3)
 	filename = "SolarSystem_init.dat"
 	getInitialCondition(filename)
-	# Manual
+	# Manual with scaled mass
 	body_dict = {"Sun": [0,0,0,0,0,0],
 				 "Earth": [1,0,0,6.28318530718,0,0]}
-	setInitialConditions("SunEarth_init.dat", body_dict)
+	scaled_mass = {"Jupiter": 2}
+	setInitialConditions("SunEarth_init.dat", body_dict, scaled_mass=scaled_mass)
 	"""
