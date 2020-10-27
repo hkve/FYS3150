@@ -56,7 +56,6 @@ def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 		N_write: (int) number of points to write to file
 	"""
 	N = int(T_end/dt)
-	
 	if N_write == None:
 		N_write = N
 
@@ -93,96 +92,47 @@ def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 		ax.legend(fontsize=13)
 		plt.show()
 	
-
-def plot_error(N_start=1, N_end=3, n_tests=20):
-	log_start, log_end = np.log10(N_start), np.log10(N_end)
-	N = np.linspace(N_start, N_end, n_tests, endpoint=True) 
-	#N = np.array([1,2,3,4,5,6,7,8], dtype=np.float64)
-	#N_start = N[0]
-	#N_end = N[-1]
-	dt = -N
-	#N = (10**N).astype(int)
 	
 
-	methods = ["verlet"]
+def plot_elliptical_orbits(dt=0.00001, T_end=10, n_v = 4, method="verlet", N_write=10000):
+	N = int(T_end/dt)
+	if N_write == None:
+		N_write = N
 
-	initFilename = "SunEarthStable_init.dat"
+	VX = np.linspace(np.pi, 5*np.pi/2, n_v)
 
-	outFilenames = []
-	for method in methods:
-		# for i in range(n_tests):
-		for i in range(len(N)):
-			outFilenames.append(f"SunEarthStable_{method}_{int(N_start)}_{int(N_end)}_{i+1}.dat") 
-
-	body_dict = {"Sun": [0,0,0,0,0,0],
-				 "Earth": [1,0,0,0,2*np.pi,0]}
+	filenames = [f"SunEarthEllip_{n_v}_{i}.dat" for i in range(n_v)]
 	
-	setInitialConditions(initFilename, body_dict, fixedCoM=True)
-
-	#check_init(initFilename, body_dict)
-	#exists = has_data(outFilenames)
-	i = 0
-
-	if not False:#not exists:
-		for method in methods:
-			for n, dt_ in zip(N,dt):
-				#dt = 1/n
-				master_call = f"python3 master.py {dt_} {n} -method {method} -sys initData/{initFilename} -out {outFilenames[i]} -Nwrite {2} -time years --log" 
-				subprocess.call(master_call.split())
-				i += 1
-	N = 10**N
-	dt = 10**dt
-	systems = []
-	eulerError = []
-	verletError = []
-
-	for outfile in outFilenames:
-	
-		system = read_data_file(outfile)
-		def f(x,y):
-			return np.linalg.norm(x-y, axis=0)
-		r = system["Earth"].r
-		rs = system["Sun"].r
-		r0 = r[:,0]
-		r1 = r[:,-1]
-		rs0 = rs[:,0]
-		rs1 = rs[:,-1]
-
-		#print(r, "r", r[0,-1], r[1,-1])
-		pos0 = np.sqrt((r[0,0]-rs[0,0])**2+ (r[1,0]-rs[1,0])**2)    #np.abs(1-np.sqrt((r[0,-1])**2 + r[1,-1]**2))
-		pos1 = np.sqrt((r[0,-1]-rs[0,-1])**2+ (r[1,-1]-rs[1,-1])**2)
-		#pos0 = np.abs(r[0,0]-rs[0,0])
-		#pos1 = np.abs(r[0,-1]-rs[0,-1])
+	for i in range(n_v):
+		body_dict = {"Sun": [0,0,0,0,0,0],
+				    "Earth": [1,0,0,0,VX[i],0]}
+		check_init(filenames[i], body_dict, fixedCoM=False)
 		
-		error = np.abs((pos1-pos0)/pos0)
-		error = np.abs(f(rs1, r1)-f(rs0, r0))
-		#print(error)
-		#print("")
-		
-		# 17 18
-		if system["method"] == 0:
-			# print("euler error: ", rx[0], rx[-1])
-			eulerError.append(error)
-		if system["method"] == 1:
-			# print("verlet error: ", rx[0], rx[-1])
-			verletError.append(error)
+	exists = has_data(filenames)
 
-	
+	if not exists:
+		for i in range(n_v):
+			master_call = f"python3 master.py -method {method} -sys initData/{filenames[i]} \
+							-out {filenames[i]} -Nwrite {N_write} -time years --q {dt} {N}" 
+			subprocess.call(master_call.split())
+
+	labs = ["$\pi$", "$3\pi/2$", "$2\pi$", "$5\pi/2$"]
 	with sns.axes_style("darkgrid"):
-		fix, ax = plt.subplots()
-		ax.set(xscale="log", yscale="log", xlabel="N", ylabel="Relative error")
-		verlim = -7
-		vs = 0
-		#fitEuler = np.polyfit(np.log10(N[5:]), np.log10(eulerError[5:]), deg = 1)
-		fitVerlet = np.polyfit(np.log10(N[vs:verlim]), np.log10(verletError[vs:verlim]), deg = 1)
-		#print("euler fit: ", fitEuler)
-		print("verlet fit: ", fitVerlet)
-		#ax.scatter(N, eulerError, label="Euler")
-		ax.scatter(N, verletError, label="Verlet")
-		ax.plot(N[vs:verlim], N[vs:verlim]**(fitVerlet[0]) * 10**fitVerlet[1])
-		ax.legend()
+		fig, ax = plt.subplots()
+		ax.set_xlabel("x [AU]", fontsize=13)
+		ax.set_ylabel("y [AU]", fontsize=13)
+		ax.axis("equal")
+		for i in range(n_v):
+			system = read_data_file(filenames[i])
+			rE = system["Earth"].r
+			ax.plot(rE[0], rE[1], label=f"$v_x=${labs[i]} AU/yr")
+
+		ax.scatter(0,0, c="r")
+		ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.18),
+          ncol=2, fancybox=True, shadow=True, fontsize=13)
 		plt.show()
-	
+
+plot_elliptical_orbits()
 
 def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 	dt = T_end/N
@@ -296,4 +246,96 @@ def plot_time(N_start=2, N_end=8, n_tests=30):
 	ax.legend(fontsize=13)
 	plt.show()
 
-plot_circular_orbit()
+
+
+
+"""
+def plot_error(N_start=1, N_end=3, n_tests=20):
+	log_start, log_end = np.log10(N_start), np.log10(N_end)
+	N = np.linspace(N_start, N_end, n_tests, endpoint=True) 
+	#N = np.array([1,2,3,4,5,6,7,8], dtype=np.float64)
+	#N_start = N[0]
+	#N_end = N[-1]
+	dt = -N
+	#N = (10**N).astype(int)
+	
+
+	methods = ["verlet"]
+
+	initFilename = "SunEarthStable_init.dat"
+
+	outFilenames = []
+	for method in methods:
+		# for i in range(n_tests):
+		for i in range(len(N)):
+			outFilenames.append(f"SunEarthStable_{method}_{int(N_start)}_{int(N_end)}_{i+1}.dat") 
+
+	body_dict = {"Sun": [0,0,0,0,0,0],
+				 "Earth": [1,0,0,0,2*np.pi,0]}
+	
+	setInitialConditions(initFilename, body_dict, fixedCoM=True)
+
+	#check_init(initFilename, body_dict)
+	#exists = has_data(outFilenames)
+	i = 0
+
+	if not False:#not exists:
+		for method in methods:
+			for n, dt_ in zip(N,dt):
+				#dt = 1/n
+				master_call = f"python3 master.py {dt_} {n} -method {method} -sys initData/{initFilename} -out {outFilenames[i]} -Nwrite {2} -time years --log" 
+				subprocess.call(master_call.split())
+				i += 1
+	N = 10**N
+	dt = 10**dt
+	systems = []
+	eulerError = []
+	verletError = []
+
+	for outfile in outFilenames:
+	
+		system = read_data_file(outfile)
+		def f(x,y):
+			return np.linalg.norm(x-y, axis=0)
+		r = system["Earth"].r
+		rs = system["Sun"].r
+		r0 = r[:,0]
+		r1 = r[:,-1]
+		rs0 = rs[:,0]
+		rs1 = rs[:,-1]
+
+		#print(r, "r", r[0,-1], r[1,-1])
+		pos0 = np.sqrt((r[0,0]-rs[0,0])**2+ (r[1,0]-rs[1,0])**2)    #np.abs(1-np.sqrt((r[0,-1])**2 + r[1,-1]**2))
+		pos1 = np.sqrt((r[0,-1]-rs[0,-1])**2+ (r[1,-1]-rs[1,-1])**2)
+		#pos0 = np.abs(r[0,0]-rs[0,0])
+		#pos1 = np.abs(r[0,-1]-rs[0,-1])
+		
+		error = np.abs((pos1-pos0)/pos0)
+		error = np.abs(f(rs1, r1)-f(rs0, r0))
+		#print(error)
+		#print("")
+		
+		# 17 18
+		if system["method"] == 0:
+			# print("euler error: ", rx[0], rx[-1])
+			eulerError.append(error)
+		if system["method"] == 1:
+			# print("verlet error: ", rx[0], rx[-1])
+			verletError.append(error)
+
+	
+	with sns.axes_style("darkgrid"):
+		fix, ax = plt.subplots()
+		ax.set(xscale="log", yscale="log", xlabel="N", ylabel="Relative error")
+		verlim = -7
+		vs = 0
+		#fitEuler = np.polyfit(np.log10(N[5:]), np.log10(eulerError[5:]), deg = 1)
+		fitVerlet = np.polyfit(np.log10(N[vs:verlim]), np.log10(verletError[vs:verlim]), deg = 1)
+		#print("euler fit: ", fitEuler)
+		print("verlet fit: ", fitVerlet)
+		#ax.scatter(N, eulerError, label="Euler")
+		ax.scatter(N, verletError, label="Verlet")
+		ax.plot(N[vs:verlim], N[vs:verlim]**(fitVerlet[0]) * 10**fitVerlet[1])
+		ax.legend()
+		plt.show()
+"""
