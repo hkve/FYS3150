@@ -54,7 +54,7 @@ if __name__ == "__main__":
     args.GR = booldic[args.GR]
     args.fixSun = booldic[args.fixSun]
     args.method = {"euler":0,"verlet":1}[args.method]
-    print(f"./main.exe {args.sys} {args.out} {args.Nwrite} {'%e' %args.dt} {'%e' %args.N} {args.method} {args.beta} {args.GR} {args.fixSun} {args.time} {args.q}")
+    #print(f"./main.exe {args.sys} {args.out} {args.Nwrite} {'%e' %args.dt} {'%e' %args.N} {args.method} {args.beta} {args.GR} {args.fixSun} {args.time} {args.q}")
     subprocess.run(f"./main.exe {args.sys} {args.out} {args.Nwrite} {'%e' %args.dt} {'%e' %args.N} {args.method} {args.beta} {args.GR} {args.fixSun} {args.time} {args.q}".split())
     if not args.q:
         print("Done!")
