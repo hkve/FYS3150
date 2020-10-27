@@ -177,7 +177,7 @@ def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 	ax.legend()
 	plt.show()
 
-def plot_time(N_start=2, N_end=8, n_tests=30):
+def plot_time(N_start=2, N_end=8, n_tests=50):
 	N = np.logspace(N_start, N_end, n_tests, endpoint=True, dtype=int)
 	
 	methods = ["euler", "verlet"]
@@ -195,8 +195,9 @@ def plot_time(N_start=2, N_end=8, n_tests=30):
 	check_init(initFilename, body_dict, fixedCoM=True)
 
 	exists = has_data(outFilenames)
+	
 	i = 0
-
+	tot = 2*n_tests
 	if not exists:
 		for method in methods:
 			for n_ in N:
@@ -204,7 +205,7 @@ def plot_time(N_start=2, N_end=8, n_tests=30):
 				master_call = f"python3 master.py {dt_} {n_} -method {method} -sys initData/{initFilename} -out {outFilenames[i]} -Nwrite {2} -time years --q" 
 				subprocess.call(master_call.split())
 				i += 1
-
+				print(f"Done {method}, dt = {n_}, {(i*100/tot):.2f}%")
 	eulerTime = []
 	verletTime = []
 	for outfile in outFilenames:
@@ -215,7 +216,6 @@ def plot_time(N_start=2, N_end=8, n_tests=30):
 		if system["method"] == 1:
 			verletTime.append(system["time"])
 
-
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 		ax.set(xscale="log", yscale="log")
@@ -223,14 +223,13 @@ def plot_time(N_start=2, N_end=8, n_tests=30):
 		ax.set_ylabel(ylabel="Time [s]", fontsize=13)
 		ax.scatter(N, eulerTime, label="Euler")
 		ax.scatter(N, verletTime, label="Verlet")
-	
+
 		# Only linfit if standard params (as some points have to be excluded)
 		if all([val is plot_time.__defaults__[i] for i, val in enumerate([N_start,N_end,n_tests])]):
-			sE, eE = 15, len(N)
-			sV, eV = 15, len(N)
+			sE, eE = 25, len(N)
+			sV, eV = 25, len(N)
 
-			slopeE, constE, r_valueE, p_valueE, std_errE = \
-			stats.linregress(np.log10(N[sE:eE]), np.log10(eulerTime[sE:eE]))
+			slopeE, constE, r_valueE, p_valueE, std_errE = stats.linregress(np.log10(N[sE:eE]), np.log10(eulerTime[sE:eE]))
 
 			# Linfit for Verlet
 			slopeV, constV, r_valueV, p_valueV, std_errV = \
@@ -241,12 +240,12 @@ def plot_time(N_start=2, N_end=8, n_tests=30):
 					label=f"Slope Euler = {slopeE:.3f}$\pm${std_errE:.3f}", markersize=3)
 			ax.plot(N[sV:eV], 10**constV * N[sV:eV]**slopeV, c="k" ,\
 					label=f"Slope Verlet = {slopeV:.3f}$\pm${std_errV:.3f}", markersize=3)
-		
+			
 	ax.legend(fontsize=13)
 	plt.show()
 
 
-
+plot_time()
 
 def plot_Etot_error(dt_start=3, dt_end=7, n_tests=20):
 	dt = np.linspace(dt_start, dt_end, n_tests, endpoint=True)*-1 
