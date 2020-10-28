@@ -33,7 +33,7 @@ def energy(body):
 	R = np.linalg.norm(body.r, axis=0)
 	V = np.linalg.norm(body.v, axis=0)
 	
-	return 0.5*V**2 - 1/R
+	return 0.5*V**2 , -1/R
 
 def angular_momentum(body):
 	r = body.r
@@ -43,6 +43,7 @@ def angular_momentum(body):
 	L = np.linalg.norm(L, axis=0)
 
 	return L
+
 
 def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 	"""
@@ -78,10 +79,29 @@ def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 	
 	system = read_data_file(outFilename)	
 	r = system["Earth"].r
+
+	Ek, Ep = energy(system["Earth"])
+	Ek_std, Ep_std = np.std(Ek), np.std(Ep)
+	Ek_mean, Ep_mean = np.mean(Ek), np.mean(Ep)
+	
+	if system["method"] == 0:
+		method = "euler"
+	if system["method"] == 1:
+		method = "verlet"
+
+	print(f"Method = {method}, dt = {dt:E}, N={N:E}, T_end = {T_end}")
+	print(f"Ek initial = {Ek[0]:.4f}, Ep initial = {Ep[0]:.4f}")
+	print(f"Ek (mean) = {Ek_mean:.4f}, std = {Ek_std:.4E}, relative = {(Ek_std/Ek_mean):.4E}")
+	print(f"Ek (mean) = {Ep_mean:.4f}, std = {Ep_std:.4E}, relative = {(Ep_std/Ep_mean):.4E}")
+
+	T = np.linspace(0, T_end, N_write, endpoint=True)
+	plt.plot(T, Ek)
+	plt.show()
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 		l = 1.5
 		ax.set(xlim=(-l,l), ylim=(-l,l))
+		ax.tick_params(axis='both', which='major', labelsize=13)
 		ax.axis("equal")
 		ax.set_xlabel("x [AU]", fontsize=13)
 		ax.set_ylabel("y [AU]", fontsize=13)
@@ -91,17 +111,17 @@ def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 
 		ax.legend(fontsize=13)
 		plt.show()
-	
-	
 
-def plot_elliptical_orbits(dt=0.0001, T_end=10, n_v = 4, method="verlet", N_write=10000):
+
+
+def plot_elliptical_orbits(dt=0.0001, T_end=50, n_v = 4, method="verlet", N_write=10000):
 	N = int(T_end/dt)
 	if N_write == None:
 		N_write = N
 
 	VX = np.linspace(np.pi, 5*np.pi/2, n_v)
 
-	filenames = [f"SunEarthEllip_{n_v}_{i}.dat" for i in range(n_v)]
+	filenames = [f"SunEarthEllip_{n_v}_{i}_{T_end}.dat" for i in range(n_v)]
 	
 	for i in range(n_v):
 		body_dict = {"Sun": [0,0,0,0,0,0],
@@ -117,6 +137,7 @@ def plot_elliptical_orbits(dt=0.0001, T_end=10, n_v = 4, method="verlet", N_writ
 			subprocess.call(master_call.split())
 
 	labs = ["$\pi$", "$3\pi/2$", "$2\pi$", "$5\pi/2$"]
+	"""
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 		ax.set_xlabel("x [AU]", fontsize=13)
@@ -132,10 +153,21 @@ def plot_elliptical_orbits(dt=0.0001, T_end=10, n_v = 4, method="verlet", N_writ
           ncol=2, fancybox=True, shadow=True, fontsize=13)
 		plt.show()
 
+	"""
+	with sns.axes_style("darkgrid"):
+		fig, ax = plt.subplots()
+		T = np.linspace(0, T_end, N_write, endpoint=True)
+		for i in range(n_v):
+			system = read_data_file(filenames[i])
+			L = angular_momentum(system["Earth"])
+			ax.plot(T, L)
+			
+	plt.show()
 
-def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
+plot_elliptical_orbits()
+
+def plot_energy(N=int(1e4), T_end = 50, N_write=10000):
 	dt = T_end/N
-	print(dt)
 	methods = ["euler", "verlet"]
 	initFilename = "SunEarthStable_init.dat"
 
@@ -166,7 +198,8 @@ def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 		c = ["k","r"]
 		for i, method in enumerate(methods):
 			system = read_data_file(outFilenames[i])
-			E = energy(system["Earth"])
+			Ep, Ek = energy(system["Earth"])
+			E = Ek+Ep
 			L = angular_momentum(system["Earth"])
 			
 			E = np.abs((E-E[0])/E[0])
@@ -176,6 +209,8 @@ def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 			ax.plot(t, L, label=r"$L$ " + method.capitalize())
 	ax.legend()
 	plt.show()
+
+
 
 def plot_time(N_start=2, N_end=8, n_tests=50):
 	N = np.logspace(N_start, N_end, n_tests, endpoint=True, dtype=int)
@@ -216,11 +251,14 @@ def plot_time(N_start=2, N_end=8, n_tests=50):
 		if system["method"] == 1:
 			verletTime.append(system["time"])
 
+	eulerTime = np.array(eulerTime)
+	verletTime = np.array(verletTime)
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 		ax.set(xscale="log", yscale="log")
-		ax.set_xlabel(xlabel="N", fontsize=13)
-		ax.set_ylabel(ylabel="Time [s]", fontsize=13)
+		ax.tick_params(axis='both', which='major', labelsize=13)
+		ax.set_xlabel(xlabel="N", fontsize=15)
+		ax.set_ylabel(ylabel="Time taken [s]", fontsize=15)
 		ax.scatter(N, eulerTime, label="Euler")
 		ax.scatter(N, verletTime, label="Verlet")
 
@@ -237,15 +275,13 @@ def plot_time(N_start=2, N_end=8, n_tests=50):
 
 			# Plot Euler and Verlet linfit
 			ax.plot(N[sE:eE], 10**constE * N[sE:eE]**slopeE, c="red",\
-					label=f"Slope Euler = {slopeE:.3f}$\pm${std_errE:.3f}", markersize=3)
+					label=f"Slope Euler = {slopeE:.3f}$\pm${std_errE:.3f} \n $R^2$ = {(r_valueE**2):.4f}", markersize=3)
 			ax.plot(N[sV:eV], 10**constV * N[sV:eV]**slopeV, c="k" ,\
-					label=f"Slope Verlet = {slopeV:.3f}$\pm${std_errV:.3f}", markersize=3)
+					label=f"Slope Verlet = {slopeV:.3f}$\pm${std_errV:.3f} \n $R^2$ = {(r_valueV**2):.4f}", markersize=3)
 			
 	ax.legend(fontsize=13)
 	plt.show()
 
-
-plot_time()
 
 def plot_Etot_error(dt_start=3, dt_end=7, n_tests=20):
 	dt = np.linspace(dt_start, dt_end, n_tests, endpoint=True)*-1 
@@ -283,10 +319,11 @@ def plot_Etot_error(dt_start=3, dt_end=7, n_tests=20):
 
 	for outfile in outFilenames:
 		system = read_data_file(outfile)
-		E = energy(system["Earth"])
+		Ek, Ep = energy(system["Earth"])
 		
+		E = Ek+Ep
 		error = np.abs((E[0]-E[-1])/E[0])
-
+	
 		if system["method"] == 0:
 			eulerError.append(error)
 		if system["method"] == 1:
@@ -295,14 +332,16 @@ def plot_Etot_error(dt_start=3, dt_end=7, n_tests=20):
 	with sns.axes_style("darkgrid"):
 		fix, ax = plt.subplots()
 		ax.invert_xaxis()
-		ax.set_xlabel("dt [AU/yr]", fontsize=13)
-		ax.set_ylabel("Relative error of $E_{tot}$", fontsize=13)
+		ax.tick_params(axis='both', which='major', labelsize=13)
+		ax.set_xlabel("$h$ [AU/yr]", fontsize=14)
+		ax.set_ylabel("Relative error of $E_{tot}$", fontsize=14)
 		ax.set(xscale="log", yscale="log")
 		ax.scatter(dt, eulerError, label="$E_{tot}$ Euler")
 		ax.scatter(dt, verletError, label="$E_{tot}$ Verlet")
-
 		slope, const, r_value, p_value, std_err = stats.linregress(np.log10(dt), np.log10(eulerError))
 		ax.plot(dt, 10**const * dt**slope, c="k" ,linestyle="dashed",\
-				label=f"s = {slope:.3f}$\pm${std_err:.3f} \nr = {r_value:.6f}")
+				label=f"s = {slope:.3f}$\pm${std_err:.3f} \n$R^2$ = {(r_value**2):.5f}")
+		
 	ax.legend(fontsize=13, loc=6)
 	plt.show()
+
