@@ -53,11 +53,9 @@ def plot_escape_velocity(n=20, T = 100):
 
     orbits = []
     for i in range(n):
-        """
         system_dict = {"Sun": [0,0,0,0,0,0], "Earth": [1,0,0,0,v[i],0]}
         setInitialConditions(f"escape_init_{i}.dat", system_dict, fixedCoM = False)
         run(f'python3 master.py {dt} {N} -sys initData/escape_init_{i}.dat -out escape_{i}.dat -Nwrite 1000 -time years -method verlet'.split())
-        """
         system = read_data_file(f"escape_{i}.dat")
         orbits.append(system["Earth"].r)
         
