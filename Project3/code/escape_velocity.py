@@ -4,7 +4,9 @@ from getInitialConditions import setInitialConditions
 import matplotlib.pyplot as plt
 from subprocess import run
 
-
+from colour import Color
+import matplotlib as mpl
+import seaborn as sns
 
 def run_simulation(dt, T, v):
     N = int(T/dt + 1)
@@ -42,7 +44,48 @@ def compute_escape_velocity(v0, dv, dt, T, max_iterations=1000):
     return v
     
 
+def plot_escape_velocity(n=20, T = 100):
+    v = np.linspace(2*np.pi, 3*np.pi, n, endpoint=True)
 
+    T = 100
+    dt = 1e-4    
+    N = int(T/dt + 1)
+
+    orbits = []
+    for i in range(n):
+        """
+        system_dict = {"Sun": [0,0,0,0,0,0], "Earth": [1,0,0,0,v[i],0]}
+        setInitialConditions(f"escape_init_{i}.dat", system_dict, fixedCoM = False)
+        run(f'python3 master.py {dt} {N} -sys initData/escape_init_{i}.dat -out escape_{i}.dat -Nwrite 1000 -time years -method verlet'.split())
+        """
+        system = read_data_file(f"escape_{i}.dat")
+        orbits.append(system["Earth"].r)
+        
+    NoOfColors = n
+    colors = list(Color("cyan").range_to(Color("orange"),NoOfColors)) 
+    colors = [color.get_rgb() for color in colors]
+    
+    vticks = [round(v_i, 2) for v_i in v]
+    
+    fig, ax = plt.subplots(1,1)
+    ax.set_facecolor('black')
+    ax.set_xlabel("x [AU]", fontsize=15)
+    ax.set_ylabel("y [AU]", fontsize=15)
+    ax.set(xlim=(-50,2), ylim=(-26,26))
+    for i, r in enumerate(orbits):
+        ax.plot(r[0], r[1], color = colors[i], alpha=0.7)
+
+    cmap = mpl.colors.ListedColormap(colors)
+    norm = mpl.colors.Normalize(vmin = v[0],vmax = v[-1])
+    cbar = ax.figure.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ax=ax, orientation='vertical',ticks=vticks)
+    cbar.ax.set_ylabel(r'   $v_y$', rotation=0, fontsize=17)
+    cbar.ax.tick_params(labelsize=13)
+    ax.tick_params(axis='both', which='major', labelsize=12)
+    ax.scatter(0,0, c="yellow", s=2)
+    ax.text(0,15.5,'               $v_{esc}$', color="black", fontsize=17)
+    ax.text(-49,6.5, "$v_{esc}=8.89$ [AU/yr]", color="white", fontsize=14)
+    ax.arrow(-43,8.5,4,4,ec="white", fc="white", head_width=1)
+    plt.show()
 
 if __name__ == '__main__':
     v0 = 2*np.pi
@@ -50,4 +93,5 @@ if __name__ == '__main__':
     v_escape = compute_escape_velocity(v0, dv, dt=1e-4, T=100)
 
     print(f"The escape velocity was ({v_escape:.2f} +- {dv:.2f}) AU/yr.")
-    print(f"The theoretical escape velocity is {np.sqrt(8*np.pi**2):.2f} AU/yr")
+    print(f"The theoretical escape velocity is {np.sqrt(8*np.pi**2):.2f} AU/yr")    
+    
