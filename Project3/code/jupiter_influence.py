@@ -104,7 +104,7 @@ def plot_radial_distance(dt=0.01, T=12):
 			print(f"Jupiter mass = {lab:5}Mj, Avrage deviation = {avg_diff:.5E}, std = {std_diff:.5E}")
 		ax.tick_params(axis='both', which='major', labelsize=13)
 		ax.set_xlabel("Time [yr]", fontsize=14)
-		ax.set_ylabel("Deviation from circular orbit [AU]", fontsize=14)
+		ax.set_ylabel("Deviation from orbit without Jupiter [AU]", fontsize=14)
 		ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.16),
           ncol=4, fancybox=True, shadow=True, fontsize=14)
 	plt.show()
