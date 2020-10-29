@@ -114,7 +114,7 @@ def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 
 
 
-def plot_elliptical_orbits(dt=0.0001, T_end=50, n_v = 4, method="verlet", N_write=10000):
+def plot_elliptical_orbits(dt=0.0001, T_end=2000, n_v = 4, method="verlet", N_write=100000):
 	N = int(T_end/dt)
 	if N_write == None:
 		N_write = N
@@ -137,7 +137,7 @@ def plot_elliptical_orbits(dt=0.0001, T_end=50, n_v = 4, method="verlet", N_writ
 			subprocess.call(master_call.split())
 
 	labs = ["$\pi$", "$3\pi/2$", "$2\pi$", "$5\pi/2$"]
-	"""
+
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 		ax.set_xlabel("x [AU]", fontsize=13)
@@ -153,7 +153,7 @@ def plot_elliptical_orbits(dt=0.0001, T_end=50, n_v = 4, method="verlet", N_writ
           ncol=2, fancybox=True, shadow=True, fontsize=13)
 		plt.show()
 
-	"""
+
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 		T = np.linspace(0, T_end, N_write, endpoint=True)
@@ -164,7 +164,6 @@ def plot_elliptical_orbits(dt=0.0001, T_end=50, n_v = 4, method="verlet", N_writ
 			
 	plt.show()
 
-plot_elliptical_orbits()
 
 def plot_energy(N=int(1e4), T_end = 50, N_write=10000):
 	dt = T_end/N
@@ -303,13 +302,15 @@ def plot_Etot_error(dt_start=3, dt_end=7, n_tests=20):
 	check_init(initFilename, body_dict)
 	exists = has_data(outFilenames)
 	i = 0
+	tot = 2*n_tests
 	if not exists:
 		for method in methods:
 			for N_, dt_ in zip(N,dt):
 				master_call = f"python3 master.py {dt_} {N_} -method {method} -sys initData/{initFilename} \
-							   -out {outFilenames[i]} -Nwrite {2} -time years --log --fixSun" 
+							   -out {outFilenames[i]} -Nwrite {2} -time years --log --fixSun --q" 
 				subprocess.call(master_call.split())
 				i += 1
+				print(f"{method}, log10(dt)={dt_:.2f}, log10(N)={N_:.2f}, {(i*100/tot):.1f}%")
 
 	N = 10**N
 	dt = 10**dt
@@ -333,7 +334,7 @@ def plot_Etot_error(dt_start=3, dt_end=7, n_tests=20):
 		fix, ax = plt.subplots()
 		ax.invert_xaxis()
 		ax.tick_params(axis='both', which='major', labelsize=13)
-		ax.set_xlabel("$h$ [AU/yr]", fontsize=14)
+		ax.set_xlabel("$h$ [yr]", fontsize=14)
 		ax.set_ylabel("Relative error of $E_{tot}$", fontsize=14)
 		ax.set(xscale="log", yscale="log")
 		ax.scatter(dt, eulerError, label="$E_{tot}$ Euler")
