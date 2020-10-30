@@ -10,7 +10,7 @@ from getInitialConditions import setInitialConditions
 from file_reader import read_data_file
 
 
-def check_init(filename, body_dict, fixedCoM):	# Check if init file exists
+def check_init(filename, body_dict, fixedCoM=False):	# Check if init file exists
 	if not filename in os.listdir("initData"): 				
 		setInitialConditions(filename, body_dict, fixedCoM=fixedCoM)
 	else:
@@ -33,7 +33,7 @@ def energy(body):
 	R = np.linalg.norm(body.r, axis=0)
 	V = np.linalg.norm(body.v, axis=0)
 	
-	return 0.5*V**2 - 1/R**2
+	return 0.5*V**2 , -1/R
 
 def angular_momentum(body):
 	r = body.r
@@ -43,6 +43,7 @@ def angular_momentum(body):
 	L = np.linalg.norm(L, axis=0)
 
 	return L
+
 
 def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 	"""
@@ -56,7 +57,6 @@ def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 		N_write: (int) number of points to write to file
 	"""
 	N = int(T_end/dt)
-	
 	if N_write == None:
 		N_write = N
 
@@ -79,10 +79,29 @@ def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 	
 	system = read_data_file(outFilename)	
 	r = system["Earth"].r
+
+	Ek, Ep = energy(system["Earth"])
+	Ek_std, Ep_std = np.std(Ek), np.std(Ep)
+	Ek_mean, Ep_mean = np.mean(Ek), np.mean(Ep)
+	
+	if system["method"] == 0:
+		method = "euler"
+	if system["method"] == 1:
+		method = "verlet"
+
+	print(f"Method = {method}, dt = {dt:E}, N={N:E}, T_end = {T_end}")
+	print(f"Ek initial = {Ek[0]:.4f}, Ep initial = {Ep[0]:.4f}")
+	print(f"Ek (mean) = {Ek_mean:.4f}, std = {Ek_std:.4E}, relative = {(Ek_std/Ek_mean):.4E}")
+	print(f"Ek (mean) = {Ep_mean:.4f}, std = {Ep_std:.4E}, relative = {(Ep_std/Ep_mean):.4E}")
+
+	T = np.linspace(0, T_end, N_write, endpoint=True)
+	plt.plot(T, Ek)
+	plt.show()
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 		l = 1.5
 		ax.set(xlim=(-l,l), ylim=(-l,l))
+		ax.tick_params(axis='both', which='major', labelsize=13)
 		ax.axis("equal")
 		ax.set_xlabel("x [AU]", fontsize=13)
 		ax.set_ylabel("y [AU]", fontsize=13)
@@ -92,101 +111,62 @@ def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 
 		ax.legend(fontsize=13)
 		plt.show()
+
+
+
+def plot_elliptical_orbits(dt=0.0001, T_end=2000, n_v = 4, method="verlet", N_write=100000):
+	N = int(T_end/dt)
+	if N_write == None:
+		N_write = N
+
+	VX = np.linspace(np.pi, 5*np.pi/2, n_v)
+
+	filenames = [f"SunEarthEllip_{n_v}_{i}_{T_end}.dat" for i in range(n_v)]
 	
-
-def plot_error(N_start=1, N_end=3, n_tests=20):
-	log_start, log_end = np.log10(N_start), np.log10(N_end)
-	N = np.linspace(N_start, N_end, n_tests, endpoint=True) 
-	#N = np.array([1,2,3,4,5,6,7,8], dtype=np.float64)
-	#N_start = N[0]
-	#N_end = N[-1]
-	dt = -N
-	#N = (10**N).astype(int)
-	
-
-	methods = ["verlet"]
-
-	initFilename = "SunEarthStable_init.dat"
-
-	outFilenames = []
-	for method in methods:
-		# for i in range(n_tests):
-		for i in range(len(N)):
-			outFilenames.append(f"SunEarthStable_{method}_{int(N_start)}_{int(N_end)}_{i+1}.dat") 
-
-	body_dict = {"Sun": [0,0,0,0,0,0],
-				 "Earth": [1,0,0,0,2*np.pi,0]}
-	
-	setInitialConditions(initFilename, body_dict, fixedCoM=True)
-
-	#check_init(initFilename, body_dict)
-	#exists = has_data(outFilenames)
-	i = 0
-
-	if not False:#not exists:
-		for method in methods:
-			for n, dt_ in zip(N,dt):
-				#dt = 1/n
-				master_call = f"python3 master.py {dt_} {n} -method {method} -sys initData/{initFilename} -out {outFilenames[i]} -Nwrite {2} -time years --log" 
-				subprocess.call(master_call.split())
-				i += 1
-	N = 10**N
-	dt = 10**dt
-	systems = []
-	eulerError = []
-	verletError = []
-
-	for outfile in outFilenames:
-	
-		system = read_data_file(outfile)
-		def f(x,y):
-			return np.linalg.norm(x-y, axis=0)
-		r = system["Earth"].r
-		rs = system["Sun"].r
-		r0 = r[:,0]
-		r1 = r[:,-1]
-		rs0 = rs[:,0]
-		rs1 = rs[:,-1]
-
-		#print(r, "r", r[0,-1], r[1,-1])
-		pos0 = np.sqrt((r[0,0]-rs[0,0])**2+ (r[1,0]-rs[1,0])**2)    #np.abs(1-np.sqrt((r[0,-1])**2 + r[1,-1]**2))
-		pos1 = np.sqrt((r[0,-1]-rs[0,-1])**2+ (r[1,-1]-rs[1,-1])**2)
-		#pos0 = np.abs(r[0,0]-rs[0,0])
-		#pos1 = np.abs(r[0,-1]-rs[0,-1])
+	for i in range(n_v):
+		body_dict = {"Sun": [0,0,0,0,0,0],
+				    "Earth": [1,0,0,0,VX[i],0]}
+		check_init(filenames[i], body_dict, fixedCoM=False)
 		
-		error = np.abs((pos1-pos0)/pos0)
-		error = np.abs(f(rs1, r1)-f(rs0, r0))
-		#print(error)
-		#print("")
-		
-		# 17 18
-		if system["method"] == 0:
-			# print("euler error: ", rx[0], rx[-1])
-			eulerError.append(error)
-		if system["method"] == 1:
-			# print("verlet error: ", rx[0], rx[-1])
-			verletError.append(error)
+	exists = has_data(filenames)
 
-	
+	if not exists:
+		for i in range(n_v):
+			master_call = f"python3 master.py -method {method} -sys initData/{filenames[i]} \
+							-out {filenames[i]} -Nwrite {N_write} -time years --q {dt} {N}" 
+			subprocess.call(master_call.split())
+
+	labs = ["$\pi$", "$3\pi/2$", "$2\pi$", "$5\pi/2$"]
+
 	with sns.axes_style("darkgrid"):
-		fix, ax = plt.subplots()
-		ax.set(xscale="log", yscale="log", xlabel="N", ylabel="Relative error")
-		verlim = -7
-		vs = 0
-		#fitEuler = np.polyfit(np.log10(N[5:]), np.log10(eulerError[5:]), deg = 1)
-		fitVerlet = np.polyfit(np.log10(N[vs:verlim]), np.log10(verletError[vs:verlim]), deg = 1)
-		#print("euler fit: ", fitEuler)
-		print("verlet fit: ", fitVerlet)
-		#ax.scatter(N, eulerError, label="Euler")
-		ax.scatter(N, verletError, label="Verlet")
-		ax.plot(N[vs:verlim], N[vs:verlim]**(fitVerlet[0]) * 10**fitVerlet[1])
-		ax.legend()
-		plt.show()
-	
+		fig, ax = plt.subplots()
+		ax.set_xlabel("x [AU]", fontsize=13)
+		ax.set_ylabel("y [AU]", fontsize=13)
+		ax.axis("equal")
+		for i in range(n_v):
+			system = read_data_file(filenames[i])
+			rE = system["Earth"].r
+			ax.plot(rE[0], rE[1], label=f"$v_x=${labs[i]} AU/yr")
 
-def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
+		ax.scatter(0,0, c="r")
+		ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.18),
+          ncol=2, fancybox=True, shadow=True, fontsize=13)
+		plt.show()
+
+
+	with sns.axes_style("darkgrid"):
+		fig, ax = plt.subplots()
+		T = np.linspace(0, T_end, N_write, endpoint=True)
+		for i in range(n_v):
+			system = read_data_file(filenames[i])
+			L = angular_momentum(system["Earth"])
+			ax.plot(T, L)
+			
+	plt.show()
+
+
+def plot_energy(N=int(1e4), T_end = 50, N_write=10000):
 	dt = T_end/N
-	print(dt)
 	methods = ["euler", "verlet"]
 	initFilename = "SunEarthStable_init.dat"
 
@@ -217,7 +197,8 @@ def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 		c = ["k","r"]
 		for i, method in enumerate(methods):
 			system = read_data_file(outFilenames[i])
-			E = energy(system["Earth"])
+			Ep, Ek = energy(system["Earth"])
+			E = Ek+Ep
 			L = angular_momentum(system["Earth"])
 			
 			E = np.abs((E-E[0])/E[0])
@@ -228,7 +209,9 @@ def plot_energy(N=int(1e7), T_end = 50, N_write=10000):
 	ax.legend()
 	plt.show()
 
-def plot_time(N_start=2, N_end=8, n_tests=30):
+
+
+def plot_time(N_start=2, N_end=8, n_tests=50):
 	N = np.logspace(N_start, N_end, n_tests, endpoint=True, dtype=int)
 	
 	methods = ["euler", "verlet"]
@@ -246,8 +229,9 @@ def plot_time(N_start=2, N_end=8, n_tests=30):
 	check_init(initFilename, body_dict, fixedCoM=True)
 
 	exists = has_data(outFilenames)
+	
 	i = 0
-
+	tot = 2*n_tests
 	if not exists:
 		for method in methods:
 			for n_ in N:
@@ -255,7 +239,7 @@ def plot_time(N_start=2, N_end=8, n_tests=30):
 				master_call = f"python3 master.py {dt_} {n_} -method {method} -sys initData/{initFilename} -out {outFilenames[i]} -Nwrite {2} -time years --q" 
 				subprocess.call(master_call.split())
 				i += 1
-
+				print(f"Done {method}, dt = {n_}, {(i*100/tot):.2f}%")
 	eulerTime = []
 	verletTime = []
 	for outfile in outFilenames:
@@ -266,22 +250,23 @@ def plot_time(N_start=2, N_end=8, n_tests=30):
 		if system["method"] == 1:
 			verletTime.append(system["time"])
 
-
+	eulerTime = np.array(eulerTime)
+	verletTime = np.array(verletTime)
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 		ax.set(xscale="log", yscale="log")
-		ax.set_xlabel(xlabel="N", fontsize=13)
-		ax.set_ylabel(ylabel="Time [s]", fontsize=13)
+		ax.tick_params(axis='both', which='major', labelsize=13)
+		ax.set_xlabel(xlabel="N", fontsize=15)
+		ax.set_ylabel(ylabel="Time taken [s]", fontsize=15)
 		ax.scatter(N, eulerTime, label="Euler")
 		ax.scatter(N, verletTime, label="Verlet")
-	
+
 		# Only linfit if standard params (as some points have to be excluded)
 		if all([val is plot_time.__defaults__[i] for i, val in enumerate([N_start,N_end,n_tests])]):
-			sE, eE = 15, len(N)
-			sV, eV = 15, len(N)
+			sE, eE = 25, len(N)
+			sV, eV = 25, len(N)
 
-			slopeE, constE, r_valueE, p_valueE, std_errE = \
-			stats.linregress(np.log10(N[sE:eE]), np.log10(eulerTime[sE:eE]))
+			slopeE, constE, r_valueE, p_valueE, std_errE = stats.linregress(np.log10(N[sE:eE]), np.log10(eulerTime[sE:eE]))
 
 			# Linfit for Verlet
 			slopeV, constV, r_valueV, p_valueV, std_errV = \
@@ -289,11 +274,75 @@ def plot_time(N_start=2, N_end=8, n_tests=30):
 
 			# Plot Euler and Verlet linfit
 			ax.plot(N[sE:eE], 10**constE * N[sE:eE]**slopeE, c="red",\
-					label=f"Slope Euler = {slopeE:.3f}$\pm${std_errE:.3f}", markersize=3)
+					label=f"Slope Euler = {slopeE:.3f}$\pm${std_errE:.3f} \n $R^2$ = {(r_valueE**2):.4f}", markersize=3)
 			ax.plot(N[sV:eV], 10**constV * N[sV:eV]**slopeV, c="k" ,\
-					label=f"Slope Verlet = {slopeV:.3f}$\pm${std_errV:.3f}", markersize=3)
-		
+					label=f"Slope Verlet = {slopeV:.3f}$\pm${std_errV:.3f} \n $R^2$ = {(r_valueV**2):.4f}", markersize=3)
+			
 	ax.legend(fontsize=13)
 	plt.show()
 
-plot_circular_orbit()
+
+def plot_Etot_error(dt_start=3, dt_end=7, n_tests=20):
+	dt = np.linspace(dt_start, dt_end, n_tests, endpoint=True)*-1 
+	N = -dt	
+
+	methods = ["euler", "verlet"]
+
+	initFilename = "SunEarthStable_init.dat"
+
+	outFilenames = []
+	for method in methods:
+		for i in range(n_tests):
+			outFilenames.append(f"SunEarthStable_{method}_{dt_start}_{dt_end}_{i+1}.dat") 
+
+	body_dict = {"Sun": [0,0,0,0,0,0],
+				 "Earth": [1,0,0,0,2*np.pi,0]}
+	
+	setInitialConditions(initFilename, body_dict)
+	check_init(initFilename, body_dict)
+	exists = has_data(outFilenames)
+	i = 0
+	tot = 2*n_tests
+	if not exists:
+		for method in methods:
+			for N_, dt_ in zip(N,dt):
+				master_call = f"python3 master.py {dt_} {N_} -method {method} -sys initData/{initFilename} \
+							   -out {outFilenames[i]} -Nwrite {2} -time years --log --fixSun --q" 
+				subprocess.call(master_call.split())
+				i += 1
+				print(f"{method}, log10(dt)={dt_:.2f}, log10(N)={N_:.2f}, {(i*100/tot):.1f}%")
+
+	N = 10**N
+	dt = 10**dt
+	systems = []
+	eulerError = []
+	verletError = []
+
+	for outfile in outFilenames:
+		system = read_data_file(outfile)
+		Ek, Ep = energy(system["Earth"])
+		
+		E = Ek+Ep
+		error = np.abs((E[0]-E[-1])/E[0])
+	
+		if system["method"] == 0:
+			eulerError.append(error)
+		if system["method"] == 1:
+			verletError.append(error)
+	
+	with sns.axes_style("darkgrid"):
+		fix, ax = plt.subplots()
+		ax.invert_xaxis()
+		ax.tick_params(axis='both', which='major', labelsize=13)
+		ax.set_xlabel("$h$ [yr]", fontsize=14)
+		ax.set_ylabel("Relative error of $E_{tot}$", fontsize=14)
+		ax.set(xscale="log", yscale="log")
+		ax.scatter(dt, eulerError, label="$E_{tot}$ Euler")
+		ax.scatter(dt, verletError, label="$E_{tot}$ Verlet")
+		slope, const, r_value, p_value, std_err = stats.linregress(np.log10(dt), np.log10(eulerError))
+		ax.plot(dt, 10**const * dt**slope, c="k" ,linestyle="dashed",\
+				label=f"s = {slope:.3f}$\pm${std_err:.3f} \n$R^2$ = {(r_value**2):.5f}")
+		
+	ax.legend(fontsize=13, loc=6)
+	plt.show()
+
