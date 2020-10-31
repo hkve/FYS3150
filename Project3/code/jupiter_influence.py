@@ -9,7 +9,14 @@ from getInitialConditions import getInitialCondition
 from file_reader import read_data_file
 
 def plot_Sun_Earth_Jupiter(dt=0.01, T = 15, jupiter_scale = 1):
-	T *= 365
+	"""
+	Plot the Sun-Earth-Jupiter system
+		Args:
+			dt: (float) step length in AU/yr
+			T: (float/int) how long to run the simulation in years
+			jupiter_scale: (int/float) In case you want to scale Jupiters mass up/down
+	"""
+	T *= 365 # Nasa data has init conditions in AU/day
 	N = int(T/dt)
 	N_write = 10000
 
@@ -31,7 +38,7 @@ def plot_Sun_Earth_Jupiter(dt=0.01, T = 15, jupiter_scale = 1):
 	rE = system["Earth"].r-rS
 	rJ = system["Jupiter"].r-rS
 
-	l = np.max(rJ) + np.max(rJ)/10
+	l = np.max(rJ) + np.max(rJ)/10 # Make plot just a little bigger than Jupiters orbit
 
 	bodynames = ["Earth", "Jupiter"]
 	bodycolors = ["#0EEB58", "orange"]
@@ -53,11 +60,19 @@ def plot_Sun_Earth_Jupiter(dt=0.01, T = 15, jupiter_scale = 1):
 	plt.show()
 
 def plot_radial_distance(dt=0.01, T=12):
-	scale_j_mass = [1, 10, 100, 1000]
+	"""
+	Plot the radial deviation from Earths orbit without Jupiter
+		Args:
+			dt: (float) step length in years
+			T: (float/int) total time to run the simulation over
+	"""
+	scale_j_mass = [1, 10, 100, 1000] # Hard code in the different scaled masses
 
 	T *= 365
 	N = int(T/dt)
 	N_write = 10000
+
+	# First run without Jupiter present
 	initFilenameNoJ = "No_jupiter.dat"
 	outFilenameNoJ = f"No_jupiter_{T}_{-np.log10(dt)}.dat"
 	
@@ -69,12 +84,13 @@ def plot_radial_distance(dt=0.01, T=12):
 		subprocess.call(master_call.split())
 
 	system = read_data_file(outFilenameNoJ)
-	rE_no_j = np.linalg.norm(system["Earth"].r, axis=0)
+	rE_no_j = np.linalg.norm(system["Earth"].r, axis=0) # Earths distance from the sun without Jupiter
 	
-	initFilenames = [f"SEJ_{scale}.dat" for scale in scale_j_mass]
+
+	initFilenames = [f"SEJ_{scale}.dat" for scale in scale_j_mass]			
 	outFilenames = [f"SEJ_{T}_{scale}_{N_write}.dat" for scale in scale_j_mass]
 
-	rE = []
+	rE = [] # To store the distances with Jupiter present at different scaled masses
 	for i in range(len(scale_j_mass)): 
 		if not initFilenames[i] in os.listdir("initData"):
 			getInitialCondition(initFilenames[i], ["Sun", "Earth", "Jupiter"], scaled_mass={"Jupiter": scale_j_mass[i]})

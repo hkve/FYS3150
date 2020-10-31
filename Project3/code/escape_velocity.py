@@ -45,6 +45,12 @@ def compute_escape_velocity(v0, dv, dt, T, max_iterations=1000):
     
 
 def plot_escape_velocity(n=20, T = 100):
+    """
+    Code to plot different inital velocities in the v_y direction
+        Args: 
+            n: (int) Number of orbits/escapes
+            T: (float/int) Total time to run over 
+    """
     v = np.linspace(2*np.pi, 3*np.pi, n, endpoint=True)
 
     T = 100
@@ -53,9 +59,9 @@ def plot_escape_velocity(n=20, T = 100):
 
     orbits = []
     for i in range(n):
-        system_dict = {"Sun": [0,0,0,0,0,0], "Earth": [1,0,0,0,v[i],0]}
-        setInitialConditions(f"escape_init_{i}.dat", system_dict, fixedCoM = False)
-        run(f'python3 master.py {dt} {N} -sys initData/escape_init_{i}.dat -out escape_{i}.dat -Nwrite 1000 -time years -method verlet'.split())
+        system_dict = {"Sun": [0,0,0,0,0,0], "Earth": [1,0,0,0,v[i],0]} # Store the different velocities
+        setInitialConditions(f"escape_init_{i}.dat", system_dict)
+        run(f'python3 master.py {dt} {N} -sys initData/escape_init_{i}.dat -out escape_{i}.dat -Nwrite 1000 -time years -method verlet --fixSun'.split())
         system = read_data_file(f"escape_{i}.dat")
         orbits.append(system["Earth"].r)
         

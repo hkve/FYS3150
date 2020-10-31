@@ -67,6 +67,8 @@ desired initial conditions. It has two main functions:
     be pulled. Defaults to today.
     * fixedCoM (bool): Whether to adjust the initial conditions such that the center
     of mass will remain fixed at the origin. Defaults to false.
+    * scaled_mass (dict): A dictionary where the keys are the ordinary names of the bodies and value is 
+    a number to scale the mass by. Defualt to None 
   * setInitialConditions(filename, body_dict, fixedCoM)  
   Writes the init-file with the specified filename to the initData-folder with the bodies
   and initial conditions specfied in body_dict.
@@ -75,9 +77,19 @@ desired initial conditions. It has two main functions:
     and the values are lists like [x, y, z, vx, vy, vz].
     * fixedCoM (bool): Whether to adjust the initial conditions such that the center
     of mass will remain fixed at the origin. Defaults to false.
+    * scaled_mass (dict): A dictionary where the keys are the ordinary names of the bodies and value is 
+    a number to scale the mass by. Defualt to None 
     
 - *file_reader.py*  
-
+This programs simply reads the datafiles created by main.cpp. The data is returned as a dictionary containing all 
+the relevant information about that datafile. 
+   * Body (class): Each body read from the file is stored as an instance of this class. It contains properties such as the name of the body,
+   its mass, UUID, as well as the position  and velocity vectors.
+   * read_data_file(filename):
+   Reads a data file and stores each body as an instance of the body class, containg all the information conserning that body. 
+   It also stores information about that specific simulation such as the method used, step length, number of integration steps,
+   time used to preform the simulation and how many points that are written to the actual data file
+     * filename (string): The name of the file to read from, stored in the data directory
   
 
 - *stability.py*  
