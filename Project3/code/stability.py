@@ -10,13 +10,27 @@ from getInitialConditions import setInitialConditions
 from file_reader import read_data_file
 
 
-def check_init(filename, body_dict, fixedCoM=False):	# Check if init file exists
+def check_init(filename, body_dict):
+	"""
+	Check if init file exsists, in case not make it
+		Args:
+			Filename: (string) What the init file should be named
+			Body_dict: (dictionary) Holding the initial conditions for each body
+	"""
 	if not filename in os.listdir("initData"): 				
-		setInitialConditions(filename, body_dict, fixedCoM=fixedCoM)
+		setInitialConditions(filename, body_dict)
 	else:
 		pass
 
-def has_data(filenames):
+def has_data(filenames): 
+	"""
+	Check if data files exsists
+		Args: 
+			filenames (string/list of strings) Name of the files that should be there
+		Returns:
+			True: if all files are present
+			False: if one or more files are missing
+	"""
 	if type(filenames) != list:
 		filenames = [filenames]
 
@@ -27,15 +41,30 @@ def has_data(filenames):
 
 	return True
 
-def energy(body):
+def energy(body): 
+	"""
+	Calculates the kinetic and potential energy of a body
+		Args: 
+			Body: (Body) what body to calculate on
+		Returns:
+			Ek: Kinetick energy of body in [ME(AU/yr)^2]
+			EP: Potential energy of body in [ME(AU/yr)^2]
+	"""
 	m = body.m
 
 	R = np.linalg.norm(body.r, axis=0)
 	V = np.linalg.norm(body.v, axis=0)
-	
-	return 0.5*V**2 , -1/R
+	 
+	return 0.5*V**2 , -1/R # [ME(AU/yr)^2]
 
 def angular_momentum(body):
+	"""
+	Calculates the angular momentum of a body
+		Args:
+			Body: (Body) what bodt to calculate on
+		Returns:
+			L: (float array) Array of the length of angular momentum vector over time
+	"""
 	r = body.r
 	v = body.v
 
@@ -51,7 +80,7 @@ def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 	Sun at origin no init vel, earth x = 1 AU vx = 2pi * AU/yr
 
 	Args:
-		dt: (float) time step in days
+		dt: (float) time step in years
 		T_end: (int/float) end time in years
 		method: (string) "euler" or "verlet"
 		N_write: (int) number of points to write to file
@@ -61,26 +90,26 @@ def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 		N_write = N
 
 	body_dict = {"Sun": [0,0,0,0,0,0],
-				 "Earth": [1,0,0,0,2*np.pi,0]}
+				 "Earth": [1,0,0,0,2*np.pi,0]} # Initial conditions
 	
 	initFilename = "SunEarthStable_init.dat"
-	outFilename = "SunEarthStable_" + "_".join([str(method), str(T_end), str(N), str(N_write)])  + ".dat"
+	outFilename = "SunEarthStable_" + "_".join([str(method), str(T_end), str(N), str(N_write)])  + ".dat" # Make filenames
 
-	check_init(initFilename, body_dict, fixedCoM=False)
-	setInitialConditions(initFilename, body_dict, fixedCoM=False)
+	check_init(initFilename, body_dict) 
+	setInitialConditions(initFilename, body_dict)
 
 	exists = has_data(outFilename)
 
-	if not exists:
+	if not exists: # If the datafiles are missing, make them
 		master_call = f"python3 master.py -method {method} -sys initData/{initFilename} \
 						-out {outFilename} -Nwrite {N_write} -time years {dt} {N}" 
 		subprocess.call(master_call.split())
 
 	
-	system = read_data_file(outFilename)	
+	system = read_data_file(outFilename) # Reads the data
 	r = system["Earth"].r
 
-	Ek, Ep = energy(system["Earth"])
+	Ek, Ep = energy(system["Earth"]) # Calculate energy
 	Ek_std, Ep_std = np.std(Ek), np.std(Ep)
 	Ek_mean, Ep_mean = np.mean(Ek), np.mean(Ep)
 	
@@ -95,8 +124,6 @@ def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 	print(f"Ek (mean) = {Ep_mean:.4f}, std = {Ep_std:.4E}, relative = {(Ep_std/Ep_mean):.4E}")
 
 	T = np.linspace(0, T_end, N_write, endpoint=True)
-	plt.plot(T, Ek)
-	plt.show()
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 		l = 1.5
@@ -114,19 +141,28 @@ def plot_circular_orbit(dt=0.0001, T_end=1, method="verlet", N_write=1000):
 
 
 
-def plot_elliptical_orbits(dt=0.0001, T_end=2000, n_v = 4, method="verlet", N_write=100000):
+def plot_elliptical_orbits(dt=0.0001, T_end=10, n_v = 4, method="verlet", N_write=10000):
+	"""
+	Makes plot of different elliptical orbits
+		Args: 
+			dt: (float) Step length in yr
+			T_end: (int/float) Total time to run the simulation
+			n_v: (int) Number of orbits in the range v_y = [pi, 5pi/2]
+			method: (string) Verlet or Euler
+			N_write: (int) How many points to write
+	"""
 	N = int(T_end/dt)
 	if N_write == None:
 		N_write = N
 
-	VX = np.linspace(np.pi, 5*np.pi/2, n_v)
+	VY = np.linspace(np.pi, 5*np.pi/2, n_v, endpoint=True) # Array holding different initial velocities in the y-direction
 
-	filenames = [f"SunEarthEllip_{n_v}_{i}_{T_end}.dat" for i in range(n_v)]
+	filenames = [f"SunEarthEllip_{n_v}_{i}_{T_end}.dat" for i in range(n_v)] # Storing filenames
 	
 	for i in range(n_v):
 		body_dict = {"Sun": [0,0,0,0,0,0],
-				    "Earth": [1,0,0,0,VX[i],0]}
-		check_init(filenames[i], body_dict, fixedCoM=False)
+				    "Earth": [1,0,0,0,VY[i],0]}
+		check_init(filenames[i], body_dict)
 		
 	exists = has_data(filenames)
 
@@ -136,7 +172,7 @@ def plot_elliptical_orbits(dt=0.0001, T_end=2000, n_v = 4, method="verlet", N_wr
 							-out {filenames[i]} -Nwrite {N_write} -time years --q {dt} {N}" 
 			subprocess.call(master_call.split())
 
-	labs = ["$\pi$", "$3\pi/2$", "$2\pi$", "$5\pi/2$"]
+	labs = ["$\pi$", "$3\pi/2$", "$2\pi$", "$5\pi/2$"] # Only true if standard parameters are used
 
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
@@ -157,61 +193,26 @@ def plot_elliptical_orbits(dt=0.0001, T_end=2000, n_v = 4, method="verlet", N_wr
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 		T = np.linspace(0, T_end, N_write, endpoint=True)
+		ax.set(xlabel="T [yr]", ylabel="|L| [$M_E AU^2/yr$]")
 		for i in range(n_v):
 			system = read_data_file(filenames[i])
 			L = angular_momentum(system["Earth"])
-			ax.plot(T, L)
-			
+			ax.plot(T, L, label=labs[i])
+		ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.18),
+          ncol=2, fancybox=True, shadow=True, fontsize=13)
 	plt.show()
 
-
-def plot_energy(N=int(1e4), T_end = 50, N_write=10000):
-	dt = T_end/N
-	methods = ["euler", "verlet"]
-	initFilename = "SunEarthStable_init.dat"
-
-	body_dict = {"Sun": [0,0,0,0,0,0],
-				 "Earth": [1,0,0,0,2*np.pi,0]}
-
-	check_init(initFilename, body_dict)
-
-	outFilenames = []
-	for method in methods:
-		outFilenames.append(f"SunEarthStable_{method}_{T_end}_{N}_{N_write}.dat")
-
-	exists = has_data(outFilenames)
-
-	i = 0
-	if not exists:
-		for method in methods:
-			master_call = f"python3 master.py -method {method} -sys initData/{initFilename} \
-							 -out {outFilenames[i]} -Nwrite {N_write} -time years {dt} {N}" 
-			subprocess.call(master_call.split())
-			i += 1
-
-
-	with sns.axes_style("darkgrid"):
-		t = np.linspace(0, T_end, N_write)
-		fig, ax = plt.subplots()
-		ax.set(yscale="log", ylim=(1e-14, 1))
-		c = ["k","r"]
-		for i, method in enumerate(methods):
-			system = read_data_file(outFilenames[i])
-			Ep, Ek = energy(system["Earth"])
-			E = Ek+Ep
-			L = angular_momentum(system["Earth"])
-			
-			E = np.abs((E-E[0])/E[0])
-			L = np.abs((L-L[0])/L[0])
-			print(L)
-			ax.plot(t, E, label=r"$E_{tot} $ " + method.capitalize(), c=c[i])
-			ax.plot(t, L, label=r"$L$ " + method.capitalize())
-	ax.legend()
-	plt.show()
 
 
 
 def plot_time(N_start=2, N_end=8, n_tests=50):
+	"""
+	Preform a timing of the two algorithms and make a log-log plot
+		Args:
+			N_start: (int) log10 of the number of integration steps to start at
+			N_end: (int) log10 of the number of integration steps to end at
+			n_tests: (int) number of test between N_start and N_end
+	"""
 	N = np.logspace(N_start, N_end, n_tests, endpoint=True, dtype=int)
 	
 	methods = ["euler", "verlet"]
@@ -226,23 +227,24 @@ def plot_time(N_start=2, N_end=8, n_tests=50):
 	body_dict = {"Sun": [0,0,0,0,0,0],
 				 "Earth": [1,0,0,0,2*np.pi,0]}
 	
-	check_init(initFilename, body_dict, fixedCoM=True)
+	check_init(initFilename, body_dict)
 
 	exists = has_data(outFilenames)
 	
 	i = 0
-	tot = 2*n_tests
-	if not exists:
+	tot = 2*n_tests 
+	if not exists: # If datafiles are missing, make them
 		for method in methods:
 			for n_ in N:
 				dt_ = 1/n_
 				master_call = f"python3 master.py {dt_} {n_} -method {method} -sys initData/{initFilename} -out {outFilenames[i]} -Nwrite {2} -time years --q" 
 				subprocess.call(master_call.split())
 				i += 1
-				print(f"Done {method}, dt = {n_}, {(i*100/tot):.2f}%")
+				print(f"Done {method}, dt = {n_}, {(i*100/tot):.2f}%") # It takes a while... good to know where your at
 	eulerTime = []
 	verletTime = []
-	for outfile in outFilenames:
+
+	for outfile in outFilenames: # Sort through files and place the time in euler and verlet
 		system = read_data_file(outfile)
 		
 		if system["method"] == 0:
@@ -250,7 +252,7 @@ def plot_time(N_start=2, N_end=8, n_tests=50):
 		if system["method"] == 1:
 			verletTime.append(system["time"])
 
-	eulerTime = np.array(eulerTime)
+	eulerTime = np.array(eulerTime) # For easier handling
 	verletTime = np.array(verletTime)
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
@@ -263,8 +265,8 @@ def plot_time(N_start=2, N_end=8, n_tests=50):
 
 		# Only linfit if standard params (as some points have to be excluded)
 		if all([val is plot_time.__defaults__[i] for i, val in enumerate([N_start,N_end,n_tests])]):
-			sE, eE = 25, len(N)
-			sV, eV = 25, len(N)
+			sE, eE = 25, len(N) # What points to fit Euler
+			sV, eV = 25, len(N) # What point to fit Verlet
 
 			slopeE, constE, r_valueE, p_valueE, std_errE = stats.linregress(np.log10(N[sE:eE]), np.log10(eulerTime[sE:eE]))
 
@@ -283,6 +285,13 @@ def plot_time(N_start=2, N_end=8, n_tests=50):
 
 
 def plot_Etot_error(dt_start=3, dt_end=7, n_tests=20):
+	"""
+	Making a plot of the relative error in the total energy of the two algorithms
+		Args:
+			dt_start: (int) -log10 of what dt to start at
+			dt_end: (int) -log10 of what dt to end at 
+			n_tests: (int) number of tests to preform between dt_start and dt_end
+	"""
 	dt = np.linspace(dt_start, dt_end, n_tests, endpoint=True)*-1 
 	N = -dt	
 
@@ -303,14 +312,14 @@ def plot_Etot_error(dt_start=3, dt_end=7, n_tests=20):
 	exists = has_data(outFilenames)
 	i = 0
 	tot = 2*n_tests
-	if not exists:
+	if not exists: # If files are missing, create them
 		for method in methods:
 			for N_, dt_ in zip(N,dt):
 				master_call = f"python3 master.py {dt_} {N_} -method {method} -sys initData/{initFilename} \
 							   -out {outFilenames[i]} -Nwrite {2} -time years --log --fixSun --q" 
 				subprocess.call(master_call.split())
 				i += 1
-				print(f"{method}, log10(dt)={dt_:.2f}, log10(N)={N_:.2f}, {(i*100/tot):.1f}%")
+				print(f"{method}, log10(dt)={dt_:.2f}, log10(N)={N_:.2f}, {(i*100/tot):.1f}%") # Again, migth take a while
 
 	N = 10**N
 	dt = 10**dt
@@ -318,7 +327,7 @@ def plot_Etot_error(dt_start=3, dt_end=7, n_tests=20):
 	eulerError = []
 	verletError = []
 
-	for outfile in outFilenames:
+	for outfile in outFilenames: # Sort through files and place the error in euler and verlet
 		system = read_data_file(outfile)
 		Ek, Ep = energy(system["Earth"])
 		
