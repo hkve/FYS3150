@@ -8,15 +8,11 @@
 #include <iomanip>
 using namespace std;
 
-double G_ = 6.67408e-11;
-//double AU = 1.496e+11; // m
-double AU = 149597870700;
-double ME = 5.972e+24; //kg
-double MS = 332946.0487; //sun mass in earth masses
-double G, c;
 
-//double G = G_/pow(AU,3)*pow(3600*24,2)*ME;
-//double c = 299792458/AU*3600*24;
+double AU = 149597870700;
+double MS = 332946.0487; //sun mass in earth masses
+double G = 4*pow(M_PI,2)/MS;// yields G in units AU^3 yr^-2 ME^-1 
+double c = 299792458/AU*3600*24*365.25;
 
 
 struct Body {
@@ -24,14 +20,7 @@ struct Body {
   double pos[3], vel[3], m;  
 };
 
-void fill_linspace(int a, int b, int c,double *L){
-    //for indexing when writing
-    double delta =ceil((b-a)/(c-1));
-    //L[c-1] = b-1;
-    for (int i=1; i<c; ++i){
-            L[c-i]=b-1 -((i-1)*delta);
-    }
-}
+
   
 
 
@@ -42,10 +31,8 @@ class System{
     double ***pos, ***vel, dt, beta;
     bool GR;
 
-    //void (*updateAcceleration)(double**, int, Body*, double);
     System(string initfile){
         readData(initfile);
-        
     }
  
 
@@ -64,13 +51,15 @@ class System{
         beta = _beta;
         GR = _GR;
         fixedSun = fixedSun_;
-        int writeInterval = (int)(N)/(Nwrite-1);
-        int writeIdx;
-        //cout << "Nwrite: " << Nwrite << endl;
-        double *L = new double[Nwrite];
-        L[0] = 0;
+      
+
+        // L contains the indecies where pos and vel are to be stored
+        double L[Nwrite];
+        double delta =ceil((N)/(Nwrite-1));
+        for (int i=1; i<c; ++i){
+                L[Nwrite-i]=N-1 -((i-1)*delta);
+        }
         int ctr = 1;
-        fill_linspace(0,N, Nwrite, L);
 
         pos = new double**[Nwrite];
         vel = new double**[Nwrite];
@@ -107,7 +96,6 @@ class System{
 
                 }
             if(t == L[ctr]){
-                //cout << t << " " << ctr << " " << L[ctr] << endl;
                 storePosVel(ctr);  // store positions / velocity updates
                 ctr ++;
                                
@@ -190,12 +178,6 @@ class System{
                 getline(data, vy, data.widen(','));
                 getline(data, vz, data.widen(','));
                 getline(data, m, data.widen('\n'));
-                
-                //double *pos = new double[3] {stod(x), stod(y), stod(z)};
-                //double *vel = new double[3] {stod(vx), stod(vy), stod(vz)};
-                //double pos[3]= {stod(x), stod(y), stod(z)};
-                //double vel[3]= {stod(vx), stod(vy), stod(vz)};
-            
             
                 bodies[k].UUID = stoi(UUID);
                 bodies[k].pos[0] = stod(x);
@@ -204,7 +186,6 @@ class System{
                 bodies[k].vel[0] = stod(vx);
                 bodies[k].vel[1] = stod(vy);
                 bodies[k].vel[2] = stod(vz);
-                //bodies[k].vel = vel;
                 bodies[k].m = stod(m);
                 k ++;
                 } 
@@ -220,6 +201,7 @@ class System{
     }
 
     void FwdEulerStep(double **a, double dt){
+        // Forward Euler integration step
         for(int i = fixedSun; i < bodyCount; i ++){
             for (int j = 0; j < 3; j ++){
                 bodies[i].pos[j] = bodies[i].vel[j]*dt + bodies[i].pos[j];
@@ -233,14 +215,14 @@ class System{
         /*
         Uses velocity Verlet to integrate
         */
+        double halfdtdt = 0.5*dt*dt;
+        double halfdt = 0.5*dt;
         for(int i = fixedSun; i < bodyCount; i ++){
             for (int j = 0; j < 3; j ++){
-                bodies[i].pos[j] = bodies[i].pos[j] +bodies[i].vel[j]*dt +0.5*a[i][j]*dt*dt;
-                
+                bodies[i].pos[j] = bodies[i].pos[j] +bodies[i].vel[j]*dt +a[i][j]*halfdtdt;
             }
         }
     
-
         // velocity verlet needs the acceleration at the next time step, so we update the acceleration array and store the old one
         double *a_old[bodyCount];
         for(int i = 0; i < bodyCount; i++){
@@ -250,23 +232,16 @@ class System{
             }
         }
         updateAcceleration(a);  
-        //cout << setprecision(18) << a_old[1][0] << " " << a[1][0] << endl;
         
-
-
         for(int i = fixedSun; i < bodyCount; i ++){
             for (int j = 0; j < 3; j ++){
-                //cout <<  bodies[i].vel[j] << ",";
-                bodies[i].vel[j] = bodies[i].vel[j] + 0.5*(a_old[i][j]+ a[i][j])*dt;
-                //cout <<  bodies[i].vel[j] << endl;
+                bodies[i].vel[j] = bodies[i].vel[j] + (a_old[i][j]+ a[i][j])*halfdt;
             }
         }
-        //cout << "=="<<endl;
         for(int i = 0; i < bodyCount; i++){
-            delete[] a_old[i];
+            delete[] a_old[i]; // a_old is no longer needed. Make sure to remove it from heap
         }
-    
-        // delete[] *a_old; // old one is no longer needed. Makes sure to remove it from heap
+
 
     }
 
@@ -278,7 +253,7 @@ class System{
     }
 
     double getGRterm(Body b1, Body b2, double dist){
-        // calculates the GR term used in 3i)
+        // calculates the GR correction term
         double relpos[3] = {b1.pos[0]-b2.pos[0],b1.pos[1]-b2.pos[1], b1.pos[2]-b2.pos[2]};
         double relvel[3] = {b1.vel[0]-b2.vel[0],b1.vel[1]-b2.vel[1], b1.vel[2]-b2.vel[2]};
         double l = (pow(relpos[0],2) + pow(relpos[1],2) + pow(relpos[2],2))
@@ -317,16 +292,10 @@ class System{
                 GMm = G*bodies[j].m;
                 for(int k = 0; k < 3; k++){
                     a[i][k] -= GMm/dist*(bodies[i].pos[k]- bodies[j].pos[k])*(1+GRterm);
-                    //a[j][k] -= a[i][k]; // lookup is faster than doing the math
                 }
             }
         }
-        // Convert a into accelerations (still under name a, though)
-        // for(int i = 0; i < bodyCount; i++){
-        //     for(int j = 0; j < 3; j++){
-        //         a[i][j] /= bodies[i].m;
-        //     }
-        // }
+
 
     }
 
@@ -350,12 +319,11 @@ int main(int argc, char** argv){
         beta (float): number between 2 and 3. Used for 3e). beta = 2 results in normal Newtonian gravity
         GR (bool/int): 0 or 1. Decides if the general relativity correction term should be included
         fixedSun (bool/int): 0 or 1. Forces the sun (must be first element in init file) to stay fixed at (0,0,0)
-        timeFormat (string): "days" or "years". Which time format to use. "days" means all times are in days, while "years" means all times are in years
         q (bool/int): 0 or 1. Run program quietly
     */
     clock_t start = clock();
 
-    string initfile = (string)argv[1];
+    string initfile = "initData/"+(string)argv[1];
     string outfile = (string)argv[2];
     int Nwrite = atoi(argv[3]);//pow(10, atof(argv[3]));
     double dt = pow(10, atof(argv[4]));
@@ -366,18 +334,9 @@ int main(int argc, char** argv){
     double beta = atof(argv[7]);
     bool GR = (bool)atoi(argv[8]);
     int fixedSun = atoi(argv[9]);
-    string timeFormat = (string)argv[10];
-    bool q = (bool)atoi(argv[11]);
+    bool q = (bool)atoi(argv[10]);
      
-    if (timeFormat == "years") {
-        G = 4*pow(M_PI,2)/MS;// yields G in units AU^3 yr^-2 ME^-1 (ME is earth mass) 
-        c = 299792458/AU*3600*24*365.25;
-    }
-    
-    else{
-        G = G_/pow(AU,3)*pow(3600*24,2)*ME;
-        c = 299792458/AU*3600*24;
-    }
+ 
     System simple(initfile);
     simple.solve(dt, N, method, beta, GR, Nwrite, fixedSun);
     clock_t stop= clock();
@@ -387,7 +346,7 @@ int main(int argc, char** argv){
     }
     start = clock();
     if(not q){
-    //cout << "Writing..." << endl;
+        cout << "Writing..." << endl;
     }
     simple.write(outfile, time);
     stop = clock();
