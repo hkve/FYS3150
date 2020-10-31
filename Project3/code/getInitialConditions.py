@@ -46,7 +46,7 @@ def grabBody(UUID, date=None):
 	
 	return init
 
-def getInitialCondition(filename, bodies=None, date=None, fixedCoM=False, scaled_mass=None, timeFormat="days"):
+def getInitialCondition(filename, bodies=None, date=None, fixedCoM=False, scaled_mass=None):
 	"""
 	Takes a list of bodies and writes initial condtions to filename
 
@@ -54,7 +54,6 @@ def getInitialCondition(filename, bodies=None, date=None, fixedCoM=False, scaled
 		filename: String, name for file to write to
 		bodies:   String list, name of bodies for initial conditions. If None all bodies are written
 		date: 	  String, YYYY-MM-DD, Date for intial conditions, default is todays date
-		timeFormat:   String, "days" or "years". velocities will be measured in AU/days or AU/years
 
 	"""
 	
@@ -77,10 +76,11 @@ def getInitialCondition(filename, bodies=None, date=None, fixedCoM=False, scaled
 			print(f"{body} not available, skipping")
 			continue
 		body_dict[body] = grabBody(UUIDs[body]).split(",")[1:]
-	if timeFormat == "years":
-		for name, val in body_dict.items():
-			new = val[:3] + [str(float(foo)*365.25) for foo in val[3:]]
-			body_dict[name] = new
+
+	for name, val in body_dict.items():
+		#convert from au/day to au/yr
+		new = val[:3] + [str(float(foo)*365.25) for foo in val[3:]]
+		body_dict[name] = new
 
 	setInitialConditions(filename, body_dict, fixedCoM, scaled_mass)
 	print(f"Saved to {filename}, wrote {len(body_dict)} bodies")
