@@ -24,6 +24,7 @@ body_dict = {"Sun": [0,0,0,0,0,0], "Earth": [1,0,0,0,5,0]}
 
 #sic("varyingBeta.dat", body_dict, fixedCoM=True)
 for beta in betas:
+    #runs simulation for several beta
     #run(f'python3.8 master.py {dt} {N} -sys initData/varyingBeta.dat -out varbeta/{round(beta,3)}.out -Nwrite {int(1e4)} -beta {beta} -time years --log'.split() )
     
 colors = list(Color("cyan", luminance=0.5).range_to(Color("orange", luminance=0.5),bnums)) 
