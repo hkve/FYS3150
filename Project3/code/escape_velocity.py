@@ -1,6 +1,4 @@
 import numpy as np
-from file_reader import read_data_file
-from getInitialConditions import setInitialConditions
 import matplotlib.pyplot as plt
 from subprocess import run
 
@@ -8,14 +6,19 @@ from colour import Color
 import matplotlib as mpl
 import seaborn as sns
 
-def run_simulation(dt, T, v):
-    N = int(T/dt + 1)
+from file_reader import read_data_file
+from getInitialConditions import setInitialConditions
+from master import simulate
 
+def run_simulation(dt, T, v):
+    #N = int(T/dt + 1)
+    N = np.log10(T)-dt
+    
     system_dict = {"Sun": [0,0,0,0,0,0], "Earth": [1,0,0,0,v,0]}
 
     setInitialConditions("escape_init.dat", system_dict, fixedCoM = True)
-
-    run(f'python master.py {dt} {N} -sys initData/escape_init.dat -out escape.dat -Nwrite 2 -time years -method verlet --q'.split() )
+    simulate(N=N, dt = dt, Nwrite=2, sys="escape_init.dat", out="escape.dat", fixSun=True, quiet=True)
+    #run(f'python3 master.py {dt} {N} -sys initData/escape_init.dat -out escape.dat -Nwrite 2 -method verlet --q'.split() )
 
     return check_escape()
 
@@ -44,7 +47,7 @@ def compute_escape_velocity(v0, dv, dt, T, max_iterations=1000):
     return v
     
 
-def plot_escape_velocity(n=20, T = 100):
+def escapeVelocity(n=20, T = 100):
     """
     Code to plot different inital velocities in the v_y direction
         Args: 
@@ -54,14 +57,14 @@ def plot_escape_velocity(n=20, T = 100):
     v = np.linspace(2*np.pi, 3*np.pi, n, endpoint=True)
 
     T = 100
-    dt = 1e-4    
-    N = int(T/dt + 1)
-
+    dt = -4    
+    N = np.log10(T)-dt
+    
     orbits = []
     for i in range(n):
         system_dict = {"Sun": [0,0,0,0,0,0], "Earth": [1,0,0,0,v[i],0]} # Store the different velocities
         setInitialConditions(f"escape_init_{i}.dat", system_dict)
-        run(f'python3 master.py {dt} {N} -sys initData/escape_init_{i}.dat -out escape_{i}.dat -Nwrite 1000 -time years -method verlet --fixSun'.split())
+        simulate(N=N, dt = dt, Nwrite=1000, sys=f"escape_init_{i}.dat", out=f"escape_{i}.dat", fixSun=True, quiet=True)
         system = read_data_file(f"escape_{i}.dat")
         orbits.append(system["Earth"].r)
         
@@ -94,8 +97,7 @@ def plot_escape_velocity(n=20, T = 100):
 if __name__ == '__main__':
     v0 = 2*np.pi
     dv = 0.01
-    v_escape = compute_escape_velocity(v0, dv, dt=1e-4, T=100)
+    v_escape = compute_escape_velocity(v0, dv, dt=-4, T=100)
 
     print(f"The escape velocity was ({v_escape:.2f} +- {dv:.2f}) AU/yr.")
     print(f"The theoretical escape velocity is {np.sqrt(8*np.pi**2):.2f} AU/yr")    
-    

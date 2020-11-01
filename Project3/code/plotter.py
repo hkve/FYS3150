@@ -9,6 +9,10 @@ from colour import Color
 import pandas as pd
 import argparse
 
+from stability import circularOrbit, ellipticalOrbits, benchmark, error
+from jupiter_influence import sunEarthJupiter, radialDistance
+from escape_velocity import escapeVelocity
+
 mpl.use(plt.get_backend())
 font = {'family' : 'normal',
         'size'   : 20}
@@ -19,7 +23,18 @@ parser = argparse.ArgumentParser(description="""
 Plot figures from the project
 """)
 
+# From stability
+parser.add_argument('-circularOrbit', help='Plot stable circulat orbit of earth, with sun kept fixed',action='store_true',)
+parser.add_argument('-ellipticalOrbits', help='Plot elliptical orbits of earth for different inital velocities, with sun kept fixed',action='store_true',)
+parser.add_argument('-benchmark', help='Preforms a benchmarking of Euler and Velocity Verlet and plots the result',action='store_true',)
+parser.add_argument('-error', help='Check energy conservation for Euler and Velocity Verlet and plots the result',action='store_true',)
 
+# From jupiter_influence
+parser.add_argument('-sunEarthJupiter', help='Plot Sun-Earth-Jupiter system with the mass of jupiter scaled by a facotr of 1000',action='store_true',)
+parser.add_argument('-radialDistance', help='Plot the radial deviation from Earths orbit without Jupiter for different masses of jupiter',action='store_true',)
+
+# From escape_velocity
+parser.add_argument('-escapeVelocity', help='Plot a visual representation of escape velocity for different inital velocities',action='store_true',)
 
 parser.add_argument('-beta10yr', help='Path of planet for beta=2.92 over 10 years',action='store_true',)
 parser.add_argument('-betaPosEnergy', help='Plot path and energy of several beta-sytems', action='store_true',)

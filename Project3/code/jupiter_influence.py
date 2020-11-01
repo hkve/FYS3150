@@ -7,8 +7,9 @@ import os
 
 from getInitialConditions import getInitialCondition
 from file_reader import read_data_file
+from master import simulate
 
-def plot_Sun_Earth_Jupiter(dt=0.01, T = 15, jupiter_scale = 1):
+def sunEarthJupiter(dt=-4, T = 15, jupiter_scale = 1000):
 	"""
 	Plot the Sun-Earth-Jupiter system
 		Args:
@@ -16,8 +17,7 @@ def plot_Sun_Earth_Jupiter(dt=0.01, T = 15, jupiter_scale = 1):
 			T: (float/int) how long to run the simulation in years
 			jupiter_scale: (int/float) In case you want to scale Jupiters mass up/down
 	"""
-	T *= 365 # Nasa data has init conditions in AU/day
-	N = int(T/dt)
+	N = np.log10(T)-dt
 	N_write = 10000
 
 	initFilename = f"SEJ_{jupiter_scale}.dat"
@@ -26,12 +26,10 @@ def plot_Sun_Earth_Jupiter(dt=0.01, T = 15, jupiter_scale = 1):
 
 	scaled_mass = {"Jupiter": jupiter_scale}
 	if not initFilename in os.listdir("initData"):
-		getInitialCondition(initFilename, bodies, fixedCoM=False, scaled_mass=scaled_mass)
+		getInitialCondition(initFilename, bodies, fixedCoM=False, scaled_mass=scaled_mass, date="2018-03-14")
 
 	if not outFilename in os.listdir("data"):
-		master_call = f"python3 master.py -method verlet -sys initData/{initFilename} \
-							-out {outFilename} -Nwrite {N_write} -time days --fixSun {dt} {N}" 
-		subprocess.call(master_call.split())
+		simulate(N=N, dt = dt, Nwrite=1000, sys=initFilename, out=outFilename, fixSun=True, quiet=True)
 
 	system = read_data_file(outFilename)
 	rS = system["Sun"].r
@@ -59,7 +57,7 @@ def plot_Sun_Earth_Jupiter(dt=0.01, T = 15, jupiter_scale = 1):
              ncol=3, fancybox=True, shadow=True, fontsize=15)
 	plt.show()
 
-def plot_radial_distance(dt=0.01, T=12):
+def radialDistance(dt=-4, T=20):
 	"""
 	Plot the radial deviation from Earths orbit without Jupiter
 		Args:
@@ -68,20 +66,18 @@ def plot_radial_distance(dt=0.01, T=12):
 	"""
 	scale_j_mass = [1, 10, 100, 1000] # Hard code in the different scaled masses
 
-	T *= 365
-	N = int(T/dt)
+	N = np.log10(T)-dt
 	N_write = 10000
 
 	# First run without Jupiter present
 	initFilenameNoJ = "No_jupiter.dat"
-	outFilenameNoJ = f"No_jupiter_{T}_{-np.log10(dt)}.dat"
+	outFilenameNoJ = f"No_jupiter_{T}_{-dt}.dat"
 	
 	if not initFilenameNoJ in os.listdir("initData"):
-		getInitialCondition(initFilenameNoJ, ["Sun", "Earth"])
+		getInitialCondition(initFilenameNoJ, ["Sun", "Earth"], date="2018-03-14")
 	if not outFilenameNoJ in os.listdir("data"):
-		master_call = f"python3 master.py -method verlet -sys initData/{initFilenameNoJ} \
-					-out {outFilenameNoJ} -Nwrite {N_write} -time days --fixSun --q {dt} {N}" 
-		subprocess.call(master_call.split())
+		simulate(N=N, dt = dt, Nwrite=N_write, sys=initFilenameNoJ, out=outFilenameNoJ, fixSun=True, quiet=True)
+
 
 	system = read_data_file(outFilenameNoJ)
 	rE_no_j = np.linalg.norm(system["Earth"].r, axis=0) # Earths distance from the sun without Jupiter
@@ -96,15 +92,13 @@ def plot_radial_distance(dt=0.01, T=12):
 			getInitialCondition(initFilenames[i], ["Sun", "Earth", "Jupiter"], scaled_mass={"Jupiter": scale_j_mass[i]})
 
 		if not outFilenames[i] in os.listdir("data"):
-			master_call = f"python3 master.py -method verlet -sys initData/{initFilenames[i]} \
-						-out {outFilenames[i]} -Nwrite {N_write} -time days --fixSun --q {dt} {N}" 
-			subprocess.call(master_call.split())
+			simulate(N=N, dt = dt, Nwrite=N_write, sys=initFilenames[i], out=outFilenames[i], fixSun=True, quiet=True)
 
 		system = read_data_file(outFilenames[i])
 		R = np.linalg.norm(system["Earth"].r, axis=0)
 		rE.append(R)
 
-	t = np.linspace(0, T/365, N_write, endpoint=True)
+	t = np.linspace(0, T, N_write, endpoint=True)
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 		for R, lab in zip(rE, scale_j_mass):

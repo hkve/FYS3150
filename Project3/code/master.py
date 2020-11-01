@@ -47,7 +47,7 @@ def simulate(N, dt, method="verlet", beta=2, Nwrite=-1, GR=False, fixSun=False, 
             NwriteStr = "N"
         else:
             NwriteStr = str(Nwrite)
-        print(f"Solving for dt: {'%e' %10**args.dt}, N: {'%i' %10**args.N}, method: {args.method}, Nwrite: {NwriteStr}, beta: {args.beta}, GR:{args.GR}, hotel: Trivago, read: {args.sys}, write: {args.out}.")
+        print(f"Solving for dt: {'%e' %10**dt}, N: {'%i' %10**N}, method: {method}, Nwrite: {NwriteStr}, beta: {beta}, GR:{GR}, hotel: Trivago, read: {sys}, write: {out}.")
     GR = booldic[GR]
     fixSun = booldic[fixSun]
     method = {"euler":0,"verlet":1}[method]

@@ -64,8 +64,6 @@ def getInitialCondition(filename, bodies=None, date=None, fixedCoM=False, scaled
 
 	if not DIR2SAVE in DIR: # Check for missing directory to store datafiles
 		os.mkdir(DIR2SAVE)
-	
-	# filename = DIR2SAVE + "/" + filename
 
 	if bodies == None:
 		bodies = UUIDs.keys() # If None is given, wrirte alle bodies
@@ -100,9 +98,9 @@ def setInitialConditions(filename, body_dict, fixedCoM = False, scaled_mass=None
 	UUIDs, Masses  = getUUIDs(DIR2SAVE+"/bodyUUID.txt")
 
 	# If some masses should be scaled
-	# if scaled_mass != None:
-	# 	for body in scaled_mass.keys():
-	# 		Masses[body] *= scaled_mass[body]
+	if scaled_mass != None:
+		for body in scaled_mass.keys():
+			Masses[body] *= scaled_mass[body]
 
 	# Checking if body is available and making x and v strings
 	for body in body_dict:
