@@ -14,6 +14,17 @@ It should contain the following programs:
 *precession.py*
 
 ## Usage
+### Installs
+The following packages must be installed to run master.py and plotter.py. 
+
+- `numpy`
+- `pandas`
+- `matplotlib`
+- `colour`
+- `seaborn`
+- `astroquery`
+
+
 ### master.py
 To run simulations using *main.cpp* we recommend to use the *master.py*. This file takes arguments from the command line and runs *main.cpp*
 with those parameters. **NB:** make sure to add --compile as a flag if main.exe is missing. The parameters are:
