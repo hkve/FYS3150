@@ -172,16 +172,17 @@ def ellipticalOrbits(dt=0.0001, T_end=10, n_v = 4, method="verlet", N_write=1000
 
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
-		ax.set_xlabel("x [AU]", fontsize=13)
-		ax.set_ylabel("y [AU]", fontsize=13)
+		ax.set_xlabel("x [AU]", fontsize=14)
+		ax.set_ylabel("y [AU]", fontsize=14)
 		ax.axis("equal")
 		for i in range(n_v):
 			system = read_data_file(filenames[i])
 			rE = system["Earth"].r
-			ax.plot(rE[0], rE[1], label=f"$v_x=${labs[i]} AU/yr")
+			ax.plot(rE[0], rE[1], label=f"$v_y=${labs[i]} AU/yr")
 
 		ax.scatter(0,0, c="r")
-		ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.18),
+		ax.tick_params(axis='both', which='major', labelsize=13)
+		ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.22),
           ncol=2, fancybox=True, shadow=True, fontsize=13)
 		plt.show()
 
@@ -189,11 +190,14 @@ def ellipticalOrbits(dt=0.0001, T_end=10, n_v = 4, method="verlet", N_write=1000
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 		T = np.linspace(0, T_end, N_write, endpoint=True)
-		ax.set(xlabel="T [yr]", ylabel="|L| [$M_E AU^2/yr$]")
+		ax.set_xlabel("Time [yr]", fontsize=14)
+		ax.set_ylabel("Relative error of |$\ell$|", fontsize=14)
 		for i in range(n_v):
 			system = read_data_file(filenames[i])
 			L = angular_momentum(system["Earth"])
-			ax.plot(T, L, label=labs[i])
+			L = np.abs((L[0]-L)/L[0])
+			ax.plot(T, L, label=f"$v_y=${labs[i]}")
+		ax.tick_params(axis='both', which='major', labelsize=13)
 		ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.18),
           ncol=2, fancybox=True, shadow=True, fontsize=13)
 	plt.show()
