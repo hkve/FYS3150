@@ -11,38 +11,50 @@ from getInitialConditions import setInitialConditions
 from master import simulate
 
 def run_simulation(dt, T, v):
-    #N = int(T/dt + 1)
-    N = np.log10(T)-dt
+    # runs a single escape simulation and returns bool whether Earth escaped
+    N = np.log10(T)-dt # log10 of N
     
     system_dict = {"Sun": [0,0,0,0,0,0], "Earth": [1,0,0,0,v,0]}
 
-    setInitialConditions("escape_init.dat", system_dict, fixedCoM = True)
+    setInitialConditions("escape_init.dat", system_dict)
     simulate(N=N, dt = dt, Nwrite=2, sys="escape_init.dat", out="escape.dat", fixSun=True, quiet=True)
-    #run(f'python3 master.py {dt} {N} -sys initData/escape_init.dat -out escape.dat -Nwrite 2 -method verlet --q'.split() )
 
     return check_escape()
 
 
 def check_escape():
-    system = read_data_file("escape.dat")
-    r = system["Earth"].r[:,-1]
-    v = system["Earth"].v[:,-1]
+    # checks for a given simulation whether the Earth fulfills the escape condition
+    system = read_data_file("escape.dat") # reads simulation data
+    r = system["Earth"].r[:,-1] # grabs last position
+    v = system["Earth"].v[:,-1] # grabs last veloicty
 
-    v_rad = np.dot(r, v) / np.linalg.norm(r)
+    v_rad = np.dot(r, v) / np.linalg.norm(r) # calculating the radial velocity
 
     escape = v_rad**2/np.dot(v, v) >= 0.99 # if the velocity is almost solely radial, Earth escaped
     return escape
 
 
 def compute_escape_velocity(v0, dv, dt, T, max_iterations=1000):
+    """
+    For a given starting velocity and velocity increments and simulation parameters, this function
+    simulates the Sun-Earth system and returns the escape velocity.
+        Args:
+            v0: (float) The first velocity to check for in AU/yr
+            dv: (float) The incremental velocity increase after failed escape in AU/yr
+            dt: (float) log10 of the time stepsize to run the simulation in yr.
+            T: (float) The number of years to run each simulation for before checking the escape condition.
+            max_iterations: (int) The number of attempts to escape before breaking the program and exiting.
+    """
+    # initializing values
     escape = False
     iterations = 0
     v = v0
+
     while not escape:
-        escape = run_simulation(dt, T, v)
         iterations += 1
-        if iterations == max_iterations:
+        if iterations > max_iterations:
             raise Exception(f"Earth was not able to escape within {max_iterations} iterations.")
+        escape = run_simulation(dt, T, v)
         v += dv
     return v
     
