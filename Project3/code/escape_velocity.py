@@ -106,6 +106,8 @@ def escapeVelocity(n=20, T = 100):
     ax.arrow(-43,8.5,4,4,ec="white", fc="white", head_width=1)
     plt.show()
 
+
+
 if __name__ == '__main__':
     v0 = 2*np.pi
     dv = 0.01
