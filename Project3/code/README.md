@@ -97,27 +97,6 @@ args:
     * q (bool): If true, the program will not output anything to terminal.
 
 ## Python programs
-- *master.py*  
-This program manages *main.cpp* and makes compiling and running the program simpler.
-It contains the *simulate*-function, which is used to run the *main.cpp*-solver for a
-given set of parameters and initial conditions and dump the output to a specified file
-location. The program uses an arg-parser, parsing the args used when running the program.  
-  positional arguments:
-  * dt              Time step length in log10(year) for simulation.
-  * N               Number of integration points in log10.
-
-  optional arguments:
-  * -h, --help      show this help message and exit.
-  * -method METHOD  Integration method to use. Must be "euler" or "verlet". Default: "verlet".
-  * -beta BETA      Change the inverse proportionality of gravity. Must be in range [2,3]. Default = 2.
-  * -sys file       Name of init file in initdData/ dir. Default: sys.dat.
-  * -out file       Name of file in data/ dir where simulation results are stored. Default: sys.out.
-  * -Nwrite points  Numbers of data points to be stored/written. Defaults to N. NB, not logarithmic!
-  * --GR            Do simulation with general relativity correction term.
-  * --fixSun        Do simulation with sun fixed at 0,0,0. (Sun must be first element in init file!).
-  * --compile       Compile main.cpp to "main.exe" before running.
-  * --q             Run quietly.
-
 - *getInitialConditions.py*  
 This program links with the *astroquery*-API to the JPL Horizons database. It can
 get the desired data from the database, and translate it into the init-files used
