@@ -14,6 +14,7 @@ It should contain the following programs:
 *precession.py*
 
 ## Usage
+## master.py
 To run simulations using *main.cpp* we recommend to use the *master.py*. This file takes arguments from the command line and runs *main.cpp*
 with those parameters. **NB:** make sure to add --compile as a flag if main.exe is missing. The parameters are:
 - required
@@ -36,7 +37,7 @@ Provided that the file *my_sys.dat* and *my_data.out* exsits in initData and dat
 ```console
 foo@bar:~$ python3 master.py -4 5 -sys my_sys.dat -out my_data.out -Nwrite 1000 --fixSun --compile
 ```
-
+## plotter.py
 To recreate the figures shown in the report, we recomend to use *plotter.py*. This file also takes arguments from the commandline, corresponding to different plots. All programs run the required simulation and reads the data dynamically. If you want to change parameters, go into the separate plot files (look in *plotter.py* to find in what files the different plotting code is located) and change default parameters. The parameters set equals the ones used in the report. The plots available are:
 - optional
   * **-h, --help**         show this help message and exit
