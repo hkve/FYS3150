@@ -104,8 +104,8 @@ args:
     force. Default is normal gravity, beta = 2.0.  
     * GR (bool): Specifies whether the general relativity correction term
     to Newtonian gravity should be added to the force. Default is false.  
-    * timeFormat (string): Either "years" or "days". Specifies whether the
-    initial conditions measures time in years or days.  
+    * fixedSun (bool): Simplifies the solver to one where the Sun is 
+    permanently at the origin.  
     * q (bool): If true, the program will not output anything to terminal.
 
 ## Python programs
