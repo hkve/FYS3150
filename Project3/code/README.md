@@ -1,15 +1,63 @@
 # Project 3 code
 ### This folder contains all the programs used to solve project 3
 It should contain the following programs:
-*main.cpp*
-*master.py*
-*getInitialConditions.py*
-*file_reader.py*
-*stability.py*
-*escape_velocity.py*
-*full_solar_system.py*
+*main.cpp*,
+*master.py*,
+*plotter.py*,
+*getInitialConditions.py*,
+*file_reader.py*,
+*stability.py*,
+*escape_velocity.py*,
+*jupiter_influence.py*,
+*full_system.py*,
+*modified_gravity.py*,
 *precession.py*
 
+## Usage
+To run simulations using *main.cpp* we recommend to use the *master.py*. This file takes arguments from the command line and runs *main.cpp*
+with those parameters. **NB:** make sure to add --compile as a flag if main.exe is missing. The parameters are:
+- required
+    * **dt** (int/float): log10 of step length for the simulation in AU/yr
+    * **N** (int/float): log10 of the number of integration steps to use
+- optional
+    * **h, --help** Shows help message (equal to this information) and exits.
+    * **-method** Integration method to use. Must be "euler" or "verlet". Default: "verlet".
+    * **-beta** Change the inverse proportionality of gravity. Must be in range [2,3]. Default = 2 (normal, newtonian gravity)
+    * **-sys** Name of init file in initdData/ dir. Default: sys.dat
+    * **-out** Name of file in data/ dir where simulation results are stored. Default: sys.out
+    * **-Nwrite** Numbers of data points to be stored/written. Defaults to N. NB, not logarithmic!
+    * **--GR** Do simulation with general relativity correction term.
+    * **--fixSun**  Do simulation with sun fixed at 0,0,0. (Sun must be first element in init file!)
+    * **--compile** Compile main.cpp to "main.exe" before running
+    * **--q** Run quietly
+
+### Example
+Provided that the file *my_sys.dat* and *my_data.out* exsits in initData and data respectively, this call compiles *main.cpp* to *main.exe*, runs *main.exe* with step length h=1e-4 and N=1e5, writing 1000 points with the sun fixed at the center 
+```console
+foo@bar:~$ python3 master.py -4 5 -sys my_sys.dat -out my_data.out -Nwrite 1000 --fixSun --compile
+```
+
+To recreate the figures shown in the report, we recomend to use *plotter.py*. This file also takes arguments from the commandline, corresponding to different plots. All programs run the required simulation and reads the data dynamically. If you want to change parameters, go into the separate plot files (look in *plotter.py* to find in what files the different plotting code is located) and change default parameters. The parameters set equals the ones used in the report. The plots available are:
+- optional
+  * **-h, --help**         show this help message and exit
+  * **-circularOrbit**     Plot stable circulat orbit of earth, with sun kept fixed
+  * **-ellipticalOrbits**  Plot elliptical orbits of earth for different inital velocities, with sun kept fixed
+  * **-benchmark**         Preforms a benchmarking of Euler and velocity Verlet and plots the result
+  * **-error**             Check energy conservation for Euler and velocity Verlet and plots the result
+  * **-sunEarthJupiter**   Plot Sun-Earth-Jupiter system with the mass of jupiter scaled by a facotr of 1000
+  * **-radialDistance**    Plot the radial deviation from Earths orbit without Jupiter for different masses of jupiter
+  * **-escapeVelocity**    Plot a visual representation of escape velocity for different inital velocities
+  * **-fullSystem**        Plot our own real system
+  * **-beta10yr**          Path of planet for beta=2.92 over 10 years
+  * **-betaPosEnergy**     Plot path and energy of several beta-sytems
+
+This call will plot the orbit of Earth around the sun with initial conditions creating a circular orbit over 1 year, and with a modfied inverse proportionality of beta = 2.92 (figure 1 and 13 in the report respectively)  
+### Example
+```console
+foo@bar:~$ python3 plotter.py -circularOrbit -beta10yr
+```
+
+# Brief explanation of central programs
 ## C++ programs
 - *main.cpp*
 This program contains the struct Body and the class System.
@@ -107,16 +155,4 @@ the relevant information about that datafile.
    Reads a data file and stores each body as an instance of the body class, containg all the information conserning that body. 
    It also stores information about that specific simulation such as the method used, step length, number of integration steps,
    time used to preform the simulation and how many points that are written to the actual data file
-     * filename (string): The name of the file to read from, stored in the data directory
-  
-
-- *stability.py*  
-This program runs tests on our algorithms. It has three main functions:  
-  * plot_circular_orbit(dt, T_end, method, N_write)  
-  Plots the orbit of the Earth around the Sun for initial conditions which should
-  a circular orbit.
-    * dt (float): integration stepsize
-    * T_end (float): time to simulate forward
-    * method (string): either "euler" or "verlet"
-    * N_write (int): Number of integration points to write to file
-  * plot_error(N_start, N_end, n_tests)  
+     * filename (string): The name of the file to read from, stored in the data directory 
