@@ -189,15 +189,17 @@ def ellipticalOrbits(dt=0.0001, T_end=10, n_v = 4, method="verlet", N_write=1000
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots()
 		T = np.linspace(0, T_end, N_write, endpoint=True)
-		ax.set(xlabel="T [yr]", ylabel="|L| [$M_E AU^2/yr$]")
+		ax.set_xlabel("T [yr]", fontsize=14)
+		ax.set_ylabel("Relative error of |L|", fontsize=14)
 		for i in range(n_v):
 			system = read_data_file(filenames[i])
 			L = angular_momentum(system["Earth"])
+			L = np.abs((L[0]-L)/L[0])
 			ax.plot(T, L, label=labs[i])
+		ax.tick_params(axis='both', which='major', labelsize=13)
 		ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.18),
           ncol=2, fancybox=True, shadow=True, fontsize=13)
 	plt.show()
-
 
 def benchmark(N_start=2, N_end=7, n_tests=50):
 	"""
