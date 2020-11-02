@@ -73,8 +73,7 @@ def findPrecession(dt, GR=False, newsim=False):
         N = np.log10(0.3) - dt # simulates 0.3 of a year, which is just over one orbit
         print("final")
         GR_string = {True:"GR", False:"CLASSIC"}[GR]
-        print(N, f"prec/final_{dt}_{GR_string}.dat")
-        simulate(N, dt, Nwrite=int(1e6), GR=GR, sys="precession_orbit_init.dat", out=f"prec/final_{dt}_{GR_string}.dat", quiet=False)
+        simulate(N, dt, Nwrite=int(1e6), GR=GR, sys="precession_orbit_init.dat", out=f"prec/final_{dt}_{GR_string}.dat", quiet=True)
 
     # Gets the precession of the century simulated and prints
     precession_per_century = getPerihelionAngle(dt, GR=GR)
@@ -86,7 +85,7 @@ def findPrecession(dt, GR=False, newsim=False):
 
 
 if __name__ == '__main__':
-    dts = np.array([-8,-7,-6,-5,-4]) # array of stepsizes to check for
+    dts = np.array([-8, -7, -6, -5,-4]) # array of stepsizes to check for
 
     classic = np.zeros(len(dts)) # empty array to save Newtonian precessions
     GR = np.zeros(len(dts)) # empty array to save GR precessions
