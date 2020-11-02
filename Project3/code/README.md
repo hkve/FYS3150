@@ -63,8 +63,9 @@ To recreate the figures shown in the report, we recomend to use *plotter.py*. Th
   * **-beta10yr**          Path of planet for beta=2.92 over 10 years
   * **-betaPosEnergy**     Plot path and energy of several beta-sytems
 
-This call will plot the orbit of Earth around the sun with initial conditions creating a circular orbit over 1 year, and with a modfied inverse proportionality of beta = 2.92 (figure 1 and 13 in the report respectively)  
+
 ### Example
+This call will plot the orbit of Earth around the sun with initial conditions creating a circular orbit over 1 year, and with a modfied inverse proportionality of beta = 2.92 (figure 1 and 13 in the report respectively)  
 ```console
 foo@bar:~$ python3 plotter.py -circularOrbit -beta10yr
 ```
