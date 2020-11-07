@@ -43,14 +43,14 @@ def str_to_spin(string):
 
 for i,string in enumerate(types):
     spins = str_to_spin(string)
-    
+    print(get_E(spins), spins, np.sum(spins))
     ddic[f"E{int(i//4)}"].append(spin_str(spins))
     ddic[f"s{int(i//4)}"].append(f"{get_E(spins)}")
-    print(int(i//4))
+    #print(int(i//4))
 
 pd.set_option('max_colwidth',200)
 df = pd.DataFrame(ddic, copy=True, columns=4)
 #print(df)
 #print(df.values[0])
-print(df.to_latex(escape=False))
+#print(df.to_latex(escape=False))
         
