@@ -1,11 +1,11 @@
 #include "IsingModel2D.hpp"
 
-using namespace std;
 
-IsingModel::IsingModel(int L_, int MCS_, int MCS_write_) {
+IsingModel::IsingModel(int L_, int MCS_, int MCS_write_, double T_) {
 	L = L_;
 	MCS = MCS_;
 	MCS_write = MCS_write_;
+	T = T_;
 
 	// Make L+2 index array holding [L-1, 0, 2 ... L-1, 0]
 	idx = new int[L+2];
@@ -18,6 +18,10 @@ IsingModel::IsingModel(int L_, int MCS_, int MCS_write_) {
 		spins[i] = new int[L]; // Make room for spin rows 
 		idx[i+1] = i; 		   // Fill rest of idx
 	}
+
+	for(int i = 0; i < 17; i++) {boltzman[i] = 0;}
+	for(int dE = -8; dE <= 8; dE += 4) {boltzman[dE+8] = exp(-dE/T);}
+	for(int i = 0; i < 5; i++) {ExpectationValues[i] = 0;}
 
 	std::random_device rd; 
 	std::mt19937_64 generator (rd()); // Bug, different runs create same result, migth be DMA related, will investigate
@@ -51,24 +55,59 @@ void IsingModel::Initialize(int value=0) {
 }
 
 void IsingModel::Metropolis() {
-	// TBC, making tomorrow
+	int neighbours;
+	int dE; 
+
+	for(int i = 0; i < L*L; i++) {
+		int ix = idistro(generator)%L+1;
+		int iy = idistro(generator)%L+1;
+		
+		neighbours = spins[idx[ix]][idx[iy+1]] +
+					 spins[idx[ix]][idx[iy-1]] +
+					 spins[idx[ix+1]][idx[iy]] +
+					 spins[idx[ix-1]][idx[iy]];
+		
+		dE = 2*spins[idx[ix]][idx[iy]]*neighbours;
+
+		//if(dE < 0 || fdistro(generator) <= boltzman[dE + 8]) {
+		if(fdistro(generator) <= boltzman[dE + 8]) {
+			Energy += dE;
+			Magnetization -= 2*spins[idx[ix]][idx[iy]];
+			spins[idx[ix]][idx[iy]] *= -1;
+		}
+	}
 }
 
 void IsingModel::Solve() {
 	// Main loop over all MCS, Solve is a bad name will figure something out
 	int write = MCS/MCS_write;
+	Energy = initEnergy();
+	Magnetization = initMagnetization();
 
-	for(int cycle = 0; cycle <= MCS; cycle++) {
+	ofstream outfile_lattice("../data/lattice.out");
+
+	writeLattice(outfile_lattice);
+	for(int cycle = 1; cycle <= MCS; cycle++) {
+		Metropolis();
 		
+		ExpectationValues[0] += (double)Energy;
+		ExpectationValues[1] += (double)Energy*Energy;
+		ExpectationValues[2] += (double)Magnetization;
+		ExpectationValues[3] += (double)Magnetization*Magnetization;
+		ExpectationValues[4] += (double)abs(Magnetization);
+
 		// To write some grids for cool plots
 		if(cycle % write == 0) {
-			cout << "write spin gird at cycle " << cycle <<endl;
+			cout << (double)cycle/MCS * 100 << "%" <<endl;
+			writeLattice(outfile_lattice);
 		}
 	}
+
+	outfile_lattice.close();
 }
 
 // Calculating state variables
-int IsingModel::Energy() {
+int IsingModel::initEnergy() {
 	int E;
 	for(int i = 0; i < L; i++) {
 		for(int j = 0; j < L; j++) {
@@ -77,7 +116,7 @@ int IsingModel::Energy() {
 	}
 	return E;
 }
-int IsingModel::Magnetization() {
+int IsingModel::initMagnetization() {
 	int M;
 	for(int i = 0; i < L; i++) {
 		for(int j = 0; j < L; j++) {
@@ -85,6 +124,15 @@ int IsingModel::Magnetization() {
 		}
 	}
 	return M;
+}
+
+void IsingModel::writeLattice(ofstream& file) {
+	for(int i = 0; i < L; i++) {
+		for(int j = 0; j < L; j++) {
+			file << spins[i][j] << " ";
+		}
+	}
+	file << endl;
 }
 
 // Free up memory
@@ -108,12 +156,9 @@ void IsingModel::printSpins() {
 
 int main(int argc, char const *argv[])
 {
-	IsingModel* problem = new IsingModel(2, 1000, 10);
+	IsingModel* problem = new IsingModel(300, 5000, 10, 1); // L=300, MCS=5000, MSC_write=10, T=1
 	
-	problem->Initialize(1);
-	problem->printSpins();
-	cout << "<E> = " << problem->Energy() <<endl;
-	cout << "<M> = " << problem->Magnetization() <<endl;
+	problem->Initialize(0); // Set random init
 	problem->Solve();
 	delete problem;
 	
