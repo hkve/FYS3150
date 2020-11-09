@@ -59,21 +59,30 @@ void IsingModel::Metropolis() {
 	int dE; 
 
 	for(int i = 0; i < L*L; i++) {
-		int ix = idistro(generator)%L+1;
-		int iy = idistro(generator)%L+1;
+		// int ix = idistro(generator)%L+1;
+		// int iy = idistro(generator)%L+1;
 		
-		neighbours = spins[idx[ix]][idx[iy+1]] +
-					 spins[idx[ix]][idx[iy-1]] +
-					 spins[idx[ix+1]][idx[iy]] +
-					 spins[idx[ix-1]][idx[iy]];
+		// neighbours = spins[ix][idx[iy+1]] +
+		// 			 spins[idx[ix]][idx[iy-1]] +
+		// 			 spins[idx[ix+1]][idx[iy]] +
+		// 			 spins[idx[ix-1]][idx[iy]];
 		
-		dE = 2*spins[idx[ix]][idx[iy]]*neighbours;
+		int ix = idistro(generator)%L;
+		int iy = idistro(generator)%L;
+		cout << (ix-1)%L << " " << (iy+1)%L << endl;
+		neighbours = spins[ix][(iy+1)%L] +
+					 spins[ix][abs((iy-1)%L)] +
+					 spins[(ix+1)%L][iy] +
+					 spins[abs((ix-1))%L][iy];
+		cout << ix << " " << iy << endl;
+
+		dE = 2*spins[ix][iy]*neighbours;
 
 		//if(dE < 0 || fdistro(generator) <= boltzman[dE + 8]) {
 		if(fdistro(generator) <= boltzman[dE + 8]) {
-			spins[idx[ix]][idx[iy]] *= -1;
+			spins[ix][iy] *= -1;
 			Energy += (double)dE;
-			Magnetization += (double)2*spins[idx[ix]][idx[iy]];
+			Magnetization += (double)2*spins[ix][iy];
 		}
 	}
 }
@@ -162,13 +171,13 @@ void IsingModel::printExp() {
 
 int main(int argc, char const *argv[])
 {
-	IsingModel* problem = new IsingModel(2, 1, 1, 1); // L=300, MCS=5000, MSC_write=10, T=1
+	IsingModel* problem = new IsingModel(20, 1, 1, 1); // L=300, MCS=5000, MSC_write=10, T=1
 	
 	problem->Initialize(0); // Set random init
-	problem->printSpins();
+	//problem->printSpins();
 	problem->printExp();
 	problem->Solve();
-	problem->printSpins();
+	//problem->printSpins();
 	problem->printExp();
 
 	delete problem;
