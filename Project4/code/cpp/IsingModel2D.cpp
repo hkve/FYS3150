@@ -7,6 +7,7 @@ IsingModel::IsingModel(int L_, int MCS_, int MCS_write_, double T_) {
 	MCS_write = MCS_write_;
 	T = T_;
 
+
 	// Make L+2 index array holding [L-1, 0, 2 ... L-1, 0]
 	idx = new int[L+2];
 	idx[0] = L-1; // Start point
