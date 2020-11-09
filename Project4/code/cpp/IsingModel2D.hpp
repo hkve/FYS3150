@@ -42,7 +42,7 @@ public:
 
 	// Functions usefull for work, migth remove
 	void printSpins();
-
+	void printExp();
 };
 
 #endif

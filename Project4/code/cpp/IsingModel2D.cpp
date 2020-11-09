@@ -71,9 +71,9 @@ void IsingModel::Metropolis() {
 
 		//if(dE < 0 || fdistro(generator) <= boltzman[dE + 8]) {
 		if(fdistro(generator) <= boltzman[dE + 8]) {
-			Energy += dE;
-			Magnetization -= 2*spins[idx[ix]][idx[iy]];
 			spins[idx[ix]][idx[iy]] *= -1;
+			Energy += (double)dE;
+			Magnetization += (double)2*spins[idx[ix]][idx[iy]];
 		}
 	}
 }
@@ -81,20 +81,20 @@ void IsingModel::Metropolis() {
 void IsingModel::Solve() {
 	// Main loop over all MCS, Solve is a bad name will figure something out
 	int write = MCS/MCS_write;
-	Energy = initEnergy();
-	Magnetization = initMagnetization();
-
+	Energy = (double)initEnergy();
+	Magnetization = (double)initMagnetization();
+	
 	ofstream outfile_lattice("../data/lattice.out");
 
 	writeLattice(outfile_lattice);
 	for(int cycle = 1; cycle <= MCS; cycle++) {
 		Metropolis();
 		
-		ExpectationValues[0] += (double)Energy;
-		ExpectationValues[1] += (double)Energy*Energy;
-		ExpectationValues[2] += (double)Magnetization;
-		ExpectationValues[3] += (double)Magnetization*Magnetization;
-		ExpectationValues[4] += (double)abs(Magnetization);
+		ExpectationValues[0] += Energy;
+		ExpectationValues[1] += Energy*Energy;
+		ExpectationValues[2] += Magnetization;
+		ExpectationValues[3] += Magnetization*Magnetization;
+		ExpectationValues[4] += abs(Magnetization);
 
 		// To write some grids for cool plots
 		if(cycle % write == 0) {
@@ -108,16 +108,16 @@ void IsingModel::Solve() {
 
 // Calculating state variables
 int IsingModel::initEnergy() {
-	int E;
+	int E = 0;
 	for(int i = 0; i < L; i++) {
 		for(int j = 0; j < L; j++) {
-			E -= spins[i][j]*(spins[idx[i+1]][idx[j]] + spins[idx[i]][idx[j+1]]);
+			E -= (double)spins[i][j]*(spins[idx[i+1]][idx[j]] + spins[idx[i]][idx[j+1]]);
 		}
 	}
 	return E;
 }
 int IsingModel::initMagnetization() {
-	int M;
+	int M = 0;
 	for(int i = 0; i < L; i++) {
 		for(int j = 0; j < L; j++) {
 			M += spins[i][j];
@@ -154,12 +154,23 @@ void IsingModel::printSpins() {
 	}
 }
 
+void IsingModel::printExp() {
+	double temp = 1/(double)MCS;
+	cout << "<E>" << ExpectationValues[0]*temp <<endl;
+	cout << "<M>" << ExpectationValues[2]*temp <<endl;
+}
+
 int main(int argc, char const *argv[])
 {
-	IsingModel* problem = new IsingModel(300, 5000, 10, 1); // L=300, MCS=5000, MSC_write=10, T=1
+	IsingModel* problem = new IsingModel(2, 1, 1, 1); // L=300, MCS=5000, MSC_write=10, T=1
 	
 	problem->Initialize(0); // Set random init
+	problem->printSpins();
+	problem->printExp();
 	problem->Solve();
+	problem->printSpins();
+	problem->printExp();
+
 	delete problem;
 	
 	return 0;
