@@ -17,7 +17,8 @@ private:
 	int MCS; // Number of cycles
 	int MCS_write; // Number of cycles to write
 	int** spins; // Holding all spins
-	
+	int* idx; // Index array that worked surprisingly well
+
 	double Energy, Magnetization;
 	double boltzman[17]; 
 	double ExpectationValues[5]; // To store E, M, E², M², |M|
@@ -29,7 +30,6 @@ public:
 	// Logic functions
 	IsingModel(int L_, int MCS_ , int MCS_write_, double T_);
 	void Initialize(int value);
-	inline int PBC(int idx) {return (idx+L)%L;}
 	void Metropolis();
 	void Solve();
 	~IsingModel();

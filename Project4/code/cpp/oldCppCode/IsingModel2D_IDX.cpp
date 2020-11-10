@@ -1,4 +1,4 @@
-#include "IsingModel2D.hpp"
+#include "IsingModel2D_IDX.hpp"
 
 
 IsingModel::IsingModel(int L_, int MCS_, int MCS_write_, double T_) {
@@ -8,11 +8,16 @@ IsingModel::IsingModel(int L_, int MCS_, int MCS_write_, double T_) {
 	T = T_;
 
 
+	// Make L+2 index array holding [L-1, 0, 2 ... L-1, 0]
+	idx = new int[L+2];
+	idx[0] = L-1; // Start point
+	idx[L+1] = 0; // End point
 	
 	// Make LxL array for spins
 	spins = new int*[L];
 	for(int i = 0; i < L; i++) {
 		spins[i] = new int[L]; // Make room for spin rows 
+		idx[i+1] = i; 		   // Fill rest of idx
 	}
 
 	for(int i = 0; i < 17; i++) {boltzman[i] = 0;}
@@ -50,27 +55,27 @@ void IsingModel::Initialize(int value=0) {
 
 }
 
-
 void IsingModel::Metropolis() {
 	int neighbours;
 	int dE; 
 
 	for(int i = 0; i < L*L; i++) {
-		int ix = idistro(generator)%L;
-		int iy = idistro(generator)%L;
+		int ix = idistro(generator)%L+1;
+		int iy = idistro(generator)%L+1;
 		
-		neighbours = spins[ix][PBC(iy+1)] +
-					 spins[ix][PBC(iy-1)] +
-					 spins[PBC(ix+1)][iy] +
-					 spins[PBC(ix-1)][iy];
+		neighbours = spins[idx[ix]][idx[iy+1]] +
+		 			 spins[idx[ix]][idx[iy-1]] +
+		 			 spins[idx[ix+1]][idx[iy]] +
+		 			 spins[idx[ix-1]][idx[iy]];
+
 		
-		dE = 2*spins[ix][iy]*neighbours;
+		dE = 2*spins[idx[ix]][idx[iy]]*neighbours;
 
 		//if(dE < 0 || fdistro(generator) <= boltzman[dE + 8]) {
 		if(fdistro(generator) <= boltzman[dE + 8]) {
-			spins[ix][iy] *= -1;
+			spins[idx[ix]][idx[iy]] *= -1;
 			Energy += (double)dE;
-			Magnetization += (double)2*spins[ix][iy];
+			Magnetization += (double)2*spins[idx[ix]][idx[iy]];
 		}
 	}
 }
@@ -108,7 +113,7 @@ int IsingModel::initEnergy() {
 	int E = 0;
 	for(int i = 0; i < L; i++) {
 		for(int j = 0; j < L; j++) {
-			E -= (double)spins[i][j]*(spins[PBC(i-1)][j] + spins[i][PBC(j-1)]);
+			E -= (double)spins[i][j]*(spins[idx[i+1]][idx[j]] + spins[idx[i]][idx[j+1]]);
 		}
 	}
 	return E;
@@ -134,6 +139,7 @@ void IsingModel::writeLattice(ofstream& file) {
 
 // Free up memory
 IsingModel::~IsingModel() {
+	delete [] idx;
 	for(int i = 0; i < L; i++) {
 		delete [] spins[i];
 	}
@@ -158,13 +164,15 @@ void IsingModel::printExp() {
 
 int main(int argc, char const *argv[])
 {
-
-	IsingModel* problem = new IsingModel(10,1000,1,1);
-	problem->Initialize(0);
-	problem->printExp();
-	problem->printSpins();
-	problem->Solve();
-	problem->printSpins();
-	problem->printExp();
+	for(int i = 0; i < 10; i++) {
+		clock_t t;
+		t = clock(); 	
+		IsingModel* problem = new IsingModel(100, 100000, 1, 1); // L=300, MCS=5000, MSC_write=10, T=1
+		problem->Initialize(0); // Set random init
+		problem->Solve();
+		delete problem;
+		t = clock() - t;
+		cout << t <<endl;
+	}
 	return 0;
 }
