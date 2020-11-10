@@ -107,7 +107,7 @@ int IsingModel::initEnergy() {
 	int E = 0;
 	for(int i = 0; i < L; i++) {
 		for(int j = 0; j < L; j++) {
-			E -= (double)spins[i][j]*(spins[PBC(i-1)][j] + spins[i][PBC(j-1)]);
+			E -= spins[i][j]*(spins[PBC(i-1)][j] + spins[i][PBC(j-1)]);
 		}
 	}
 	return E;
@@ -135,14 +135,14 @@ void IsingModel::writeLattice(ofstream& file) {
 
 void IsingModel::writeFinalExpValues(string filename) {
 	double E = ExpectationValues[0]/MCS;
-	double M = ExpectationValues[1]/MCS;
-	double E2 = ExpectationValues[2]/MCS;
+	double E2 = ExpectationValues[1]/MCS;
+	double M = ExpectationValues[2]/MCS;
 	double M2 = ExpectationValues[3]/MCS;
 	double Mabs = ExpectationValues[4]/MCS;
-	double CV = (E2-E*E)/(T*T); // Heat caps
-	double X = (M2-M*M)/(T);  // susceptibility
+	double varE = E2-E*E;
+	double varM = M2-M*M;
 	ofstream outfile(filename, ios_base::app); // Appending to file
-	outfile << E << " " << M << " " << E2 << " " << M2 << " " << Mabs << " " << CV << " " << X << T << endl;
+	outfile << E << " " << M << " " << E2 << " " << M2 << " " << Mabs << " " << varE << " " << varM << " " << T << endl;
 	outfile.close();
 }
 
