@@ -95,12 +95,12 @@ void IsingModel::Solve() {
 
 		// To write some grids for cool plots
 		if(cycle % write == 0) {
-			//cout << (double)cycle/MCS * 100 << "%" <<endl;
+			cout << (double)cycle/MCS * 100 << "%" <<endl;
 			writeLattice(outfile_lattice);
 		}
 	}
-
 	outfile_lattice.close();
+	writeFinalExpValues("../data/exp_values.out");
 }
 
 // Calculating state variables
@@ -123,7 +123,9 @@ int IsingModel::initMagnetization() {
 	return M;
 }
 
+// Write2file functions
 void IsingModel::writeLattice(ofstream& file) {
+	// Write spin lattice to file
 	for(int i = 0; i < L; i++) {
 		for(int j = 0; j < L; j++) {
 			file << spins[i][j] << " ";
@@ -131,6 +133,20 @@ void IsingModel::writeLattice(ofstream& file) {
 	}
 	file << endl;
 }
+
+void IsingModel::writeFinalExpValues(string filename) {
+	double E = ExpectationValues[0]/MCS;
+	double M = ExpectationValues[1]/MCS;
+	double E2 = ExpectationValues[2]/MCS;
+	double M2 = ExpectationValues[3]/MCS;
+	double Mabs = ExpectationValues[4]/MCS;
+	double CV = (E2-E*E)/(T*T); // Heat caps
+	double X = (M2-M*M)/(T);  // susceptibility
+	ofstream outfile(filename, ios_base::app); // Appending to file
+	outfile << E << " " << M << " " << E2 << " " << M2 << " " << Mabs << " " << CV << " " << X <<endl;
+	outfile.close();
+}
+
 
 // Free up memory
 IsingModel::~IsingModel() {
@@ -155,16 +171,13 @@ void IsingModel::printExp() {
 	cout << "<E>" << ExpectationValues[0]*temp <<endl;
 	cout << "<M>" << ExpectationValues[2]*temp <<endl;
 }
-
+/*
 int main(int argc, char const *argv[])
 {
 
-	IsingModel* problem = new IsingModel(10,1000,1,1);
+	IsingModel* problem = new IsingModel(2,1000,1,1);
 	problem->Initialize(0);
-	problem->printExp();
-	problem->printSpins();
 	problem->Solve();
-	problem->printSpins();
-	problem->printExp();
 	return 0;
 }
+*/

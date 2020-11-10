@@ -7,6 +7,7 @@
 #include <cmath>   // For exp()
 #include <fstream> // For write2file
 #include <time.h>
+#include <string>
 
 using namespace std;
 
@@ -29,7 +30,7 @@ public:
 	// Logic functions
 	IsingModel(int L_, int MCS_ , int MCS_write_, double T_);
 	void Initialize(int value);
-	inline int PBC(int idx) {return (idx+L)%L;}
+	inline int PBC(int idx) {return (idx+L)%L;} // For periodic boundary conditions
 	void Metropolis();
 	void Solve();
 	~IsingModel();
@@ -40,6 +41,7 @@ public:
 
 	// Writing to file
 	void writeLattice(ofstream& file);	
+	void writeFinalExpValues(string filename);
 
 	// Functions usefull for work, migth remove
 	void printSpins();
