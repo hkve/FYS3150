@@ -95,12 +95,11 @@ void IsingModel::Solve() {
 
 		// To write some grids for cool plots
 		if(cycle % write == 0) {
-			cout << (double)cycle/MCS * 100 << "%" <<endl;
+			//cout << (double)cycle/MCS * 100 << "%" <<endl;
 			writeLattice(outfile_lattice);
 		}
 	}
 	outfile_lattice.close();
-	writeFinalExpValues("../data/exp_values.out");
 }
 
 // Calculating state variables
@@ -143,7 +142,7 @@ void IsingModel::writeFinalExpValues(string filename) {
 	double CV = (E2-E*E)/(T*T); // Heat caps
 	double X = (M2-M*M)/(T);  // susceptibility
 	ofstream outfile(filename, ios_base::app); // Appending to file
-	outfile << E << " " << M << " " << E2 << " " << M2 << " " << Mabs << " " << CV << " " << X <<endl;
+	outfile << E << " " << M << " " << E2 << " " << M2 << " " << Mabs << " " << CV << " " << X << T << endl;
 	outfile.close();
 }
 
