@@ -11,10 +11,11 @@ Z = 12 + 4*np.cosh(8/T)
 E_ana = -32/Z * np.sinh(8/T) 
 Mabs_ana = 8/Z * (2+np.exp(8/T))
 Cv_ana = 1024/(T*Z)**2 *(3*np.cosh(8/T)+1)
-X_ana = 32/(T*Z) * (1+8*np.exp(8/T))
+X_ana = 32/(T*Z) * (1+np.exp(8/T))
 
 with sns.axes_style("darkgrid"):
-	fig, axes = plt.subplots(nrows=2,ncols=2)	
+	fig, axes = plt.subplots(nrows=2,ncols=2)
+	
 	axes[0,0].scatter(T, E)
 	axes[0,1].scatter(T, Mabs)
 	axes[1,0].scatter(T, CV)
