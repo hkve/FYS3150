@@ -1,6 +1,10 @@
 model: compile_model run_model
 2x2 : 2x2_compile 2x2_run
 
+20x20_compile:
+	g++ -O3 -o 20x20_lattice.out 20x20_lattice.cpp IsingModel2D.cpp
+
+
 compile_model:
 	g++ -O3 -o IsingModel2D.out IsingModel2D.cpp
 
