@@ -18,16 +18,13 @@ IsingModel::IsingModel(int L_, int MCS_, int MCS_write_, double T_) {
 	for(int i = 0; i < 17; i++) {boltzman[i] = 0;}
 	for(int dE = -8; dE <= 8; dE += 4) {boltzman[dE+8] = exp(-dE/T);}
 	for(int i = 0; i < 5; i++) {ExpectationValues[i] = 0;}
-
-	std::random_device rd; 
-	std::mt19937_64 generator (rd()); // Bug, different runs create same result, migth be DMA related, will investigate
-	std::uniform_real_distribution<double> fdistro(0,1);
-	std::uniform_int_distribution<int> idistro(0,L-1);
 }
 
 void IsingModel::Initialize(int value=0) {
 	// Initialization of spin lattice, value chooses init state. 0 [random, defualt] * 1 [up] * -1 [down] 
-
+	std::random_device rd; 
+	std::mt19937_64 generator (rd()); 
+	std::uniform_real_distribution<double> fdistro(0,1);
 	// If random init state
 	if(value == 0) { 
 		for(int i = 0; i < L; i++) {
@@ -51,13 +48,15 @@ void IsingModel::Initialize(int value=0) {
 }
 
 
-void IsingModel::Metropolis() {
+void IsingModel::Metropolis(uniform_real_distribution<double> &fdistro, 
+							uniform_int_distribution<int> &idistro,
+							mt19937_64 &generator) {
 	int neighbours;
 	int dE; 
 
 	for(int i = 0; i < L*L; i++) {
-		int ix = idistro(generator)%L;
-		int iy = idistro(generator)%L;
+		int ix = idistro(generator);
+		int iy = idistro(generator);
 		
 		neighbours = spins[ix][PBC(iy+1)] +
 					 spins[ix][PBC(iy-1)] +
@@ -66,7 +65,6 @@ void IsingModel::Metropolis() {
 		
 		dE = 2*spins[ix][iy]*neighbours;
 
-		//if(dE < 0 || fdistro(generator) <= boltzman[dE + 8]) {
 		if(fdistro(generator) <= boltzman[dE + 8]) {
 			spins[ix][iy] *= -1;
 			Energy += (double)dE;
@@ -83,9 +81,14 @@ void IsingModel::Solve() {
 	
 	ofstream outfile_lattice("../data/lattice.out");
 
+	std::random_device rd; 
+	std::mt19937_64 generator (rd()); 
+	std::uniform_real_distribution<double> fdistro(0,1);
+	std::uniform_int_distribution<int> idistro(0,L-1);
+
 	writeLattice(outfile_lattice);
 	for(int cycle = 1; cycle <= MCS; cycle++) {
-		Metropolis();
+		Metropolis(fdistro, idistro, generator);
 		
 		ExpectationValues[0] += Energy;
 		ExpectationValues[1] += Energy*Energy;
@@ -95,7 +98,6 @@ void IsingModel::Solve() {
 
 		// To write some grids for cool plots
 		if(cycle % write == 0) {
-			//cout << (double)cycle/MCS * 100 << "%" <<endl;
 			writeLattice(outfile_lattice);
 		}
 	}
@@ -170,13 +172,16 @@ void IsingModel::printExp() {
 	cout << "<E>" << ExpectationValues[0]*temp <<endl;
 	cout << "<M>" << ExpectationValues[2]*temp <<endl;
 }
+
 /*
 int main(int argc, char const *argv[])
 {
 
 	IsingModel* problem = new IsingModel(2,1000,1,1);
 	problem->Initialize(0);
+	problem->printSpins();
 	problem->Solve();
+	problem->printSpins();
 	return 0;
 }
 */

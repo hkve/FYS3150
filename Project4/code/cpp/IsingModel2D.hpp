@@ -23,15 +23,14 @@ private:
 	double boltzman[17]; 
 	double ExpectationValues[5]; // To store E, M, E², M², |M|
 
-	std::mt19937_64 generator; // Random number generator 
-	std::uniform_real_distribution<double> fdistro; // To initialize spins 
-	std::uniform_int_distribution<int> idistro;    // To choose random spin flip
 public:
 	// Logic functions
 	IsingModel(int L_, int MCS_ , int MCS_write_, double T_);
 	void Initialize(int value);
 	inline int PBC(int idx) {return (idx+L)%L;} // For periodic boundary conditions
-	void Metropolis();
+	void Metropolis(uniform_real_distribution<double> &fdistro,
+				    uniform_int_distribution<int> &idistro,  
+				    mt19937_64 &generator);
 	void Solve();
 	~IsingModel();
 
