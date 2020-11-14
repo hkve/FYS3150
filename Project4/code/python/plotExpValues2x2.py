@@ -3,7 +3,7 @@ def main():
 	import matplotlib.pyplot as plt
 	import seaborn as sns
 
-	data = np.loadtxt("../data/expValues.out")
+	data = np.loadtxt("../data/2x2EXP.out")
 
 	E, M, E2, M2, Mabs, varE, varM, T = data[:,0], data[:,1], data[:,2], data[:,3], data[:,4], data[:,5], data[:,6], data[:,7]
 	CV = varE/T**2
@@ -35,3 +35,4 @@ def main():
 		axes[1,0].set_xlabel("T", fontsize=fontsize)
 		axes[1,1].set_xlabel("T", fontsize=13)
 	plt.show()
+

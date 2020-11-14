@@ -1,17 +1,15 @@
-model: compile_model run_model
-2x2 : 2x2_compile 2x2_run
-
-20x20_compile:
-	g++ -O3 -o 20x20_lattice.out 20x20_lattice.cpp IsingModel2D.cpp
-
-
 compile_model:
 	g++ -O3 -o IsingModel2D.out IsingModel2D.cpp
 
-run_model: 
-	./IsingModel2D.out 
-
-2x2_compile:
+2x2:
 	g++ -O3 -o 2x2_lattice.out 2x2_lattice.cpp IsingModel2D.cpp
-2x2_run:
-	./2x2_lattice.out $s $e $f
+
+2x2MCS:
+	g++ -O3 -o 2x2_lattice_MCS.out 2x2_lattice_MCS.cpp IsingModel2D.cpp
+
+20x20:
+	g++ -O3 -o 20x20_lattice.out 20x20_lattice.cpp IsingModel2D.cpp
+
+
+
+

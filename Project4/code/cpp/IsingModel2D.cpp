@@ -144,7 +144,9 @@ void IsingModel::writeFinalExpValues(string filename) {
 	double varE = E2-E*E;
 	double varM = M2-M*M;
 	ofstream outfile(filename, ios_base::app); // Appending to file
-	outfile << E << " " << M << " " << E2 << " " << M2 << " " << Mabs << " " << varE << " " << varM << " " << T << endl;
+	outfile << E << " " << M << " " << E2 << " " 
+			<< M2 << " " << Mabs << " " << varE << " "
+			<< varM << " " << T << " " << MCS << endl;
 	outfile.close();
 }
 
