@@ -1,4 +1,4 @@
-def main():
+def main(sim = False):
 	import numpy as np
 	import matplotlib.pyplot as plt
 	from subprocess import run
@@ -11,7 +11,6 @@ def main():
 	N = 200
 	MCCs = np.logspace(1, 6, N, dtype=int)
 	
-	sim = False
 	filenames = [f"2x2_{T}.out" for T in T_]
 	for T, filename in zip(T_, filenames):
 		for MCC in MCCs:

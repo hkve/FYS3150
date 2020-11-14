@@ -1,8 +1,11 @@
-def main():
+def main(sim = False):
 	import numpy as np
 	import matplotlib.pyplot as plt
 	import seaborn as sns
-
+	if sim:
+		print("--sim called. however, no default function call for plotExpValues2x2.py has been defined")
+		import sys 
+		sys.exit()
 	data = np.loadtxt("../data/2x2EXP.out")
 
 	E, M, E2, M2, Mabs, varE, varM, T = data[:,0], data[:,1], data[:,2], data[:,3], data[:,4], data[:,5], data[:,6], data[:,7]

@@ -1,4 +1,4 @@
-def main():
+def main(sim = False):
     import numpy as np
     import matplotlib.pyplot as plt
     import seaborn as sns
@@ -10,7 +10,7 @@ def main():
     dMCCs = 100
     T_ = [1,2.4]
     initSpin_ = [0,1]
-    sim = not True
+    
     MCCs = np.array([1,5,10,50,100,200,300,400,500,600,700,800,900,1000,1200,1500,1800,2200,2600,3000,3400,5000,6000,7000,8000,9000,10000,20000,30000,40000,80000,100000])
     MCCs = np.asarray(np.logspace(0,5, 100),dtype=np.int32)
     print(MCCs)
