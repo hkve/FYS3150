@@ -5,11 +5,9 @@ def main(sim = False):
 	import seaborn as sns
 	import sys
 
-	MCCs_start = 10
-	MCCs_end = 10000
 	T_ = [1,3]
 	N = 200
-	MCCs = np.logspace(1, 6, N, dtype=int)
+	MCCs = np.logspace(1, 6, N, dtype=int, endpoint=True)
 	
 	filenames = [f"2x2_{T}.out" for T in T_]
 	for T, filename in zip(T_, filenames):
@@ -26,7 +24,7 @@ def main(sim = False):
 		axes[0].set(xscale="log")
 		axes[1].set(xscale="log")
 		for filename in filenames:
-			data = np.loadtxt("../data/" + filename)
+			data = np.loadtxt(f"../data/{filename}")
 
 			T = data[0,-2]
 			MCCs = data[:,-1]

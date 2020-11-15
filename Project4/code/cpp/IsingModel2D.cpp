@@ -155,7 +155,7 @@ void IsingModel::writeAcceptedFlips(string filename) {
 	ofstream outfile(filename, ios_base::app); // Apennding to file
 	int attemptedFlips = L*L*MCS;
 	double ratioFlips = (double) acceptedFlips/attemptedFlips;
-	outfile << acceptedFlips << " " << attemptedFlips << " " << ratioFlips <<endl;
+	outfile << acceptedFlips << " " << attemptedFlips << " " << ratioFlips << " " << L << " " << MCS <<endl;
 	outfile.close();
 }
 
