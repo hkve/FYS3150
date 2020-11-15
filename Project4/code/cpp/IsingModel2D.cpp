@@ -8,7 +8,7 @@ IsingModel::IsingModel(int L_, int MCS_, int MCS_write_, double T_) {
 	T = T_;
 
 
-	
+	acceptedFlips = 0; 	
 	// Make LxL array for spins
 	spins = new int*[L];
 	for(int i = 0; i < L; i++) {
@@ -69,6 +69,7 @@ void IsingModel::Metropolis(uniform_real_distribution<double> &fdistro,
 			spins[ix][iy] *= -1;
 			Energy += (double)dE;
 			Magnetization += (double)2*spins[ix][iy];
+			acceptedFlips++;
 		}
 	}
 }
@@ -150,6 +151,13 @@ void IsingModel::writeFinalExpValues(string filename) {
 	outfile.close();
 }
 
+void IsingModel::writeAcceptedFlips(string filename) {
+	ofstream outfile(filename, ios_base::app); // Apennding to file
+	int attemptedFlips = L*L*MCS;
+	double ratioFlips = (double) acceptedFlips/attemptedFlips;
+	outfile << acceptedFlips << " " << attemptedFlips << " " << ratioFlips <<endl;
+	outfile.close();
+}
 
 // Free up memory
 IsingModel::~IsingModel() {

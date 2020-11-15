@@ -23,6 +23,7 @@ private:
 	double boltzman[17]; 
 	double ExpectationValues[5]; // To store E, M, E², M², |M|
 
+	int acceptedFlips;
 public:
 	// Logic functions
 	IsingModel(int L_, int MCS_ , int MCS_write_, double T_);
@@ -41,6 +42,7 @@ public:
 	// Writing to file
 	void writeLattice(ofstream& file);	
 	void writeFinalExpValues(string filename);
+	void writeAcceptedFlips(string filename);
 
 	// Functions usefull for work, migth remove
 	void printSpins();
