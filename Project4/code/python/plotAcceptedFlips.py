@@ -31,4 +31,3 @@ def main(sim = False):
 		plt.legend()
 		plt.show()
 		
-main(sim = False)

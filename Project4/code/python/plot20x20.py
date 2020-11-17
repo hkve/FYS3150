@@ -13,7 +13,6 @@ def main(sim = False):
     
     MCCs = np.array([1,5,10,50,100,200,300,400,500,600,700,800,900,1000,1200,1500,1800,2200,2600,3000,3400,5000,6000,7000,8000,9000,10000,20000,30000,40000,80000,100000])
     MCCs = np.asarray(np.logspace(0,5, 100),dtype=np.int32)
-    print(MCCs)
     E_ = []
     Mabs_ = []
 
@@ -58,4 +57,5 @@ def main(sim = False):
 
         axes[0].set_ylabel("$\\langle E \\rangle / L^2$", fontsize=13)
         axes[1].set_ylabel("$ \\left <|M|\\right > / L^2 $", fontsize=13)
+    print("Plot not in log(x)-y format, press 'k' in plot window to change format")
     plt.show()
