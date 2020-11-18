@@ -8,7 +8,7 @@ def main(sim = False):
 	Tend = 4
 	dt = 0.1
 	MCCs = int(1e6)
-	filename = "../data/2x2EXP.out"
+	filename = "2x2EXP.out"
 
 	if sim:
 		#print("--sim called. however, no default function call for plotExpValues2x2.py has been defined")
