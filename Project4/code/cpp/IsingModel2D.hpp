@@ -8,6 +8,7 @@
 #include <fstream> // For write2file
 #include <time.h>
 #include <string>
+#include <iomanip>
 
 using namespace std;
 
@@ -15,8 +16,8 @@ class IsingModel {
 private:
 	int L; // Dimension of LxL lattice
 	double T; // Temperature
-	int MCS; // Number of cycles
-	int MCS_write; // Number of cycles to write
+	int MCCs; // Number of cycles
+	int MCCs_write; // Number of cycles to write
 	int** spins; // Holding all spins
 	
 	double Energy, Magnetization;
@@ -26,7 +27,7 @@ private:
 	int acceptedFlips;
 public:
 	// Logic functions
-	IsingModel(int L_, int MCS_ , int MCS_write_, double T_);
+	IsingModel(int L_, int MCCs_ , int MCCs_write_, double T_);
 	void Initialize(int value);
 	inline int PBC(int idx) {return (idx+L)%L;} // For periodic boundary conditions
 	void Metropolis(uniform_real_distribution<double> &fdistro,
