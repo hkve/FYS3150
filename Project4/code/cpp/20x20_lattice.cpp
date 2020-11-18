@@ -1,7 +1,9 @@
 #include "IsingModel2D.hpp"
 
 int main(int argc, char const *argv[])
-{
+{   
+    // tror kommentarene under er feil, evt fjern de senere
+    
 	/*args:
     T (double): Temperature in kT/J
     MCCs_start (double): Cycle start 
