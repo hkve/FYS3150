@@ -11,8 +11,7 @@ int main(int argc, char const *argv[])
 	double T_end = atof(argv[2]);
 	double dT = atof(argv[3]);
 	int MCS = atoi(argv[4]);
-	string path = "../data/";
-	string filename = path + argv[5];
+	string filename = argv[5];
 	
 	if(T_start == T_end) {
 		IsingModel* problem = new IsingModel(2,MCS,1,T_start);

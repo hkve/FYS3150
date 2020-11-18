@@ -74,6 +74,14 @@ void IsingModel::Metropolis(uniform_real_distribution<double> &fdistro,
 	}
 }
 
+void IsingModel::UpdateExpValues() {
+	ExpectationValues[0] += Energy;
+	ExpectationValues[1] += Energy*Energy;
+	ExpectationValues[2] += Magnetization;
+	ExpectationValues[3] += Magnetization*Magnetization;
+	ExpectationValues[4] += abs(Magnetization);
+}
+
 void IsingModel::Solve() {
 	// Main loop over all MCS, Solve is a bad name will figure something out
 	int write = MCS/MCS_write;
@@ -90,12 +98,7 @@ void IsingModel::Solve() {
 	writeLattice(outfile_lattice);
 	for(int cycle = 1; cycle <= MCS; cycle++) {
 		Metropolis(fdistro, idistro, generator);
-		
-		ExpectationValues[0] += Energy;
-		ExpectationValues[1] += Energy*Energy;
-		ExpectationValues[2] += Magnetization;
-		ExpectationValues[3] += Magnetization*Magnetization;
-		ExpectationValues[4] += abs(Magnetization);
+		UpdateExpValues();
 
 		// To write some grids for cool plots
 		if(cycle % write == 0) {
@@ -103,6 +106,28 @@ void IsingModel::Solve() {
 		}
 	}
 	outfile_lattice.close();
+}
+
+void IsingModel::Solve_ExpAfterStabilize(int stableAfter, string filename) {
+	Energy = (double)initEnergy();
+	Magnetization = (double)initMagnetization();
+
+	std::random_device rd; 
+	std::mt19937_64 generator (rd()); 
+	std::uniform_real_distribution<double> fdistro(0,1);
+	std::uniform_int_distribution<int> idistro(0,L-1);	
+
+	ofstream outfile_energy(filename);
+
+	for(int cycle = 1; cycle <= MCS; cycle++) {
+		Metropolis(fdistro, idistro, generator);
+		UpdateExpValues();
+
+		if(cycle >= stableAfter) {
+			outfile_energy << (double)Energy/L/L << endl;
+			//outfile_energy << (double)ExpectationValues[0]/cycle <<endl;
+		}
+	}
 }
 
 // Calculating state variables
@@ -158,6 +183,7 @@ void IsingModel::writeAcceptedFlips(string filename) {
 	outfile << acceptedFlips << " " << attemptedFlips << " " << ratioFlips << " " << L << " " << MCS <<endl;
 	outfile.close();
 }
+
 
 // Free up memory
 IsingModel::~IsingModel() {

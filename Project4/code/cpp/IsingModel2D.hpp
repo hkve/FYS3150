@@ -32,7 +32,9 @@ public:
 	void Metropolis(uniform_real_distribution<double> &fdistro,
 				    uniform_int_distribution<int> &idistro,  
 				    mt19937_64 &generator);
+	void UpdateExpValues();
 	void Solve();
+	void Solve_ExpAfterStabilize(int stableAfter, string filename);
 	~IsingModel();
 
 	// Calculating state variables

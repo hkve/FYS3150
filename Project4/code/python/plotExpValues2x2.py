@@ -2,12 +2,20 @@ def main(sim = False):
 	import numpy as np
 	import matplotlib.pyplot as plt
 	import seaborn as sns
-	if sim:
-		print("--sim called. however, no default function call for plotExpValues2x2.py has been defined")
-		import sys 
-		sys.exit()
-	data = np.loadtxt("../data/2x2EXP.out")
+	from subprocess import run
+	
+	Tstart = 2
+	Tend = 4
+	dt = 0.1
+	MCCs = int(1e6)
+	filename = "../data/2x2EXP.out"
 
+	if sim:
+		#print("--sim called. however, no default function call for plotExpValues2x2.py has been defined")
+		run(f"../cpp/2x2_lattice.out {Tstart} {Tend} {dt} {MCCs} {filename}".split())
+			
+	data = np.loadtxt("../data/2x2EXP.out")
+	print(data)
 	E, M, E2, M2, Mabs, varE, varM, T = data[:,0], data[:,1], data[:,2], data[:,3], data[:,4], data[:,5], data[:,6], data[:,7]
 	CV = varE/T**2
 	X = varM/T
