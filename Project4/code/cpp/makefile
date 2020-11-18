@@ -10,6 +10,7 @@ acceptedFlips:
 20x20:
 	g++ -O3 -o 20x20_lattice.out 20x20_lattice.cpp IsingModel2D.cpp
 
-
+energyCount:
+	g++ -O3 -o 20x20_energy_count.out 20x20_energy_count.cpp IsingModel2D.cpp
 
 
