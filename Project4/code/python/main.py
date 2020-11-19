@@ -2,7 +2,7 @@ import numpy as np
 import sys, argparse, subprocess, argcomplete
 
 
-import plot20x20, plotExpValues2x2, plotMCS2x2, plotAcceptedFlips
+import plot20x20, plotExpValues2x2, plotMCS2x2, plotAcceptedFlips, plotEnergyHistogram
 
 
 class fakeStr(str):
@@ -26,7 +26,7 @@ parser._optionals.title = 'args'
 parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS, help='Show this help message and exit.')
 argparse._HelpAction(option_strings=['-h', '--help'], dest='help', default='==SUPPRESS==', help='Show this help message and exit.')
 
-parser.add_argument('type',type=str,  choices = ["2x2", "20x20", "plot-exp-2x2", "plot-EM-20x20", "plot-MCCs-2x2", "plot-accepted-flips"],help="Follow program name by optional program specific parameters listed below")
+parser.add_argument('type',type=str,  choices = ["2x2", "20x20", "plot-exp-2x2", "plot-EM-20x20", "plot-MCCs-2x2", "plot-accepted-flips", "plot-E-hist"],help="Follow program name by optional program specific parameters listed below")
 parser.add_argument("-MCCs", metavar="",type=int, help="int. Number of MCCs to perform")
 parser.add_argument("-T", metavar="",type=float, help="float. System temperature")
 parser.add_argument("-T0", metavar = "", type=float, help="float. Start temperature")
@@ -43,7 +43,8 @@ progparams.add_argument(fakeStr("-fake20x20"), metavar = "20x20 [-T] [-MCCs] [-i
 progparams.add_argument(fakeStr("-fakeplot2x2"), metavar = "plot-exp-2x2 [--sim]", required=False, action="append", help="Plots exp. values for a 2x2 lattice")
 progparams.add_argument(fakeStr("-fakeplot2x2_MCCs"), metavar = "plot-MCCs-2x2 [--sim]", required=False, action="append", help="Plots exp. values vs MCCs for a 2x2 lattice")
 progparams.add_argument(fakeStr("-fakeplot20x20"), metavar = "plot-EM-20x20 [--sim]", required=False, action="append", help="Plots E and M for a 20x20 lattice")
-progparams.add_argument(fakeStr("-fakeplotAccFlip"), metavar = "plot-accepted-flips [--sim]", required=False, action="append", help="DESCRIPTION MISSING")
+progparams.add_argument(fakeStr("-fakeplotAccFlip"), metavar = "plot-accepted-flips [--sim]", required=False, action="append", help="DESCRIPTION MISSING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+progparams.add_argument(fakeStr("-fakeplotEhist"), metavar = "plot-E-hist [--sim]", required=False, action="append", help="Plot energy histogram for temperatures T=1 and T=2.4")
 
 
 examples = parser.add_argument_group("#Examples#")
@@ -109,3 +110,8 @@ if __name__ == "__main__":
       defaults["sim"] = False
       args = assignDefaults(args, defaults)
       plotAcceptedFlips.main(args["sim"])
+    
+    elif args.type == "plot-E-hist":
+      defaults["sim"] = False
+      args = assignDefaults(args, defaults)
+      plotEnergyHistogram.main(args["sim"])
