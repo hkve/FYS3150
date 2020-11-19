@@ -13,4 +13,5 @@ acceptedFlips:
 energyCount:
 	g++ -O3 -o 20x20_energy_count.out 20x20_energy_count.cpp IsingModel2D.cpp
 
-
+paralell:
+	g++ -O3 -o paralell.out IsingModel2DParalell.cpp -fopenmp

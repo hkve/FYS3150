@@ -53,3 +53,4 @@ def main(sim = False):
 	fig.legend(lines,labels,loc='upper center', ncol=2, fancybox=True, shadow=True,fontsize=14)
 	plt.show()
 
+main(sim=True)

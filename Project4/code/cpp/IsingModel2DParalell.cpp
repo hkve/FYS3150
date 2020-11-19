@@ -225,14 +225,14 @@ int main(int argc, char* argv[]) {
 	double dT = atof(argv[5]);
 	string filename = argv[6];
 
-	int Ntemps = (int) (Tend-Tstart)/dT;
-
+	int Ntemps = (int) ((Tend-Tstart)/dT);
+	cout << Ntemps;
 	omp_set_num_threads(4);
 	double start = omp_get_wtime();
- 
+
 	#pragma omp parallel for 
 	for(int i = 0; i <= Ntemps; i++) {
-		float T = Tstart + i*dT;
+		double T = Tstart + i*dT;
 		IsingModel* problem = new IsingModel(L, MCCs, T);
 		problem->Initialize(0);
 		problem->Solve();

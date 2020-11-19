@@ -6,7 +6,7 @@ def main(sim = False):
 	from subprocess import run
 
 	Tstart = 2
-	Tend = 2.3
+	Tend = 2.5
 	dT = 0.05
 	MCCs = int(1e5)
 	#L_ = [40, 60, 80, 100]
@@ -14,11 +14,12 @@ def main(sim = False):
 	filenames = [f"Exp_values_L{L}.dat" for L in L_]
 
 	if sim:
+		#os.system("../cpp/Paralell.out 5 1000000 2 3 0.1 data.out")
 		for L, filename in zip(L_, filenames):
 			if filename in os.listdir("../data/"):
 				os.system(f"rm ../data/{filename}")
 
-			run(f"../cpp/Paralell.out {L} {MCCs} {Tstart} {Tend} {dT} {filename}".split())
+			os.system(f"../cpp/paralell.out {L} {MCCs} {Tstart} {Tend} {dT} {filename}")
 
 	fig, axes = plt.subplots(nrows=1, ncols=2)
 	with sns.axes_style("darkgrid"):
