@@ -210,7 +210,7 @@ void IsingModel::writeFinalExpValues(string filename) {
 	double M2 = ExpectationValues[3]/MCCs;
 	double Mabs = ExpectationValues[4]/MCCs;
 	double varE = E2-E*E;
-	double varM = M2-M*M;
+	double varM = M2-Mabs*Mabs;
 
 	ofstream outfile("../data/"+ filename, ios_base::app); // Appending to file
 	outfile << E << " " << M << " " << E2 << " " 

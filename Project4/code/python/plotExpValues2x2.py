@@ -40,7 +40,7 @@ def main(sim = False):
 		axes[0,0].plot(T, E_ana/L**2,label="Analytical", c="r", lw=anasize, alpha=anaalpha)
 		axes[0,1].plot(T, Mabs_ana/L**2, c="r", lw=anasize, alpha=anaalpha)
 		axes[1,0].plot(T, Cv_ana/L**2, c="r", lw=anasize, alpha=anaalpha)
-		axes[1,1].plot(T, X_ana/L**2, c="r", lw=anasize, alpha=anaalpha)
+		#axes[1,1].plot(T, X_ana/L**2, c="r", lw=anasize, alpha=anaalpha)
 
 		fontsize=14
 		axes[0,0].set_ylabel(r"$\langle E \rangle$", fontsize=fontsize)
@@ -53,4 +53,4 @@ def main(sim = False):
 	fig.legend(lines,labels,loc='upper center', ncol=2, fancybox=True, shadow=True,fontsize=14)
 	plt.show()
 
-main(sim=True)
+main(sim=False)
