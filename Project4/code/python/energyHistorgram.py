@@ -17,7 +17,8 @@ def main(sim = False):
 				os.system(f"rm ../data/{filename}")
 			run(f"../cpp/20x20_energy_count.out {T} {stableAfter} {MCCs} {filename}".split())
 
-	bins = [4, 50]
+	bins = [5, 59] # Disse bin-sizene ga ish fine plots, bare å eksperimentere
+	# Valgte log siden jeg ville plotte begge i samme, kan evt å ha 2 y-akser 
 	fig, ax = plt.subplots()
 	ax.set(yscale="log")
 	for T, filename, Bin in zip(T_, filenames, bins):
@@ -25,6 +26,7 @@ def main(sim = False):
 		weights = np.ones_like(data)/len(data)
 		ax.hist(data, bins=Bin, weights=weights, alpha=0.75, label=f"{T}")
 		print(f"T = {T} E_mean = {np.mean(data)}, sigma = {np.std(data)}")
+		ax.set(xlabel="E", ylabel="P(E)")
 	ax.legend()
 	plt.show()
 	
