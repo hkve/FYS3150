@@ -23,8 +23,8 @@ def main(sim = False):
 	E_ana = -32/Z * np.sinh(8/T) 
 	Mabs_ana = 8/Z * (2+np.exp(8/T))
 	Cv_ana = 1024/(T*Z)**2 *(3*np.cosh(8/T)+1)
-	X_ana = 32/(T*Z) * (1+np.exp(8/T))
-
+	#X_ana = 32/(T*Z) * (1+np.exp(8/T))
+	X_ana = (32/Z * (1+np.exp(8/T)) - Mabs_ana**2)/T
 	with sns.axes_style("darkgrid"):
 		fig, axes = plt.subplots(nrows=2,ncols=2, dpi=100)
 		markersize =120
@@ -40,7 +40,7 @@ def main(sim = False):
 		axes[0,0].plot(T, E_ana/L**2,label="Analytical", c="r", lw=anasize, alpha=anaalpha)
 		axes[0,1].plot(T, Mabs_ana/L**2, c="r", lw=anasize, alpha=anaalpha)
 		axes[1,0].plot(T, Cv_ana/L**2, c="r", lw=anasize, alpha=anaalpha)
-		#axes[1,1].plot(T, X_ana/L**2, c="r", lw=anasize, alpha=anaalpha)
+		axes[1,1].plot(T, X_ana/L**2, c="r", lw=anasize, alpha=anaalpha)
 
 		fontsize=14
 		axes[0,0].set_ylabel(r"$\langle E \rangle$", fontsize=fontsize)
