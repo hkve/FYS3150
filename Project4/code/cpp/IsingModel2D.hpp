@@ -35,6 +35,7 @@ public:
 				    mt19937_64 &generator);
 	void UpdateExpValues();
 	void Solve();
+	void Solve_ExpValuesMeanwhile(string filename);
 	void Solve_ExpAfterStabilize(int stableAfter, string filename);
 	~IsingModel();
 

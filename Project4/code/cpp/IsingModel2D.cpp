@@ -135,6 +135,35 @@ void IsingModel::Solve() {
 	outfile_lattice.close();
 }
 
+void IsingModel::Solve_ExpValuesMeanwhile(string filename) {
+	Energy = (double)initEnergy();
+	Magnetization = (double)initMagnetization();
+	
+	// Set random seed and generator
+	std::random_device rd; 
+	std::mt19937_64 generator (rd());
+
+	// Uniform float distro for comparing with the boltzman factor
+	// Uniform int distro for picking random spin 
+	std::uniform_real_distribution<double> fdistro(0,1);
+	std::uniform_int_distribution<int> idistro(0,L-1);
+
+	ofstream outfile_ExpValues("../data/"+filename);
+
+	for(int cycle = 1; cycle <= MCCs; cycle++) {
+		// Preform metropolis algo for L*L grid
+		Metropolis(fdistro, idistro, generator);
+		
+		// Update expectation values after L*L flip attempts 
+		UpdateExpValues();
+
+		// Saves E and |M| at every step	
+		double E_ = ExpectationValues[0]/cycle;
+		double Mabs_ = ExpectationValues[4]/cycle;
+		outfile_ExpValues << E_ << " " << Mabs_ << " " << cycle <<endl;
+	}
+}
+
 void IsingModel::Solve_ExpAfterStabilize(int stableAfter, string filename) {
 	// Main loop over all MCCs, after the loop hits "stableAfter" int, beging writing grid energy (NOT EXPECTATION) to filename
 
