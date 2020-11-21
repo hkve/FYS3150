@@ -16,16 +16,19 @@ IsingModel::IsingModel(int L_, int MCCs_, double T_, int stableMCCs_) {
 	for(int i = 0; i < 17; i++) {boltzman[i] = 0;} // Fill boltzman factors to zero
 	for(int dE = -8; dE <= 8; dE += 4) {boltzman[dE+8] = exp(-dE/T);} // Fill boltzman factors with actual values, indexed with dE
 	for(int i = 0; i < 5; i++) {ExpectationValues[i] = 0;} // Fill expectation values with zeros 
+
+	// Set random seed and generator
+	std::random_device rd; 
+	std::mt19937_64 generator (rd());
+
+	// Uniform float distro for comparing with the boltzman factor
+	// Uniform int distro for picking random spin 
+	std::uniform_real_distribution<double> fdistro(0,1);
+	std::uniform_int_distribution<int> idistro(0,L-1);
 }
 
 void IsingModel::Initialize(int value=0) {
 	// Initialization of spin lattice, value chooses init state. 0 [random, defualt] * 1 [up] * -1 [down] 
-	// Mades random device (random seed) and generator
-	std::random_device rd; 
-	std::mt19937_64 generator (rd());  
-
-	// Uniform float distro in range (0,1) to place spin up or down (only used for random state ie. 0) 
-	std::uniform_real_distribution<double> fdistro(0,1);
 	
 	// If random init state
 	if(value == 0) { 
@@ -52,9 +55,7 @@ void IsingModel::Initialize(int value=0) {
 }
 
 
-void IsingModel::Metropolis(uniform_real_distribution<double> &fdistro, 
-							uniform_int_distribution<int> &idistro,
-							mt19937_64 &generator) {
+void IsingModel::Metropolis() {
 	// Preforms the metropolis over the spin grid.
 	int neighbours; // To hold the sum spins for all neighbours
 	int dE; // To hold the change in energy
@@ -62,8 +63,8 @@ void IsingModel::Metropolis(uniform_real_distribution<double> &fdistro,
 	// Loops over grid L*L times
 	for(int i = 0; i < L*L; i++) {
 		// Pick a random spin with index ix, iy
-		int ix = idistro(generator);
-		int iy = idistro(generator);
+		int ix = idistro(generator)%L;
+		int iy = idistro(generator)%L;
 		
 		// Calculate sum of all neighbours of spin ix, iy
 		neighbours = spins[ix][PBC(iy+1)] +
@@ -94,20 +95,11 @@ void IsingModel::Solve() {
 	ExpectationValues[3] += Magnetization*Magnetization;
 	ExpectationValues[4] += abs(Magnetization);
 
-	// Set random seed and generator
-	std::random_device rd; 
-	std::mt19937_64 generator (rd());
-
-	// Uniform float distro for comparing with the boltzman factor
-	// Uniform int distro for picking random spin 
-	std::uniform_real_distribution<double> fdistro(0,1);
-	std::uniform_int_distribution<int> idistro(0,L-1);
-
 
 	// Loop over all cycles
 	for(int cycle = 1; cycle <= MCCs; cycle++) {
 		// Preform metropolis algo for L*L grid
-		Metropolis(fdistro, idistro, generator);
+		Metropolis();
 		// Update expectation values after L*L flip attempts 
 		if (cycle >= stableMCCs){
 		ExpectationValues[0] += Energy;
@@ -235,7 +227,7 @@ int main(int argc, char* argv[]) {
 
 	int Ntemps = (int) ((Tend-Tstart)/dT);
 	cout << Ntemps;
-	omp_set_num_threads(4);
+	omp_set_num_threads(6);
 	double start = omp_get_wtime();
 
 	#pragma omp parallel for 

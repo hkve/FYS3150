@@ -26,14 +26,17 @@ private:
 	double boltzman[17]; 
 	double ExpectationValues[5]; // To store E, M, E², M², |M|
 
+	std::random_device rd;
+	std::mt19937_64 generator;
+	std::uniform_real_distribution<double> fdistro;
+	std::uniform_int_distribution<int> idistro;
+
 public:
 	// Logic functions
 	IsingModel(int L_, int MCCs_ , double T_, int stableMCCs_);
 	void Initialize(int value);
 	inline int PBC(int idx) {return (idx+L)%L;} // For periodic boundary conditions
-	void Metropolis(uniform_real_distribution<double> &fdistro,
-				    uniform_int_distribution<int> &idistro,  
-				    mt19937_64 &generator);
+	void Metropolis();
 	void Solve();
 	~IsingModel();
 
