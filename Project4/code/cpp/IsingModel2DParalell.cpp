@@ -1,9 +1,10 @@
 #include "IsingModel2DParalell.hpp"
 
 
-IsingModel::IsingModel(int L_, int MCCs_, double T_) {
+IsingModel::IsingModel(int L_, int MCCs_, double T_, int stableMCCs_) {
 	L = L_; // Grid size is L*L
 	MCCs = MCCs_; // Number of cycles to run
+	stableMCCs = stableMCCs_;
 	T = T_; // Temperature
 
 	// Make LxL array for spins
@@ -87,7 +88,11 @@ void IsingModel::Solve() {
 	// Initialize energy and magnetization
 	Energy = (double)initEnergy();
 	Magnetization = (double)initMagnetization();
-	
+	ExpectationValues[0] += Energy;
+	ExpectationValues[1] += Energy*Energy;
+	ExpectationValues[2] += Magnetization;
+	ExpectationValues[3] += Magnetization*Magnetization;
+	ExpectationValues[4] += abs(Magnetization);
 
 	// Set random seed and generator
 	std::random_device rd; 
@@ -104,11 +109,13 @@ void IsingModel::Solve() {
 		// Preform metropolis algo for L*L grid
 		Metropolis(fdistro, idistro, generator);
 		// Update expectation values after L*L flip attempts 
+		if (cycle >= stableMCCs){
 		ExpectationValues[0] += Energy;
 		ExpectationValues[1] += Energy*Energy;
 		ExpectationValues[2] += Magnetization;
 		ExpectationValues[3] += Magnetization*Magnetization;
 		ExpectationValues[4] += abs(Magnetization);
+		}
 	}
 }
 
@@ -137,11 +144,11 @@ void IsingModel::writeFinalExpValues(string filename) {
 	// Takes a filename to write final expectation values, as well as T and MCCs
 
 	// Normalize with the number of MCCs 
-	double E = ExpectationValues[0]/MCCs;
-	double E2 = ExpectationValues[1]/MCCs;
-	double M = ExpectationValues[2]/MCCs;
-	double M2 = ExpectationValues[3]/MCCs;
-	double Mabs = ExpectationValues[4]/MCCs;
+	double E = ExpectationValues[0]/(MCCs-stableMCCs);
+	double E2 = ExpectationValues[1]/(MCCs-stableMCCs);
+	double M = ExpectationValues[2]/(MCCs-stableMCCs);
+	double M2 = ExpectationValues[3]/(MCCs-stableMCCs);
+	double Mabs = ExpectationValues[4]/(MCCs-stableMCCs);
 	double varE = E2-E*E;
 	double varM = M2-Mabs*Mabs;
 
@@ -220,10 +227,11 @@ int main(int argc, char* argv[]) {
 int main(int argc, char* argv[]) {
 	int L = atoi(argv[1]); 
 	int MCCs = atoi(argv[2]);
-	double Tstart = atof(argv[3]);
-	double Tend = atof(argv[4]);
-	double dT = atof(argv[5]);
-	string filename = argv[6];
+	int stableMCCs = atoi(argv[3]);
+	double Tstart = atof(argv[4]);
+	double Tend = atof(argv[5]);
+	double dT = atof(argv[6]);
+	string filename = argv[7];
 
 	int Ntemps = (int) ((Tend-Tstart)/dT);
 	cout << Ntemps;
@@ -233,7 +241,7 @@ int main(int argc, char* argv[]) {
 	#pragma omp parallel for 
 	for(int i = 0; i <= Ntemps; i++) {
 		double T = Tstart + i*dT;
-		IsingModel* problem = new IsingModel(L, MCCs, T);
+		IsingModel* problem = new IsingModel(L, MCCs, T, stableMCCs);
 		problem->Initialize(0);
 		problem->Solve();
 		problem->writeFinalExpValues(filename);

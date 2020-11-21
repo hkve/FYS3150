@@ -18,6 +18,7 @@ private:
 	int L; // Dimension of LxL lattice
 	double T; // Temperature
 	int MCCs; // Number of cycles
+	int stableMCCs;
 	int MCCs_write; // Number of cycles to write
 	int** spins; // Holding all spins
 	
@@ -27,7 +28,7 @@ private:
 
 public:
 	// Logic functions
-	IsingModel(int L_, int MCCs_ , double T_);
+	IsingModel(int L_, int MCCs_ , double T_, int stableMCCs_);
 	void Initialize(int value);
 	inline int PBC(int idx) {return (idx+L)%L;} // For periodic boundary conditions
 	void Metropolis(uniform_real_distribution<double> &fdistro,
