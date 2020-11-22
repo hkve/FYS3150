@@ -11,14 +11,14 @@ def main(sim = False):
 	orientation = 0 # random
 	T_ = [1, 2, 3]
 	T_ = np.linspace(1,2.4, 5, endpoint=True)
-
+	
 	N = 100
 	MCCs = np.logspace(1, 5, N, dtype=int, endpoint=True)
 	filenames = [f"acceptedFlips_{T}.out" for T in T_]
 	for T, filename in zip(T_, filenames):
 		for MCC in MCCs:
 			if sim:
-				sys.exit()
+				
 				print(round(T,3), MCC/MCCs[-1])
 				run(f"../cpp/acceptedFlips.out {T} {L} {MCC} {orientation} {filename}".split())
 			else:

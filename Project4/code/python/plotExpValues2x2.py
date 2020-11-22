@@ -25,6 +25,7 @@ def main(sim = False):
 	Cv_ana = 1024/(T*Z)**2 *(3*np.cosh(8/T)+1)
 	#X_ana = 32/(T*Z) * (1+np.exp(8/T))
 	X_ana = (32/Z * (1+np.exp(8/T)) - Mabs_ana**2)/T
+	err = np.zeros(4)
 	with sns.axes_style("darkgrid"):
 		fig, axes = plt.subplots(nrows=2,ncols=2, dpi=100)
 		markersize =120
@@ -42,6 +43,7 @@ def main(sim = False):
 		axes[1,0].plot(T, Cv_ana/L**2, c="r", lw=anasize, alpha=anaalpha)
 		axes[1,1].plot(T, X_ana/L**2, c="r", lw=anasize, alpha=anaalpha)
 
+
 		fontsize=14
 		axes[0,0].set_ylabel(r"$\langle E \rangle$", fontsize=fontsize)
 		axes[0,1].set_ylabel(r"$\langle |M| \rangle$", fontsize=fontsize)
@@ -49,8 +51,12 @@ def main(sim = False):
 		axes[1,1].set_ylabel("$\chi$", fontsize=fontsize)
 		axes[1,0].set_xlabel("$T$  $[ kT$ / $J]$", fontsize=fontsize)
 		axes[1,1].set_xlabel("$T$  $[ kT$ / $J]$", fontsize=13)
+
+		err[0] = np.mean(np.abs((E-E_ana)/E_ana))
+		err[1] = np.mean(np.abs((Mabs-Mabs_ana)/Mabs_ana))  
+		err[2] = np.mean(np.abs((CV-Cv_ana)/Cv_ana)) 
+		err[3] = np.mean(np.abs((X-X_ana)/X_ana)) 
+	print(err)
 	lines, labels = axes[0,0].get_legend_handles_labels()
 	fig.legend(lines,labels,loc='upper center', ncol=2, fancybox=True, shadow=True,fontsize=14)
 	plt.show()
-
-main(sim=False)
