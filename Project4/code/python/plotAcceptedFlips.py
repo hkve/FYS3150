@@ -1,9 +1,10 @@
-def main(sim = False):
+def main(sim = False, comp = False):
 	import numpy as np
 	import matplotlib.pyplot as plt
 	from subprocess import run
 	import seaborn as sns
 	import sys
+	import os
 	from colour import Color
 	import matplotlib as mpl
 
@@ -14,17 +15,23 @@ def main(sim = False):
 	
 	N = 100
 	MCCs = np.logspace(1, 5, N, dtype=int, endpoint=True)
-	filenames = [f"acceptedFlips_{T}.out" for T in T_]
-	for T, filename in zip(T_, filenames):
-		for MCC in MCCs:
-			if sim:
-				
-				print(round(T,3), MCC/MCCs[-1])
-				run(f"../cpp/acceptedFlips.out {T} {L} {MCC} {orientation} {filename}".split())
-			else:
-				break
+	filenames = [f"acceptedFlips_{T}.dat" for T in T_]
 
-	
+	if comp:
+		os.chdir("../cpp/")
+		os.system("make acceptedFlips")
+		os.chdir("../python")
+	for T, filename in zip(T_, filenames):
+		try: 
+			os.system(f"rm ../data/{filename}")
+		finally:
+			for MCC in MCCs:
+				if sim:
+					run(f"../cpp/acceptedFlips.dat {T} {L} {MCC} {orientation} {filename}".split())
+					print(f"Done T = {T}, MCCs = {MCC}")
+				else:
+					break
+
 	with sns.axes_style("darkgrid"):
 		fig, ax = plt.subplots(nrows=1, ncols=2,dpi=150)
 		ax[0].set(xscale="log", yscale="log")

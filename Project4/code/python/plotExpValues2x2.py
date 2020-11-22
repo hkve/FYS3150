@@ -1,17 +1,23 @@
-def main(sim = False):
+def main(sim = False, comp = False):
 	import numpy as np
 	import matplotlib.pyplot as plt
 	import seaborn as sns
 	from subprocess import run
-	
+	import os
+
 	Tstart = 1
 	Tend = 4
 	dt = 0.1
 	MCCs = int(1e6)
 	filename = "2x2EXP.out"
 
+	if comp: 
+		os.chdir("../cpp/")
+		os.system("make 2x2")
+		os.chdir("../python/")
 	if sim:
 		#print("--sim called. however, no default function call for plotExpValues2x2.py has been defined")
+		os.system("rm ../data/2x2EXP.out")
 		run(f"../cpp/2x2_lattice.out {Tstart} {Tend} {dt} {MCCs} {filename}".split())
 			
 	data = np.loadtxt("../data/2x2EXP.out")
@@ -56,7 +62,8 @@ def main(sim = False):
 		err[1] = np.mean(np.abs((Mabs-Mabs_ana)/Mabs_ana))  
 		err[2] = np.mean(np.abs((CV-Cv_ana)/Cv_ana)) 
 		err[3] = np.mean(np.abs((X-X_ana)/X_ana)) 
-	print(err)
+	
 	lines, labels = axes[0,0].get_legend_handles_labels()
 	fig.legend(lines,labels,loc='upper center', ncol=2, fancybox=True, shadow=True,fontsize=14)
 	plt.show()
+
