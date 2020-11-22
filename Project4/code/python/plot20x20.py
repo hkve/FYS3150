@@ -6,7 +6,7 @@ def main(sim = False, comp = False):
 	import os
 
 	L = 20
-	MCCs = int(1e6) # FHODSFHIODSFHDSFHOHFODHFOHDOJFHOSD
+	MCCs = int(1e6) 
 	T_ = [1,2.4]
 	initSpin_ = [0,1]
 	filenames = []

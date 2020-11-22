@@ -43,7 +43,7 @@ progparams.add_argument(fakeStr("-fake20x20"), metavar = "20x20 [-T] [-MCCs] [-i
 progparams.add_argument(fakeStr("-fakeplot2x2"), metavar = "plot-exp-2x2 [--sim] [--compile]", required=False, action="append", help="Plots exp. values for a 2x2 lattice")
 progparams.add_argument(fakeStr("-fakeplot2x2_MCCs"), metavar = "plot-MCCs-2x2 [--sim] [--compile]", required=False, action="append", help="Plots exp. values vs MCCs for a 2x2 lattice")
 progparams.add_argument(fakeStr("-fakeplot20x20"), metavar = "plot-EM-20x20 [--sim] [--compile]", required=False, action="append", help="Plots E and M for a 20x20 lattice")
-progparams.add_argument(fakeStr("-fakeplotAccFlip"), metavar = "plot-accepted-flips [--sim] [--compile]", required=False, action="append", help="DESCRIPTION MISSING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+progparams.add_argument(fakeStr("-fakeplotAccFlip"), metavar = "plot-accepted-flips [--sim] [--compile]", required=False, action="append", help="Plots the number of accepted flips as a function of MCCs for T = 1.00, 1.35, 1.70, 2.05 and 2.40")
 progparams.add_argument(fakeStr("-fakeplotEhist"), metavar = "plot-E-hist [--sim] [--compile]", required=False, action="append", help="Plot energy histogram for temperatures T=1 and T=2.4")
 
 
@@ -111,8 +111,9 @@ if __name__ == "__main__":
     
     elif args.type == "plot-accepted-flips":
       defaults["sim"] = False
+      defaults["compile"] = False
       args = assignDefaults(args, defaults)
-      plotAcceptedFlips.main(args["sim"])
+      plotAcceptedFlips.main(args["sim"], args["compile"])
     
     elif args.type == "plot-E-hist":
       defaults["sim"] = False
