@@ -35,16 +35,16 @@ parser.add_argument("-dT", metavar = "", type=float, help="float. Temperature st
 parser.add_argument("-initSpin", metavar="", type=int, help="int. Init spin configuration. 1: all up, -1: all down, 0: random")
 parser.add_argument("-filename", metavar="", type=str, help="str. Output filename")
 parser.add_argument("--sim", action="store_true", help="Re-run simulations in plotting code with default parameters. May take time")
-
+parser.add_argument("--compile", action="store_true", help="Compile corresponding c++ program")
 
 progparams = parser.add_argument_group("Program parameters (specifics)")
 progparams.add_argument(fakeStr("-fake2x2"), metavar = "2x2 [-T0] [-T1] [-dT] [-MCCs] [-filename]", required=False, action="append", help="2x2 lattice from temperature T0 to T1 with step dT. Defaults: T0=1, T1=4, dT=0.1, MCCs=100000, filename=../data/2x2EXP.out")
 progparams.add_argument(fakeStr("-fake20x20"), metavar = "20x20 [-T] [-MCCs] [-initSpin] [-filename]", required=False, action="append", help="20x20 lattice at temp. T. Defaults: T=1, MCCs=100000, initSpin = 0, filename=../data/20x20.out")
-progparams.add_argument(fakeStr("-fakeplot2x2"), metavar = "plot-exp-2x2 [--sim]", required=False, action="append", help="Plots exp. values for a 2x2 lattice")
-progparams.add_argument(fakeStr("-fakeplot2x2_MCCs"), metavar = "plot-MCCs-2x2 [--sim]", required=False, action="append", help="Plots exp. values vs MCCs for a 2x2 lattice")
-progparams.add_argument(fakeStr("-fakeplot20x20"), metavar = "plot-EM-20x20 [--sim]", required=False, action="append", help="Plots E and M for a 20x20 lattice")
-progparams.add_argument(fakeStr("-fakeplotAccFlip"), metavar = "plot-accepted-flips [--sim]", required=False, action="append", help="DESCRIPTION MISSING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-progparams.add_argument(fakeStr("-fakeplotEhist"), metavar = "plot-E-hist [--sim]", required=False, action="append", help="Plot energy histogram for temperatures T=1 and T=2.4")
+progparams.add_argument(fakeStr("-fakeplot2x2"), metavar = "plot-exp-2x2 [--sim] [--compile]", required=False, action="append", help="Plots exp. values for a 2x2 lattice")
+progparams.add_argument(fakeStr("-fakeplot2x2_MCCs"), metavar = "plot-MCCs-2x2 [--sim] [--compile]", required=False, action="append", help="Plots exp. values vs MCCs for a 2x2 lattice")
+progparams.add_argument(fakeStr("-fakeplot20x20"), metavar = "plot-EM-20x20 [--sim] [--compile]", required=False, action="append", help="Plots E and M for a 20x20 lattice")
+progparams.add_argument(fakeStr("-fakeplotAccFlip"), metavar = "plot-accepted-flips [--sim] [--compile]", required=False, action="append", help="DESCRIPTION MISSING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+progparams.add_argument(fakeStr("-fakeplotEhist"), metavar = "plot-E-hist [--sim] [--compile]", required=False, action="append", help="Plot energy histogram for temperatures T=1 and T=2.4")
 
 
 examples = parser.add_argument_group("#Examples#")
@@ -93,8 +93,9 @@ if __name__ == "__main__":
 
     elif args.type == "plot-exp-2x2":
       defaults["sim"] = False
+      defaults["compile"] = False
       args = assignDefaults(args,defaults)
-      plotExpValues2x2.main(args["sim"])
+      plotExpValues2x2.main(args["sim"], args["compile"])
 
     elif args.type == "plot-EM-20x20":
       defaults["sim"] = False
@@ -103,8 +104,9 @@ if __name__ == "__main__":
  
     elif args.type == "plot-MCCs-2x2":
       defaults["sim"] = False
+      defaults["compile"] = False
       args = assignDefaults(args, defaults)
-      plotMCS2x2.main(args["sim"])
+      plotMCS2x2.main(args["sim"], args["compile"])
     
     elif args.type == "plot-accepted-flips":
       defaults["sim"] = False
