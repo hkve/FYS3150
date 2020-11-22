@@ -159,3 +159,14 @@ IsingModel::~IsingModel() {
 	}
 	delete [] spins;
 }
+
+void IsingModel::writeLattice(string filename) {
+	ofstream outfile("../data/"+ filename, ios_base::app);
+	// Write spin lattice to file
+	for(int i = 0; i < L; i++) {
+		for(int j = 0; j < L; j++) {
+			outfile << spins[i][j] << " ";
+		}
+	}
+	outfile << endl;
+}

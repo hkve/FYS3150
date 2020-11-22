@@ -34,6 +34,7 @@ private:
 public:
 	// Logic functions
 	IsingModel(int L_, int MCCs_ , double T_, int stableMCCs_);
+	void writeLattice(string file);
 	void Initialize(int value);
 	inline int PBC(int idx) {return (idx+L)%L;} // For periodic boundary conditions
 	void Metropolis();
