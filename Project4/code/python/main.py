@@ -1,5 +1,5 @@
 import numpy as np
-import sys, argparse, subprocess, argcomplete
+import sys, argparse, subprocess, argcomplete, os
 
 
 import plot20x20, plotExpValues2x2, plotMCS2x2, plotAcceptedFlips, plotEnergyHistogram
@@ -26,7 +26,7 @@ parser._optionals.title = 'args'
 parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS, help='Show this help message and exit.')
 argparse._HelpAction(option_strings=['-h', '--help'], dest='help', default='==SUPPRESS==', help='Show this help message and exit.')
 
-parser.add_argument('type',type=str,  choices = ["2x2", "20x20", "plot-exp-2x2", "plot-EM-20x20", "plot-MCCs-2x2", "plot-accepted-flips", "plot-E-hist"],help="Follow program name by optional program specific parameters listed below")
+parser.add_argument('type',type=str,  choices = ["2x2", "20x20", "parallel", "plot-exp-2x2", "plot-EM-20x20", "plot-MCCs-2x2", "plot-accepted-flips", "plot-E-hist"],help="Follow program name by optional program specific parameters listed below")
 parser.add_argument("-MCCs", metavar="",type=int, help="int. Number of MCCs to perform")
 parser.add_argument("-T", metavar="",type=float, help="float. System temperature")
 parser.add_argument("-T0", metavar = "", type=float, help="float. Start temperature")
@@ -34,17 +34,23 @@ parser.add_argument("-T1", metavar = "", type=float, help="float. End temperatur
 parser.add_argument("-dT", metavar = "", type=float, help="float. Temperature step")
 parser.add_argument("-initSpin", metavar="", type=int, help="int. Init spin configuration. 1: all up, -1: all down, 0: random")
 parser.add_argument("-filename", metavar="", type=str, help="str. Output filename")
+parser.add_argument("-L", metavar="", type=str, help="Grid size")
+parser.add_argument("-saveAfter", metavar="", type=str, help="When the grid energy becomes stable")
+parser.add_argument("-threads", metavar="", type=str, help="Number of threads to use if parallel")
 parser.add_argument("--sim", action="store_true", help="Re-run simulations in plotting code with default parameters. May take time")
 parser.add_argument("--compile", action="store_true", help="Compile corresponding c++ program")
 
-progparams = parser.add_argument_group("Program parameters (specifics)")
-progparams.add_argument(fakeStr("-fake2x2"), metavar = "2x2 [-T0] [-T1] [-dT] [-MCCs] [-filename]", required=False, action="append", help="2x2 lattice from temperature T0 to T1 with step dT. Defaults: T0=1, T1=4, dT=0.1, MCCs=100000, filename=../data/2x2EXP.out")
-progparams.add_argument(fakeStr("-fake20x20"), metavar = "20x20 [-T] [-MCCs] [-initSpin] [-filename]", required=False, action="append", help="20x20 lattice at temp. T. Defaults: T=1, MCCs=100000, initSpin = 0, filename=../data/20x20.out")
-progparams.add_argument(fakeStr("-fakeplot2x2"), metavar = "plot-exp-2x2 [--sim] [--compile]", required=False, action="append", help="Plots exp. values for a 2x2 lattice")
-progparams.add_argument(fakeStr("-fakeplot2x2_MCCs"), metavar = "plot-MCCs-2x2 [--sim] [--compile]", required=False, action="append", help="Plots exp. values vs MCCs for a 2x2 lattice")
-progparams.add_argument(fakeStr("-fakeplot20x20"), metavar = "plot-EM-20x20 [--sim] [--compile]", required=False, action="append", help="Plots E and M for a 20x20 lattice")
-progparams.add_argument(fakeStr("-fakeplotAccFlip"), metavar = "plot-accepted-flips [--sim] [--compile]", required=False, action="append", help="Plots the number of accepted flips as a function of MCCs for T = 1.00, 1.35, 1.70, 2.05 and 2.40")
-progparams.add_argument(fakeStr("-fakeplotEhist"), metavar = "plot-E-hist [--sim] [--compile]", required=False, action="append", help="Plot energy histogram for temperatures T=1 and T=2.4")
+progparams = parser.add_argument_group("Program parameters (specifics) \nFrom here you can run the C++ programs")
+progparams.add_argument(fakeStr("-fake2x2"), metavar = "2x2 [-T0] [-T1] [-dT] [-MCCs] [-filename] [--compile]", required=False, action="append", help="2x2 lattice from temperature T0 to T1 with step dT. Defaults: T0=1, T1=4, dT=0.1, MCCs=100000, filename=2x2EXP.out")
+progparams.add_argument(fakeStr("-fake20x20"), metavar = "20x20 [-T] [-MCCs] [-initSpin] [-filename] [--compile]", required=False, action="append", help="20x20 lattice at temp. T. Defaults: T=1, MCCs=100000, initSpin = 0, filename=20x20.out")
+progparams.add_argument(fakeStr("-parallel"), metavar="parallel [-L] [-MCCs] [-saveAfter] [-T0] [-T1] [-dT] [threads] [-filename] [--compile]", required=False, action="append", help="Runs different grid sizes in temperature range [T0, T1] with dT spacing. Defaults L=20 MCCs=1000000 saveAfter=10**4.2, T0=2, T1=2.3, dT=0.1, threads=2, filename=parallell_run.dat")
+
+plots = parser.add_argument_group("Program plots \nFrom here you can recreate the plots as seen in the report")
+plots.add_argument(fakeStr("-fakeplot2x2"), metavar = "plot-exp-2x2 [--sim] [--compile]", required=False, action="append", help="Plots exp. values for a 2x2 lattice")
+plots.add_argument(fakeStr("-fakeplot2x2_MCCs"), metavar = "plot-MCCs-2x2 [--sim] [--compile]", required=False, action="append", help="Plots exp. values vs MCCs for a 2x2 lattice")
+plots.add_argument(fakeStr("-fakeplot20x20"), metavar = "plot-EM-20x20 [--sim] [--compile]", required=False, action="append", help="Plots E and M for a 20x20 lattice")
+plots.add_argument(fakeStr("-fakeplotAccFlip"), metavar = "plot-accepted-flips [--sim] [--compile]", required=False, action="append", help="Plots the number of accepted flips as a function of MCCs for T = 1.00, 1.35, 1.70, 2.05 and 2.40")
+plots.add_argument(fakeStr("-fakeplotEhist"), metavar = "plot-E-hist [--sim] [--compile]", required=False, action="append", help="Plot energy histogram for temperatures T=1 and T=2.4")
 
 
 examples = parser.add_argument_group("#Examples#")
@@ -64,6 +70,10 @@ def assignDefaults(args, defaults):
       newargs[key] = val
   return newargs
 
+def compile(name):
+  os.chdir("../cpp/")
+  os.system(f"make {name}")
+  os.chdir("../python/")
 
 if __name__ == "__main__":
     args = parser.parse_args()
@@ -77,19 +87,43 @@ if __name__ == "__main__":
       defaults["T1"] = 4
       defaults["dT"] = 0.1
       defaults["MCCs"] = int(1e6)
-      defaults["filename"] = "../data/2x2EXP.out"
+      defaults["filename"] = "../data/2x2EXP.dat"
 
       args = assignDefaults(args,defaults)
+
+      if args["compile"]:
+        compile("2x2")
+
       subprocess.run(f'../cpp/2x2_lattice.out {args["T0"]} {args["T1"]} {args["dT"]} {args["MCCs"]} {args["filename"]}'.split())
 
     elif args.type=="20x20":
       defaults["T"] = 1
       defaults["MCCs"] = 10000
       defaults["initSpin"] = 0
-      defaults["filename"] = "../data/20x20.out"
+      defaults["filename"] = "../data/20x20.dat"
       args = assignDefaults(args,defaults)
 
+      if args["compile"]:
+        compile("20x20")
+        
+
       subprocess.run(f'../cpp/20x20_lattice.out {args["T"]} {args["MCCs"]} {args["initSpin"]} {args["filename"]}'.split())
+
+    elif args.type=="parallel":
+      defaults["L"] = 20
+      defaults["MCCs"] = 1000000
+      defaults["saveAfter"] = int(10**4.2)
+      defaults["T0"] = 2
+      defaults["T1"] = 2.3
+      defaults["dT"] = 0.1
+      defaults["threads"] = 4
+      defaults["filename"] = "parallell_run.dat"
+
+      args = assignDefaults(args, defaults)
+      if args["compile"]:
+        compile("parallel")
+
+      subprocess.run(f'../cpp/parallel.out {args["L"]} {args["MCCs"]} {args["saveAfter"]} {args["T0"]} {args["T1"]} {args["dT"]} {args["threads"]} {args["filename"]}'.split())
 
     elif args.type == "plot-exp-2x2":
       defaults["sim"] = False

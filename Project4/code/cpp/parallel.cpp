@@ -8,12 +8,13 @@ int main(int argc, char* argv[]) {
 	double Tstart = atof(argv[4]);
 	double Tend = atof(argv[5]);
 	double dT = atof(argv[6]);
-	string filename = argv[7];
+	int Nthreads = atoi(argv[7]);
+	string filename = argv[8];
 
 	int Ntemps = (int) ((Tend-Tstart)/dT);
 	double start = omp_get_wtime();
 
-	omp_set_num_threads(4);
+	omp_set_num_threads(Nthreads);
 	#pragma omp parallel for 
 	for(int i = 0; i <= Ntemps+1; i++) {
 		double T = Tstart + i*dT;

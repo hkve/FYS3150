@@ -15,7 +15,7 @@ def main(sim = False, comp = False):
 	
 	N = 100
 	MCCs = np.logspace(1, 5, N, dtype=int, endpoint=True)
-	filenames = [f"acceptedFlips_{T}.out" for T in T_]
+	filenames = [f"acceptedFlips_{T}.dat" for T in T_]
 
 	if comp:
 		os.chdir("../cpp/")
@@ -27,7 +27,7 @@ def main(sim = False, comp = False):
 		finally:
 			for MCC in MCCs:
 				if sim:
-					run(f"../cpp/acceptedFlips.out {T} {L} {MCC} {orientation} {filename}".split())
+					run(f"../cpp/acceptedFlips.dat {T} {L} {MCC} {orientation} {filename}".split())
 					print(f"Done T = {T}, MCCs = {MCC}")
 				else:
 					break

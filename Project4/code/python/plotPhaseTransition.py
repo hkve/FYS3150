@@ -27,14 +27,14 @@ def main(sim = False, **kwargs):
     stable_MCCs = int(10**stable_logMCCs)
     logMCCs = 4.5
     MCCs = int(10**logMCCs)
-
+    threads = 4
     filenames = [f"paralell_L{L}_T0{Tstart}_T1{Tend}_dT{dT}_MCCs{stable_logMCCs}.dat" for L in L_]
 
     
     if sim:
         for L,filename in zip(L_,filenames):
             #run(f"rm ../data/{filename}".split())
-            #run(f"../cpp/paralell.out {L} {MCCs} {stable_MCCs} {Tstart} {Tend+dT} {dT} {filename}".split())
+            #run(f"../cpp/paralell.out {L} {MCCs} {stable_MCCs} {Tstart} {Tend} {dT} {threads} {filename}".split())
             pass
 
     with sns.axes_style("darkgrid"):
