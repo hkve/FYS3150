@@ -99,8 +99,9 @@ if __name__ == "__main__":
 
     elif args.type == "plot-EM-20x20":
       defaults["sim"] = False
+      defaults["compile"] = False
       args = assignDefaults(args,defaults)
-      plot20x20.main(args["sim"])
+      plot20x20.main(args["sim"], args["compile"])
  
     elif args.type == "plot-MCCs-2x2":
       defaults["sim"] = False
