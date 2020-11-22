@@ -117,5 +117,6 @@ if __name__ == "__main__":
     
     elif args.type == "plot-E-hist":
       defaults["sim"] = False
+      defaults["compile"] = False
       args = assignDefaults(args, defaults)
-      plotEnergyHistogram.main(args["sim"])
+      plotEnergyHistogram.main(args["sim"], args["compile"])

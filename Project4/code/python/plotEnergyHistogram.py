@@ -1,4 +1,4 @@
-def main(sim = False):
+def main(sim = False, comp = False):
 	import numpy as np
 	import matplotlib.pyplot as plt
 	import seaborn as sns
@@ -10,6 +10,11 @@ def main(sim = False):
 	L = 20
 	stableAfter = int(10**4.2)
 	filenames = [f"20x20_{T}_energy_count.dat" for T in T_]
+
+	if comp:
+		os.chdir("../cpp/")
+		os.system("make energyCount")
+		os.chdir("../python/")
 
 	for T, filename in zip(T_, filenames):
 		if sim:
