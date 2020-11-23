@@ -57,7 +57,7 @@ plots.add_argument(fakeStr("-fakeplotEhist"), metavar = "plot-E-hist [--sim] [--
 
 
 examples = parser.add_argument_group("#Examples#")
-examples.add_argument(fakeStr("-ex1"), metavar = "2x2 -T1 8 -filename ../data/foo.dat", required=False, action="append", help="Simulates 2x2 lattice from T0=1 to T1=8 and outputs data to foo.dat ")
+examples.add_argument(fakeStr("-ex1"), metavar = "2x2 -T1 8 -filename foo.dat", required=False, action="append", help="Simulates 2x2 lattice from T0=1 to T1=8 and outputs data to foo.dat ")
 examples.add_argument(fakeStr("-ex2"), metavar = "20x20 -MCCs 100", required=False, action="append", help="Simulates 20x20 lattice with default values except for MCCs = 100")
 examples.add_argument(fakeStr("-ex3"), metavar = "plot-EM-20x20 --sim", required=False, action="append", help="Simulates for default parameters and plots E and M for 20x20 lattice")
 
