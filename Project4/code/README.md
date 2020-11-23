@@ -30,8 +30,8 @@ The following packages must be installed to run **all** of the code. Some will r
 
 - `numpy`
 - `matplotlib`
-- `argcomplete`
-- `color`
+- `argparse`
+- `colour`
 - `scipy`
 
 
