@@ -164,15 +164,19 @@ void IsingModel::printExp() {
 
 int main(int argc, char const *argv[])
 {
+
+for (int L = 10; L <= 50; L+=10) { 
 	for(int i = 0; i < 10; i++) {
 		clock_t t;
 		t = clock(); 	
-		IsingModel* problem = new IsingModel(100, 100000, 1, 1); // L=300, MCS=5000, MSC_write=10, T=1
+		IsingModel* problem = new IsingModel(L, 100000, 1, 1);
 		problem->Initialize(0); // Set random init
 		problem->Solve();
 		delete problem;
-		t = clock() - t;
-		cout << t <<endl;
+		double totalTime = clock() - t;
+		totalTime = totalTime/(double)CLOCKS_PER_SEC;
+		cout << L << " " << totalTime <<endl;
 	}
+}
 	return 0;
 }
