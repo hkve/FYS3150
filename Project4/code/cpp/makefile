@@ -1,3 +1,5 @@
+all: 2x2 acceptedFlips 20x20 energyCount parallel
+
 compile_model:
 	g++ -O3 -o IsingModel2D.out IsingModel2D.cpp
 

@@ -36,7 +36,7 @@ public:
 	void UpdateExpValues();
 	void Solve();
 	void Solve_ExpValuesMeanwhile(string filename);
-	void Solve_ExpAfterStabilize(int stableAfter, string filename);
+	void Solve_EnergyAfterStabilize(int stableAfter, string filename);
 	~IsingModel();
 
 	// Calculating state variables

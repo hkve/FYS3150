@@ -21,8 +21,10 @@ int main(int argc, char* argv[]) {
 	int Nthreads = atoi(argv[6]);
 	string filename = argv[7];
 
-	double T = 1; // Just som temperature, can check for multiple mabye idk
-	int stableMCCs = 0; // Again idk
+	// As we are only testing time these dont matter
+	double Tstart = 1;
+	double dT = 0.1; 
+	int stableMCCs = 0; 
 
 	int NL = (Lend-Lstart)/dL;
 
@@ -33,34 +35,36 @@ int main(int argc, char* argv[]) {
 			int L = Lstart + i*dL;
 			outfile << L << " ";
 			omp_set_num_threads(Nthreads);
+			double start = omp_get_wtime();
 			#pragma omp parallel for 
 			for(int N = 0; N < Ntests; N++) {
+				double T = Tstart + N*dT; 
 				IsingModel* problem = new IsingModel(L, MCCs, T, stableMCCs);
 				problem->Initialize(0);
-				double start = omp_get_wtime();
 				problem->Solve();
-				double end = omp_get_wtime();
-				double totalTime = double (end-start);
-				outfile << totalTime << " ";
 				delete problem;	
 			}
-			outfile << endl;
+			double end = omp_get_wtime();
+			double totalTime = (end-start);
+			totalTime = double (totalTime/Ntests);
+			outfile << totalTime << " " <<endl;
 		}
 		#else // If compiled without -fopenmp (runs in series)
 		{
 			int L = Lstart + i*dL;
 			outfile << L << " ";
+			clock_t start = clock();
 			for(int N = 0; N < Ntests; N++) {
+				double T = Tstart + N*dT;
 				IsingModel* problem = new IsingModel(L, MCCs, T, stableMCCs);
 				problem->Initialize(0);
-				clock_t start = clock();
 				problem->Solve();
-				clock_t end = clock();
-				double totalTime = double (end-start)/CLOCKS_PER_SEC; 
-				outfile << totalTime << " ";
 				delete problem;		
 			}
-			outfile << endl;
+			clock_t end = clock();
+			double totalTime = (end-start)/(double)CLOCKS_PER_SEC; 
+			totalTime = totalTime/(double)Ntests;
+			outfile << totalTime << " " <<endl;
 		}
 		#endif
 	}

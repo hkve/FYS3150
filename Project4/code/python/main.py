@@ -40,6 +40,9 @@ parser.add_argument("-threads", metavar="", type=str, help="Number of threads to
 parser.add_argument("--sim", action="store_true", help="Re-run simulations in plotting code with default parameters. May take time")
 parser.add_argument("--compile", action="store_true", help="Compile corresponding c++ program")
 
+comp = parser.add_argument_group("If you simply want to compile all programs, write")
+comp.add_argument(fakeStr("-fakecompile"), metavar = "compile", required=False, action="append", help="Compiles all C++ programs")
+
 progparams = parser.add_argument_group("Program parameters (specifics) \nFrom here you can run the C++ programs")
 progparams.add_argument(fakeStr("-fake2x2"), metavar = "2x2 [-T0] [-T1] [-dT] [-MCCs] [-filename] [--compile]", required=False, action="append", help="2x2 lattice from temperature T0 to T1 with step dT. Defaults: T0=1, T1=4, dT=0.1, MCCs=100000, filename=2x2EXP.out")
 progparams.add_argument(fakeStr("-fake20x20"), metavar = "20x20 [-T] [-MCCs] [-initSpin] [-filename] [--compile]", required=False, action="append", help="20x20 lattice at temp. T. Defaults: T=1, MCCs=100000, initSpin = 0, filename=20x20.out")
@@ -54,7 +57,7 @@ plots.add_argument(fakeStr("-fakeplotEhist"), metavar = "plot-E-hist [--sim] [--
 
 
 examples = parser.add_argument_group("#Examples#")
-examples.add_argument(fakeStr("-ex1"), metavar = "2x2 -T1 8 -filename ../data/foo.dat", required=False, action="append", help="Simulates 2x2 lattice from T0=1 to T1=8 and outputs data to foo.dat ")
+examples.add_argument(fakeStr("-ex1"), metavar = "2x2 -T1 8 -filename foo.dat", required=False, action="append", help="Simulates 2x2 lattice from T0=1 to T1=8 and outputs data to foo.dat ")
 examples.add_argument(fakeStr("-ex2"), metavar = "20x20 -MCCs 100", required=False, action="append", help="Simulates 20x20 lattice with default values except for MCCs = 100")
 examples.add_argument(fakeStr("-ex3"), metavar = "plot-EM-20x20 --sim", required=False, action="append", help="Simulates for default parameters and plots E and M for 20x20 lattice")
 
@@ -76,11 +79,15 @@ def compile(name):
   os.chdir("../python/")
 
 if __name__ == "__main__":
+    if len(sys.argv) == 2:
+	    if sys.argv[1] == "compile":
+	    	compile("all")
+	    	exit()
+
     args = parser.parse_args()
     defaults = {}
     for arg in args.__dict__.keys():
       defaults[arg] = None
-   
 
     if args.type=="2x2":
       defaults["T0"] = 1

@@ -164,7 +164,7 @@ void IsingModel::Solve_ExpValuesMeanwhile(string filename) {
 	}
 }
 
-void IsingModel::Solve_ExpAfterStabilize(int stableAfter, string filename) {
+void IsingModel::Solve_EnergyAfterStabilize(int stableAfter, string filename) {
 	// Main loop over all MCCs, after the loop hits "stableAfter" int, beging writing grid energy (NOT EXPECTATION) to filename
 
 	// Initialize energy and magnetization
