@@ -62,8 +62,8 @@ int main(int argc, char* argv[]) {
 				delete problem;		
 			}
 			clock_t end = clock();
-			double totalTime = double (end-start)/CLOCKS_PER_SEC; 
-			totalTime = double (totalTime/Ntests);
+			double totalTime = (end-start)/(double)CLOCKS_PER_SEC; 
+			totalTime = totalTime/(double)Ntests;
 			outfile << totalTime << " " <<endl;
 		}
 		#endif

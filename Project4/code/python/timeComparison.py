@@ -6,10 +6,10 @@ def main(sim=False):
 
 	Lstart = 20
 	Lend = 100
-	dL = 10
+	dL = 5
 	MCCs = 5
-	Nthreads = 5
-	Ntests = 2*(Nthreads-1)
+	Nthreads = 4
+	Ntests = 3*Nthreads
 	methods = ["Series", "Parallel"]
 
 	filenames = [f"timeComparison_{Lstart}to{Lend}_dL{dL}_N{Ntests}_MCC{MCCs}_{method}.dat" for method in methods]
@@ -60,4 +60,4 @@ def main(sim=False):
 
 		plt.show()
 
-main(sim=True)
+main(sim=False)
