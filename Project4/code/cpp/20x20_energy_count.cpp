@@ -9,5 +9,5 @@ int main(int argc, char const *argv[]) {
 	cout << "T = " << T <<endl;
 	IsingModel* problem = new IsingModel(20,MCCs,1,T);
 	problem->Initialize(0);
-	problem->Solve_ExpAfterStabilize(stableAfter, filename);
+	problem->Solve_EnergyAfterStabilize(stableAfter, filename);
 }
