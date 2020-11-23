@@ -57,11 +57,11 @@ def main(sim = False, **kwargs):
 
             for j,(ax, param) in enumerate(zip(np.array(axes).flatten(), [E,Mabs, CV,X])):
                 
-                cs = pol.UnivariateSpline(T_,param_,s=10000)
-                Ts = np.linspace(T_[0],T_[-1],10000)
+                cs = pol.UnivariateSpline(T,param,s=10000)
+                Ts = np.linspace(T[0],T[-1],10000)
                
                 ax.plot(Ts,cs(Ts) , color=Color(colors[i], luminance=0.4).get_rgb(), alpha=0.7,lw=2.2)
-                ax.scatter(T_, param_ , color=colors[i], alpha=0.7,label=f"$L={L}$",)
+                ax.scatter(T, param , color=colors[i], alpha=0.7,label=f"$L={L}$",)
 
         #axes[0,0].legend([f"$L={L}$" for L in L_])
         lines, labels = axes[0,0].get_legend_handles_labels()
