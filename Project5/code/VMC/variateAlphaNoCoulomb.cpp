@@ -1,0 +1,27 @@
+#include "variationalMC.hpp"
+#include "trialFunctions.cpp"
+
+int main(int argc, char *argv[]) {
+	if(argc < 4) {
+		cerr << "Bad usage, enter log10(MCCs), alphaStart, alphaEnd, dAlpha" <<endl;
+		exit(1);
+	}
+
+	int MCCs = pow(10, atoi(argv[1]));
+	double alphaStart = atof(argv[2]);
+	double alphaEnd = atof(argv[3]);
+	double dAlpha = atof(argv[4]);
+	string filename = "varAlphaNoCoulomb";
+
+	double omega = 1;
+	double alpha = alphaStart;
+	double step = 0.01;
+	int N_alpha = int ((alphaEnd-alphaStart)/dAlpha) + 1;
+	
+	for(int i = 0; i <= N_alpha; i++) {
+		alpha = alphaStart + i*dAlpha;
+		VMC* problem = new VMC(omega,alpha, step, psi_T1, EL_1);
+		problem->Run(MCCs, 10000, filename + to_string(i) + ".dat");
+		cout << "Done alpha = " << alpha << endl; 
+	}
+}

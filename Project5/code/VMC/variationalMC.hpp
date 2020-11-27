@@ -3,7 +3,9 @@
 
 #include <iostream> // Input/output
 #include <cmath>	// For powers, abs
+#include <string>   // For filenames
 #include <fstream>  // Write to files
+#include <iomanip>  // To set precision in files
 #include <random>   // For uniform_real_distribution
 
 // To not kill eyes
@@ -29,6 +31,8 @@ private:
 	double Energy;
 	double step_length;
 
+	double ExpectationValues[3];
+
 	// Generator and distribution to calculate the ratio w >= P(R_trial)/P(R)
 	std::mt19937 generator;
 	std::uniform_real_distribution<double> s;
@@ -40,7 +44,10 @@ public:
 	void Metropolis();
 
 	// Preforms the metropolis algorithm MCCs times
-	void Run(int MCCs);
+	void Run(int MCCs, int MCCs_write, string filenmame);
+
+	// Writing functions
+	void WriteExpectationValues(int cycle, ofstream& file);
 };
 
 #endif

@@ -1,5 +1,4 @@
 #include "variationalMC.hpp"
-#include "trialFunctions.cpp"
 
 VMC::VMC(double omega_, double alpha_, double step, func psi, func EL) {
 	// Set frequancy and variational parameter
@@ -12,8 +11,9 @@ VMC::VMC(double omega_, double alpha_, double step, func psi, func EL) {
 	// Create R and R_trial
 	R = new double[6];
 	R_trial = new double[6];
-	// Fill with zeros
-	for(int i =0; i < 6; i++) {R[i]=0; R_trial[0]=0;} 
+
+	for(int i =0; i < 6; i++) {R[i]=0; R_trial[i]=0;} // Fill R and R_trial with zeros 
+	for(int i = 0; i < 5; i++) {ExpectationValues[i] = 0;} // Fill expectation values with zeros
 
 	step_length = step;
 
@@ -27,7 +27,7 @@ void VMC::Metropolis() {
 
 	// Calculate trial step
 	for(int i = 0; i < 6; i++) {
-		R_trial[i] = R[i] + step_length * s(generator);
+		R_trial[i] = R[i] + step_length * (s(generator)-0.5);
 	}
 
 	double w = waveFunction(R_trial, omega, alpha)/waveFunction(R, omega, alpha);
@@ -41,20 +41,43 @@ void VMC::Metropolis() {
 	}
 }
 
-void VMC::Run(int MCCs) {
+void VMC::Run(int MCCs, int MCCs_write, string filename) {
+	int write = MCCs/MCCs_write;
 
-Energy = localEnergy(R, omega, alpha);
+	Energy = localEnergy(R, omega, alpha);
+	double R12 = (R[0]-R[3])*(R[0]-R[3]) +
+			     	 (R[1]-R[4])*(R[1]-R[4]) +
+				     (R[2]-R[5])*(R[2]-R[5]);
+	ExpectationValues[0] += Energy;
+	ExpectationValues[1] += Energy*Energy;
+	ExpectationValues[2] += sqrt(R12);
 
-for(int cycle = 1; cycle <= MCCs; cycle++) {
-	Metropolis();
-}
-cout << Energy << endl;
+	ofstream file("../../data/" + filename);
+	WriteExpectationValues(1, file);
+
+	for(int cycle = 1; cycle <= MCCs; cycle++) {
+		Metropolis();
 	
+
+		R12 = (R[0]-R[3])*(R[0]-R[3]) +
+			     	 (R[1]-R[4])*(R[1]-R[4]) +
+				     (R[2]-R[5])*(R[2]-R[5]);
+		ExpectationValues[0] += Energy;
+		ExpectationValues[1] += Energy*Energy;
+		ExpectationValues[2] += sqrt(R12); 
+
+		if(cycle%write == 0) {
+			WriteExpectationValues(cycle, file);
+		}
+	}
+
+	file.close();
 }
 
-
-int main(int argc, char *argv[]) {
-	VMC* problem = new VMC(1,1, 0.01, psi_T1, EL_1);
-	problem->Run(1000000);
-	return 0;
+void VMC::WriteExpectationValues(int cycle, ofstream& file) {
+	double E = ExpectationValues[0]/cycle;
+	double EE = ExpectationValues[1]/cycle;
+	double r12 = ExpectationValues[2]/cycle;
+	file << cycle << " " << E << " " << EE << " " << r12 <<endl;
 }
+

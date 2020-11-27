@@ -1,7 +1,6 @@
-all: compile run
-
-compile:
+compile_model:
 	g++ -o compiled/main.exe variationalMC.cpp 
 
-run:
-	./compiled/main.exe
+compile_alpha: 
+	g++ -o compiled/variateAlphaNoCoulomb.exe variateAlphaNoCoulomb.cpp variationalMC.cpp
+

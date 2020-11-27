@@ -19,3 +19,10 @@ double EL_1(double *r, double omega, double alpha) {
 	
 	return 0.5*omega*omega*(r1_squared+r2_squared)*(1-alpha*alpha) + 3*alpha * omega;
 }
+
+double EL_1_Columb(double *r, double omega, double alpha) {
+	double r12 = (r[0]-r[3])*(r[0]-r[3]) +
+				 (r[1]-r[4])*(r[1]-r[4]) +
+				 (r[2]-r[5])*(r[2]-r[5]);
+	return EL_1(r, omega, alpha) + 1/sqrt(r12);
+}
