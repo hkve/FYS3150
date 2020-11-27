@@ -25,19 +25,22 @@ private:
 	double* R; 
 	double* R_trial;
 
+	// Energy
+	double Energy;
+	double step_length;
+
 	// Generator and distribution to calculate the ratio w >= P(R_trial)/P(R)
 	std::mt19937 generator;
-	std::uniform_real_distribution<double> w;
+	std::uniform_real_distribution<double> s;
 public:
 	// Constructor for storing problem constants
-	VMC(double omega_, double alpha_, func psi, func EL);
+	VMC(double omega_, double alpha_, double step, func psi, func EL);
 
 	// Preform a step of the metropolis algorithm
 	void Metropolis();
 
 	// Preforms the metropolis algorithm MCCs times
 	void Run(int MCCs);
-	void callFunc();
 };
 
 #endif
