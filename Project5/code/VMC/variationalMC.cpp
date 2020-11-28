@@ -1,9 +1,10 @@
 #include "variationalMC.hpp"
 
-VMC::VMC(double omega_, double alpha_, double step, func psi, func EL) {
+VMC::VMC(func psi, func EL, double step, double omega_, double alpha_, double beta_) {
 	// Set frequancy and variational parameter
 	omega = omega_;
 	alpha = alpha_;
+	beta = beta_;
 
 	waveFunction = psi;
 	localEnergy = EL;
@@ -14,6 +15,8 @@ VMC::VMC(double omega_, double alpha_, double step, func psi, func EL) {
 
 	for(int i =0; i < 6; i++) {R[i]=0; R_trial[i]=0;} // Fill R and R_trial with zeros 
 	for(int i = 0; i < 5; i++) {ExpectationValues[i] = 0;} // Fill expectation values with zeros
+	R[0] = 0.1;
+	R[3] = -0.1;
 
 	step_length = step;
 
@@ -30,21 +33,22 @@ void VMC::Metropolis() {
 		R_trial[i] = R[i] + step_length * (s(generator)-0.5);
 	}
 
-	double w = waveFunction(R_trial, omega, alpha)/waveFunction(R, omega, alpha);
+	double w = waveFunction(R_trial, omega, alpha, beta)/waveFunction(R, omega, alpha, beta);
 
 	if(w >= s(generator)) {
 		for(int i = 0; i < 6; i++) {
 			R[i] = R_trial[i];
 		}
 
-		Energy = localEnergy(R, omega, alpha);
+		Energy = localEnergy(R, omega, alpha, beta);
 	}
 }
 
 void VMC::Run(int MCCs, int MCCs_write, string filename) {
 	int write = MCCs/MCCs_write;
 
-	Energy = localEnergy(R, omega, alpha);
+	Energy = localEnergy(R, omega, alpha, beta);
+
 	double R12 = (R[0]-R[3])*(R[0]-R[3]) +
 			     	 (R[1]-R[4])*(R[1]-R[4]) +
 				     (R[2]-R[5])*(R[2]-R[5]);

@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
 	
 	for(int i = 0; i <= N_alpha; i++) {
 		alpha = alphaStart + i*dAlpha;
-		VMC* problem = new VMC(omega,alpha, step, psi_T1, EL_1);
+		VMC* problem = new VMC(psi_T1, EL_1, step, omega, alpha);
 		problem->Run(MCCs, 10000, filename + to_string(i) + ".dat");
 		cout << "Done alpha = " << alpha << endl; 
 	}

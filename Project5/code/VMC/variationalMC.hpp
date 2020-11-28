@@ -10,13 +10,14 @@
 
 // To not kill eyes
 using namespace std; 
-typedef double (*func)(double*, double, double);
+typedef double (*func)(double*, double, double, double);
 
 class VMC {
 private:
 	// Potential and variational parameters
 	double omega;
 	double alpha;
+	double beta;
 
 	// Trial wavefunction and local energy
 	func waveFunction;
@@ -26,24 +27,26 @@ private:
 	// 6 element array, stored as [x1,y1,z1,x2,y2,z2]
 	double* R; 
 	double* R_trial;
-
-	// Energy
-	double Energy;
+	
+	// Step length
 	double step_length;
 
+	// Energy and expectation values
+	double Energy;
 	double ExpectationValues[3];
 
 	// Generator and distribution to calculate the ratio w >= P(R_trial)/P(R)
 	std::mt19937 generator;
 	std::uniform_real_distribution<double> s;
+
 public:
-	// Constructor for storing problem constants
-	VMC(double omega_, double alpha_, double step, func psi, func EL);
+	// Constructor for storing problem constants and functions
+	VMC(func psi, func EL, double step, double omega_, double alpha_, double beta_=0);
 
 	// Preform a step of the metropolis algorithm
 	void Metropolis();
 
-	// Preforms the metropolis algorithm MCCs times
+	// Preforms the metropolis algorithm MCCs times, how many to write and outfilename
 	void Run(int MCCs, int MCCs_write, string filenmame);
 
 	// Writing functions
