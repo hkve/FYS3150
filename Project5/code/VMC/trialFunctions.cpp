@@ -45,5 +45,6 @@ double EL_2(double *r, double omega, double alpha, double beta) {
 	double betaTermSquared = 0.5*betaTerm*betaTerm;
 
 	double extraAddition = alpha*omega*r12 - betaTermSquared - 2/r12 + 2*betaTerm;
-	return EL_1_Columb(r, omega, alpha, beta) + betaTermSquared*extraAddition;	
+	// Think calling EL_1 here is faster, no need to calculate r12 twice
+	return EL_1(r, omega, alpha, beta) + 1/r12 + betaTermSquared*extraAddition;	
 }
