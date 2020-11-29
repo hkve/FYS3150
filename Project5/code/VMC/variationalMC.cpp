@@ -125,6 +125,18 @@ void VMC::Logspace(int MCCs_write) {
 	}	
 }
 
+void VMC::Linspace(int MCCs_write) {
+	// For writing linspaced values
+	int dN = MCCs/MCCs_write;
+
+	write = new int[MCCs_write];
+
+	for(int i = 0; i < MCCs_write; i++) {
+		write[i] = (i+1)*dN;
+		cout << write[i] <<endl;
+	}
+}
+
 void VMC::WriteExpectationValues(int cycle, ofstream& file) {
 	// Retrives exp values, normalize with cycle and write to file
 	double E = ExpectationValues[0]/cycle;
@@ -132,4 +144,3 @@ void VMC::WriteExpectationValues(int cycle, ofstream& file) {
 	double r12 = ExpectationValues[2]/cycle;
 	file << cycle << " " << E << " " << EE << " " << r12 <<endl;
 }
-

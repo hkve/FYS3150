@@ -55,6 +55,7 @@ public:
 
 	// For writing data
 	void Logspace(int MCCs_write);
+	void Linspace(int MCCs_write);
 
 	// Writing functions
 	void WriteExpectationValues(int cycle, ofstream& file);
