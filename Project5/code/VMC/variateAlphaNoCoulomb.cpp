@@ -15,13 +15,14 @@ int main(int argc, char *argv[]) {
 
 	double omega = 1;
 	double alpha = alphaStart;
-	double step = 0.01;
+	double step = 1.4;
 	int N_alpha = int ((alphaEnd-alphaStart)/dAlpha) + 1;
-	
-	for(int i = 0; i <= N_alpha; i++) {
+
+	for(int i = 0; i < N_alpha; i++) {
 		alpha = alphaStart + i*dAlpha;
-		VMC* problem = new VMC(psi_T1, EL_1, step, omega, alpha);
-		problem->Run(MCCs, 10000, filename + to_string(i) + ".dat");
+		VMC* problem = new VMC(psi_T1, EL_1, MCCs, step, omega, alpha);
+		problem->Logspace(1000);
+		problem->Run(filename + to_string(i) + ".dat");
 		cout << "Done alpha = " << alpha << endl; 
 	}
 }

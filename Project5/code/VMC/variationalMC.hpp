@@ -28,12 +28,16 @@ private:
 	double* R; 
 	double* R_trial;
 	
-	// Step length
+	// Step length, MCCs
 	double step_length;
+	int MCCs; 
 
 	// Energy and expectation values
 	double Energy;
 	double ExpectationValues[3];
+
+	// Storing what indexes should be written to file
+	int* write;
 
 	// Generator and distribution to calculate the ratio w >= P(R_trial)/P(R)
 	std::mt19937 generator;
@@ -41,13 +45,16 @@ private:
 
 public:
 	// Constructor for storing problem constants and functions
-	VMC(func psi, func EL, double step, double omega_, double alpha_, double beta_=0);
+	VMC(func psi, func EL, int MCCs_, double step, double omega_, double alpha_, double beta_=0);
 
 	// Preform a step of the metropolis algorithm
 	void Metropolis();
 
 	// Preforms the metropolis algorithm MCCs times, how many to write and outfilename
-	void Run(int MCCs, int MCCs_write, string filenmame);
+	void Run(string filenmame);
+
+	// For writing data
+	void Logspace(int MCCs_write);
 
 	// Writing functions
 	void WriteExpectationValues(int cycle, ofstream& file);
