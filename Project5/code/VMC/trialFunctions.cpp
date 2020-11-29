@@ -1,5 +1,6 @@
 /*
 Here you can define all the trial wavefuntions you want
+Use the absolute square of the WF
 REMEMBER: in the file you want to use them add #include "trialFunctions.cpp"
 NB: Don't add trialFunctions.cpp to compile list, cpp does this auto
 */
@@ -18,7 +19,7 @@ double psi_T2(double *r, double omega, double alpha, double beta) {
 				 (r[2]-r[5])*(r[2]-r[5]);
 	r12 = sqrt(r12);
 
-	return psi_T1(r, omega, alpha, beta)*exp(r12/(2*(1+beta*r12)));	
+	return psi_T1(r, omega, alpha, beta)*exp(r12/(1+beta*r12));	
 }
 
 double EL_1(double *r, double omega, double alpha, double beta) {
