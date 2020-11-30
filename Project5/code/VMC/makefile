@@ -4,3 +4,5 @@ compile_model:
 compile_alpha: 
 	g++ -o compiled/variateAlphaNoCoulomb.exe variateAlphaNoCoulomb.cpp variationalMC.cpp
 
+compile_sandbox:
+	g++ -o compiled/sandbox.exe sandbox.cpp variationalMC.cpp

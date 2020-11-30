@@ -50,6 +50,9 @@ public:
 	// Preform a step of the metropolis algorithm
 	void Metropolis();
 
+	// Constr
+	void Stabilize(int stableAfter);
+
 	// Preforms the metropolis algorithm MCCs times, how many to write and outfilename
 	void Run(string filenmame, string spaced="log", int MCCs_write=1000);
 

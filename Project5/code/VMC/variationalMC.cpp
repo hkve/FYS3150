@@ -50,11 +50,17 @@ void VMC::Metropolis() {
 	}
 }
 
-void VMC::Run(string filename, string spaced, int MCCs_write) {
-	// Calculate initial local energy
+void VMC::Stabilize(int stableAfter) {
+	for(int i = 0; i < stableAfter-1; i++) {
+		Metropolis();
+	}
+}
 
+void VMC::Run(string filename, string spaced, int MCCs_write) {
+	// Choose how to space the values written to outfile
 	setOutfileParameters(MCCs_write, spaced);
 
+	// Calculate initial local energy
 	Energy = localEnergy(R, omega, alpha, beta);
 
 	// For exp values
@@ -172,4 +178,3 @@ void VMC::WriteExpectationValues(int cycle, ofstream& file) {
 	double r12 = ExpectationValues[2]/cycle;
 	file << cycle << " " << E << " " << EE << " " << r12 <<endl;
 }
-
