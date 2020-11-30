@@ -5,7 +5,10 @@ import matplotlib.pyplot as plt
 alphaStart = 0.5
 alphaEnd = 1.5
 dAlpha = 0.1
-N_alpha = int((alphaEnd-alphaStart)/dAlpha) + 1
+
+N_alpha = round(((alphaEnd-alphaStart)/dAlpha),0)
+N_alpha = int(N_alpha) + 1
+
 
 alphas = np.linspace(alphaStart, alphaEnd, N_alpha, endpoint=True)
 

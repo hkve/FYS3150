@@ -21,8 +21,7 @@ int main(int argc, char *argv[]) {
 	for(int i = 0; i < N_alpha; i++) {
 		alpha = alphaStart + i*dAlpha;
 		VMC* problem = new VMC(psi_T1, EL_1, MCCs, step, omega, alpha);
-		problem->Logspace(1000);
-		problem->Run(filename + to_string(i) + ".dat");
+		problem->Run(filename + to_string(i) + ".dat", "log", 1000);
 		cout << "Done alpha = " << alpha << endl; 
 	}
 }

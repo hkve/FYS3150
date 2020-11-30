@@ -50,8 +50,11 @@ void VMC::Metropolis() {
 	}
 }
 
-void VMC::Run(string filename) {
+void VMC::Run(string filename, string spaced, int MCCs_write) {
 	// Calculate initial local energy
+
+	setOutfileParameters(MCCs_write, spaced);
+
 	Energy = localEnergy(R, omega, alpha, beta);
 
 	// For exp values
@@ -97,6 +100,23 @@ void VMC::Run(string filename) {
 	file.close();
 }
 
+void VMC::setOutfileParameters(int MCCs_write, string spaced) {
+	// Choosing how to space the values written to outfile
+	if(spaced=="log" || spaced=="Log") {
+		Logspace(MCCs_write);
+	}
+	else if (spaced=="lin" || spaced=="Lin") {
+		Linspace(MCCs_write);
+	}
+	else if(spaced=="final" || spaced=="Final") {
+		Final();
+	}
+	else {
+		cerr << spaced << " is not a recognized outfile parameter. Use 'log', 'lin' or 'final'" <<endl;
+		exit(1);
+	}
+}
+
 void VMC::Logspace(int MCCs_write) {
 	// For writing (kindof) logspaced valus
 
@@ -127,14 +147,22 @@ void VMC::Logspace(int MCCs_write) {
 
 void VMC::Linspace(int MCCs_write) {
 	// For writing linspaced values
+	
+	// Linspaced index step
 	int dN = MCCs/MCCs_write;
 
+	// Array holding what cycles to write
 	write = new int[MCCs_write];
 
 	for(int i = 0; i < MCCs_write; i++) {
 		write[i] = (i+1)*dN;
-		cout << write[i] <<endl;
 	}
+}
+
+void VMC::Final() {
+	// For just writing the last value
+	write = new int[1];
+	write[0] = MCCs;
 }
 
 void VMC::WriteExpectationValues(int cycle, ofstream& file) {
@@ -144,3 +172,4 @@ void VMC::WriteExpectationValues(int cycle, ofstream& file) {
 	double r12 = ExpectationValues[2]/cycle;
 	file << cycle << " " << E << " " << EE << " " << r12 <<endl;
 }
+

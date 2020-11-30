@@ -51,11 +51,15 @@ public:
 	void Metropolis();
 
 	// Preforms the metropolis algorithm MCCs times, how many to write and outfilename
-	void Run(string filenmame);
+	void Run(string filenmame, string spaced="log", int MCCs_write=1000);
 
-	// For writing data
+	// Sets what mode you want to write 
+	void setOutfileParameters(int MCCs_write, string spaced);
+	
+	// Different modes of writing data
 	void Logspace(int MCCs_write);
 	void Linspace(int MCCs_write);
+	void Final();
 
 	// Writing functions
 	void WriteExpectationValues(int cycle, ofstream& file);
