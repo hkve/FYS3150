@@ -65,3 +65,4 @@ def varAlphaInteractive(sim = False):
 	axes[0].legend()
 	axes[1].legend()
 	plt.show()
+
