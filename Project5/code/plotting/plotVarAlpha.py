@@ -16,12 +16,12 @@ def varAlpha(sim = False):
 	if sim:
 		os.chdir("../VMC/compiled")
 		os.system(f"./variateAlpha.exe {7} {alphaStart} {alphaEnd} {dAlpha} noninteractive")
+		os.chdir("../../plotting")
 
 	fig, axes = plt.subplots(nrows=1, ncols=2)
 	axes[0].set(xscale="log")
 	axes[1].set(xscale="log")
 	for i, alpha in enumerate(alphas):
-		os.chdir("../plotting")
 		data = np.loadtxt(f"../data/varAlphaNoninteractive{i}.dat")
 		cyles, E, E2 = data[:,0], data[:,1], data[:,2]
 
@@ -52,12 +52,12 @@ def varAlphaInteractive(sim = False):
 	if sim:
 		os.chdir("../VMC/compiled")
 		os.system(f"./variateAlpha.exe {7} {alphaStart} {alphaEnd} {dAlpha} interactive")
+		os.chdir("../../plotting")
 
 	fig, axes = plt.subplots(nrows=1, ncols=2)
 	axes[0].set(xscale="log")
 	axes[1].set(xscale="log")
 	for i, alpha in enumerate(alphas):
-		os.chdir("../plotting")
 		data = np.loadtxt(f"../data/varAlphaInteractive{i}.dat")
 		cyles, E, E2 = data[:,0], data[:,1], data[:,2]
 
@@ -69,5 +69,3 @@ def varAlphaInteractive(sim = False):
 	axes[0].legend()
 	axes[1].legend()
 	plt.show()
-
-varAlphaInteractive(False)
