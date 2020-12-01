@@ -1,8 +1,8 @@
-compile_model:
+model:
 	g++ -o compiled/main.exe variationalMC.cpp 
 
-compile_alpha: 
-	g++ -o compiled/variateAlphaNoCoulomb.exe variateAlphaNoCoulomb.cpp variationalMC.cpp
+alpha: 
+	g++ -o compiled/variateAlpha.exe variateAlpha.cpp variationalMC.cpp
 
-compile_sandbox:
+sandbox:
 	g++ -o compiled/sandbox.exe sandbox.cpp variationalMC.cpp

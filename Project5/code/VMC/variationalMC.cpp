@@ -17,8 +17,8 @@ VMC::VMC(func psi, func EL, int MCCs_, double step, double omega_, double alpha_
 	for(int i = 0; i < 5; i++) {ExpectationValues[i] = 0;} // Fill expectation values with zeros
 	// For the interactive case, the two electrons need some sort of seperations (so <E> is not inf)
 	// If this is need, I will make a setInitialGuess function. Asked on Piazza but no reply :(
-	//R[0] = 0.79683;
-	//R[3] = -0.79683;
+	R[0] = 0.79683;
+	R[3] = -0.79683;
 
 	step_length = step;
 	MCCs = MCCs_;
