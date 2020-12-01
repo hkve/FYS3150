@@ -14,9 +14,7 @@ def varAlpha(sim = False):
 	alphas = np.linspace(alphaStart, alphaEnd, N_alpha, endpoint=True)
 
 	if sim:
-		os.chdir("../VMC/compiled")
-		os.system(f"./variateAlpha.exe {7} {alphaStart} {alphaEnd} {dAlpha} noninteractive")
-		os.chdir("../../plotting")
+		os.system(f"../compiled/variateAlpha.exe {7} {alphaStart} {alphaEnd} {dAlpha} noninteractive")
 
 	fig, axes = plt.subplots(nrows=1, ncols=2)
 	axes[0].set(xscale="log")
@@ -50,9 +48,7 @@ def varAlphaInteractive(sim = False):
 	alphas = np.linspace(alphaStart, alphaEnd, N_alpha, endpoint=True)
 
 	if sim:
-		os.chdir("../VMC/compiled")
-		os.system(f"./variateAlpha.exe {7} {alphaStart} {alphaEnd} {dAlpha} interactive")
-		os.chdir("../../plotting")
+		os.system(f"../compiled/variateAlpha.exe {7} {alphaStart} {alphaEnd} {dAlpha} interactive")
 
 	fig, axes = plt.subplots(nrows=1, ncols=2)
 	axes[0].set(xscale="log")

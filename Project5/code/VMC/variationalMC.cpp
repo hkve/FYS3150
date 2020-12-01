@@ -72,7 +72,7 @@ void VMC::Run(string filename, string spaced, int MCCs_write) {
 	ExpectationValues[2] += sqrt(R12);
 
 	// Open exp values file
-	ofstream file("../../data/" + filename);
+	ofstream file("../data/" + filename);
 	
 
 	// Dummy counter for keeping track of what index to write
