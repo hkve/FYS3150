@@ -6,14 +6,16 @@ int main(int argc, char *argv[]) {
 	int stableAfter = (int) pow(10, 6);
 	double step = 1.5;
 	double omega = 1;
-	double alpha = 1.4;
+	double alpha = 1;
 
-	VMC noStable(psi_T1, EL_1, MCCs, step, omega, alpha);
-	noStable.Run("noStable.dat");
+	VMC bar(psi_T1, EL_1, MCCs, step, omega, alpha);
+	bar.Run("myoutfile.dat", "log", 1000);
 
-	VMC Stable(psi_T1, EL_1, MCCs, step, omega, alpha);
-	Stable.Stabilize(stableAfter);
-	Stable.Run("Stable.dat");
-
+	// Run without saving anything under the computations, only write at the end
+	/*
+	VMC foo(psi_T1, EL_1_Columb, MCCs, step, omega, alpha);
+	foo.Run_NoSave();
+	foo.WriteFinal("dump.dat"); // NOTE: appends
+	*/
 	return 0;
 }

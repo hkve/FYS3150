@@ -6,19 +6,9 @@ VMC::VMC(func psi, func EL, int MCCs_, double step, double omega_, double alpha_
 	alpha = alpha_;
 	beta = beta_;
 
+	// Set class functions equal to input functions
 	waveFunction = psi;
 	localEnergy = EL;
-
-	// Create R and R_trial
-	R = new double[6];
-	R_trial = new double[6];
-
-	for(int i =0; i < 6; i++) {R[i]=0; R_trial[i]=0;} // Fill R and R_trial with zeros 
-	for(int i = 0; i < 5; i++) {ExpectationValues[i] = 0;} // Fill expectation values with zeros
-	// For the interactive case, the two electrons need some sort of seperations (so <E> is not inf)
-	// If this is need, I will make a setInitialGuess function. Asked on Piazza but no reply :(
-	R[0] = 0.79683;
-	R[3] = -0.79683;
 
 	step_length = step;
 	MCCs = MCCs_;
@@ -26,6 +16,18 @@ VMC::VMC(func psi, func EL, int MCCs_, double step, double omega_, double alpha_
 	// Set random number generator
 	std::mt19937 generator(clock());
 	std::uniform_real_distribution<double> s(0,1);
+	
+	// Create R and R_trial
+	R = new double[6];
+	R_trial = new double[6];
+
+	// Fill R with random step and R_trial with zeros
+	for(int i =0; i < 6; i++) {
+		R[i] = step_length * (s(generator)-0.5);
+		R_trial[i] = 0;
+	}  
+	for(int i = 0; i < 5; i++) {ExpectationValues[i] = 0;} // Fill expectation values with zeros
+	
 }
 
 void VMC::Metropolis() {
@@ -106,6 +108,34 @@ void VMC::Run(string filename, string spaced, int MCCs_write) {
 	file.close();
 }
 
+void VMC::Run_NoSave() {
+	// Calculate initial local energy
+	Energy = localEnergy(R, omega, alpha, beta);
+
+	// For exp values
+	double R12 = (R[0]-R[3])*(R[0]-R[3]) +
+			     	 (R[1]-R[4])*(R[1]-R[4]) +
+				     (R[2]-R[5])*(R[2]-R[5]);
+	ExpectationValues[0] += Energy;
+	ExpectationValues[1] += Energy*Energy;
+	ExpectationValues[2] += sqrt(R12);
+
+		// Loop over all MCCs
+	for(int cycle = 1; cycle <= MCCs; cycle++) {
+		
+		// Preform metropolis algorithm
+		Metropolis();
+		
+		// Calculate R12, energy and energy**2 for exp values
+		R12 = (R[0]-R[3])*(R[0]-R[3]) +
+			     	 (R[1]-R[4])*(R[1]-R[4]) +
+				     (R[2]-R[5])*(R[2]-R[5]);
+		ExpectationValues[0] += Energy;
+		ExpectationValues[1] += Energy*Energy;
+		ExpectationValues[2] += sqrt(R12); 
+	}
+}
+
 void VMC::setOutfileParameters(int MCCs_write, string spaced) {
 	// Choosing how to space the values written to outfile
 	if(spaced=="log" || spaced=="Log") {
@@ -177,4 +207,14 @@ void VMC::WriteExpectationValues(int cycle, ofstream& file) {
 	double EE = ExpectationValues[1]/cycle;
 	double r12 = ExpectationValues[2]/cycle;
 	file << cycle << " " << E << " " << EE << " " << r12 <<endl;
+}
+
+void VMC::WriteFinal(string filename) {
+	ofstream file;
+	file.open("../data/" + filename, ios_base::app);
+	double E = ExpectationValues[0]/MCCs;
+	double EE = ExpectationValues[1]/MCCs;
+	double r12 = ExpectationValues[2]/MCCs;
+
+	file << MCCs << " " << alpha << " " << beta << " " << E << " " << EE << " " << r12 <<endl;
 }
