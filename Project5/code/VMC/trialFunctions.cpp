@@ -30,7 +30,7 @@ double EL_1(double *r, double omega, double alpha, double beta) {
 	return 0.5*omega*omega*(r1_squared+r2_squared)*(1-alpha*alpha) + 3*alpha * omega;
 }
 
-double EL_1_Columb(double *r, double omega, double alpha, double beta) {
+double EL_1_Coulomb(double *r, double omega, double alpha, double beta) {
 	double r12 = (r[0]-r[3])*(r[0]-r[3]) +
 				 (r[1]-r[4])*(r[1]-r[4]) +
 				 (r[2]-r[5])*(r[2]-r[5]);
