@@ -3,10 +3,10 @@ all: alpha
 
 # All C++ should be compiled to "compiled" folder
 model:
-	g++ -o ../compiled/main.exe variationalMC.cpp 
+	g++ -O3 -o ../compiled/main.exe variationalMC.cpp 
 
 alpha: 
-	g++ -o ../compiled/variateAlpha.exe variateAlpha.cpp variationalMC.cpp
+	g++ -O3 -o ../compiled/variateAlpha.exe variateAlpha.cpp variationalMC.cpp
 
 sandbox:
-	g++ -o ../compiled/sandbox.exe sandbox.cpp variationalMC.cpp
+	g++ -O3 -o ../compiled/sandbox.exe sandbox.cpp variationalMC.cpp
