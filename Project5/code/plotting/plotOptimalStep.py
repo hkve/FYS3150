@@ -1,40 +1,43 @@
 def plotOptimalStep(sim = False):
 	import numpy as np
 	import matplotlib.pyplot as plt
+	import os
+	from optimalStep import findPercentAccepts, findOptimalStep
 
-	alphaStart = 0.7
-	alphaEnd = 1.3
+	omega = 1
+	alphaStart = 0.1
+	alphaEnd = 2
 	dAlpha = 0.1
 
-	stepStart = 0.5
-	stepEnd = 20
-	dStep = 0.5
+	stepStart = 0.1
+	stepEnd = 5
+	dStep = 0.3
 
-	N_alpha = round(((alphaEnd-alphaStart)/dAlpha),0)
-	N_alpha = int(N_alpha) + 1
-	N_step = round(((stepEnd-stepStart)/dStep),0)
-	N_step = int(N_step) + 1
-	
-	alphas = np.linspace(alphaStart, alphaEnd, N_alpha)
-	steps = np.linspace(stepStart, stepEnd, N_step)
+	filename = "optimalStep1.dat"
 
-	data = np.loadtxt("../data/optimalStep1.dat")
+	if sim:
+		os.system(f"../compiled/optimalStep.exe {6} {omega} {alphaStart} {alphaEnd} {dAlpha} {stepStart} {stepEnd} {dStep} {filename}")
 
-	MCCs, alpha, step, accepts = data[:,0], data[:,1], data[:,2], data[:,3]
-
-	percentAccepts = accepts/MCCs
+	steps, alphas, percentAcceptAlphas = findPercentAccepts(filename)
 
 	fig, ax = plt.subplots()
-	
 	ax.axhline(0.5, linestyle="dashed", c="k")
 	ax.set_xlabel("Step length", fontsize=13)
 	ax.set_ylabel("Accepted", fontsize=13)
-	for a in alphas:
-		dataIdx = np.in1d(alpha, round(a,10))
-		ax.plot(steps, percentAccepts[dataIdx], label=rf"$\alpha=${a:.2f}")
+	
+	for alpha, percentAccepts in zip(alphas, percentAcceptAlphas):		
+		ax.plot(steps, percentAccepts, label=rf"$\alpha=${alpha:.2f}")
+	
 
 	ax.legend()
 	plt.show()
 
+	fig, ax = plt.subplots()
+	ax.set_xlabel(rf"$\alpha$ ($\omega=${omega:.3f})", fontsize=13)
+	ax.set_ylabel("Step closest to 50% accepts", fontsize=13)
+	optimalStep = findOptimalStep(steps, alphas, percentAcceptAlphas)
 	
-plotOptimalStep()
+	ax.scatter(alphas, optimalStep)
+	plt.show()
+
+plotOptimalStep(sim = True)
