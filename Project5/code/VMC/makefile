@@ -10,3 +10,6 @@ alpha:
 
 sandbox:
 	g++ -O3 -o ../compiled/sandbox.exe sandbox.cpp variationalMC.cpp
+
+optimalStep:
+	g++ -O3 -o ../compiled/optimalStep.exe optimalStep.cpp variationalMC.cpp

@@ -36,6 +36,9 @@ private:
 	double Energy;
 	double ExpectationValues[3];
 
+	// Counting the number of accepted steps
+	int accepted;
+
 	// Storing what indexes should be written to file
 	int* write;
 
@@ -55,8 +58,12 @@ public:
 
 	// Preforms the metropolis algorithm MCCs times, how many to write and outfilename
 	void Run(string filenmame, string spaced="log", int MCCs_write=1000);
+
 	// Same as above, but nothing is saved under calculations
 	void Run_NoSave();
+
+	// Getter for energy, used when variating both alpha and beta
+	double getEnergy();
 
 	// Sets what mode you want to write 
 	void setOutfileParameters(int MCCs_write, string spaced);
@@ -69,6 +76,7 @@ public:
 	// Writing functions
 	void WriteExpectationValues(int cycle, ofstream& file);
 	void WriteFinal(string filename);
+	void WriteAccepts(string filename);
 };
 
 #endif

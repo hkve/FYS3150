@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 		EL = EL_1;
 	}
 	else {
-		EL = EL_1_Columb;
+		EL = EL_1_Coulomb;
 	}
 
 	double omega = 1;

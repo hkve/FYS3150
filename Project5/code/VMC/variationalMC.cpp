@@ -26,8 +26,9 @@ VMC::VMC(func psi, func EL, int MCCs_, double step, double omega_, double alpha_
 		R[i] = step_length * (s(generator)-0.5);
 		R_trial[i] = 0;
 	}  
-	for(int i = 0; i < 5; i++) {ExpectationValues[i] = 0;} // Fill expectation values with zeros
+	for(int i = 0; i < 3; i++) {ExpectationValues[i] = 0;} // Fill expectation values with zeros
 	
+	accepted = 0;
 }
 
 void VMC::Metropolis() {
@@ -49,6 +50,9 @@ void VMC::Metropolis() {
 		}
 		// Calculate new local energy
 		Energy = localEnergy(R, omega, alpha, beta);
+
+		// Count the accepted step
+		accepted++;
 	}
 }
 
@@ -136,6 +140,11 @@ void VMC::Run_NoSave() {
 	}
 }
 
+double VMC::getEnergy() {
+	// Getter for the energy
+	return ExpectationValues[0]/MCCs;
+}
+
 void VMC::setOutfileParameters(int MCCs_write, string spaced) {
 	// Choosing how to space the values written to outfile
 	if(spaced=="log" || spaced=="Log") {
@@ -210,6 +219,7 @@ void VMC::WriteExpectationValues(int cycle, ofstream& file) {
 }
 
 void VMC::WriteFinal(string filename) {
+	// Appending parameters and expectation values to file, assuming Run or Run_NoSaved has been called
 	ofstream file;
 	file.open("../data/" + filename, ios_base::app);
 	double E = ExpectationValues[0]/MCCs;
@@ -217,4 +227,12 @@ void VMC::WriteFinal(string filename) {
 	double r12 = ExpectationValues[2]/MCCs;
 
 	file << MCCs << " " << alpha << " " << beta << " " << E << " " << EE << " " << r12 <<endl;
+}
+
+void VMC::WriteAccepts(string filename) {
+	// Writing the number of accepted steps, assuming Run or Run_NoSaved has been called
+	ofstream file;
+	file.open("../data/" + filename, ios_base::app);
+
+	file << MCCs << " " << alpha << " " << step_length << " " << accepted <<endl;
 }
