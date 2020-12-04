@@ -2,9 +2,9 @@
 #include "trialFunctions.cpp"
 
 int main(int argc, char *argv[]) {
-	int searches = 2;
+	int searches = 5;
 	double omega = 1;
-	int MCCs = (int)pow(10,6);
+	int MCCs = (int)pow(10,7);
 
 	double maxAlpha = 1.1;
 	double minAlpha = 0.8;
@@ -16,7 +16,6 @@ int main(int argc, char *argv[]) {
 	int N_beta = 20;
 	double dBeta;
 	
-
 	double bestAlpha = 0.9; // Here use best value from wavefunc1 with Coulomb interaction
 	double alpha;
 
@@ -67,8 +66,16 @@ int main(int argc, char *argv[]) {
 
 			delete problem;
 		}
+
+		minAlpha = bestAlpha - (maxAlpha-minAlpha)/(i+2);
+		maxAlpha = bestAlpha + (maxAlpha-minAlpha)/(i+2);
+		
+		minBeta = bestBeta - (maxBeta-minBeta)/(i+2);
+		maxBeta = bestBeta + (maxBeta-minBeta)/(i+2);
 	}
 
-	cout << "Beep-Boop im done found lowest energy E = " << Energy 
-	<< " at alpha = " << bestAlpha << " beta = " << bestBeta << endl;
+	cout << "Beep-Boop im done!" <<endl
+		 << "E_min = " << Energy_min << endl
+		 << "Best alpha = " << bestAlpha << " - last step = " << dAlpha <<endl
+		 << "Best beta  = " << bestBeta << " - last step = " << dBeta <<endl;
 }
