@@ -45,7 +45,7 @@ double EL_2(double *r, double omega, double alpha, double beta) {
 	double betaTerm = 1/(1+beta*r12);
 	double betaTermSquared = 0.5*betaTerm*betaTerm;
 
-	double extraAddition = alpha*omega*r12 - betaTermSquared - 2/r12 + 2*betaTerm;
+	double extraAddition = alpha*omega*r12 - betaTermSquared - 2/r12 + 2*beta*betaTerm;
 	// Think calling EL_1 here is faster, no need to calculate r12 twice
 	return EL_1(r, omega, alpha, beta) + 1/r12 + betaTermSquared*extraAddition;	
 }

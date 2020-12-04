@@ -13,3 +13,6 @@ sandbox:
 
 optimalStep:
 	g++ -O3 -o ../compiled/optimalStep.exe optimalStep.cpp variationalMC.cpp
+
+beta:
+	g++ -O3 -o ../compiled/variateBeta.exe variateBeta.cpp variationalMC.cpp
