@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 		dBeta = (maxBeta - minBeta)/(double)(N_beta-1);
 
 		
-		step = 1.5/sqrt(bestAlpha);
+		step = 1.39/sqrt(bestAlpha);
 
 		cout << "BETA" <<endl;
 		for(int j = 0; j < N_beta; j++) {

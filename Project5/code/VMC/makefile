@@ -16,3 +16,6 @@ optimalStep:
 
 beta:
 	g++ -O3 -o ../compiled/variateBeta.exe variateBeta.cpp variationalMC.cpp
+
+betaGrid:
+	g++ -O3 -o ../compiled/variateBeta_grid.exe variateBeta_grid.cpp variationalMC.cpp 
