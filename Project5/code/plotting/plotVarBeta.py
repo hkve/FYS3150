@@ -10,15 +10,16 @@ def varBeta(sim = False):
 	# These values gave pretty plots, feel free to test different
 	alphaMin = 0.8 
 	alphaMax = 1.4
-	N_alpha = 20
+	N_alpha = 250
 	betaMin = 0
 	betaMax = 1
-	N_beta = 20
-	filename = "variateBeta_grid.dat"
+	N_beta = 250
+	filename = f"variateBeta_grid_{betaMin}-{betaMax}-{N_beta}_{alphaMin}-{alphaMax}-{N_alpha}_{MCCs}-{omega}.dat"
 
 	if sim:
 		if filename in os.listdir("../data/"):
 			os.system(f"rm ../data/{filename}")
+		#print(f"../compiled/variateBeta_grid.exe {MCCs} {omega} {alphaMin} {alphaMax} {N_alpha} {betaMin} {betaMax} {N_beta} {filename}")
 		os.system(f"../compiled/variateBeta_grid.exe {MCCs} {omega} {alphaMin} {alphaMax} {N_alpha} {betaMin} {betaMax} {N_beta} {filename}")
 
 	MCCs, alpha, beta, E, EE, varE = np.loadtxt(f"../data/{filename}", unpack=True)
