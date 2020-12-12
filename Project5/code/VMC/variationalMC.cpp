@@ -1,6 +1,9 @@
 #include "variationalMC.hpp"
 
 VMC::VMC(func psi, func EL, int MCCs_, double step, double omega_, double alpha_, double beta_) {
+	// Set MCCs
+	MCCs = MCCs_;
+
 	// Set frequancy and variational parameter
 	omega = omega_;
 	alpha = alpha_;
@@ -10,8 +13,12 @@ VMC::VMC(func psi, func EL, int MCCs_, double step, double omega_, double alpha_
 	waveFunction = psi;
 	localEnergy = EL;
 
-	step_length = step;
-	MCCs = MCCs_;
+	if(step == 0) {
+		step_length = optimalStep();
+	}
+	else {
+		step_length = step;
+	}
 
 	// Set random number generator
 	std::mt19937 generator(clock());
@@ -26,7 +33,7 @@ VMC::VMC(func psi, func EL, int MCCs_, double step, double omega_, double alpha_
 		R[i] = step_length * (s(generator)-0.5);
 		R_trial[i] = 0;
 	}  
-	for(int i = 0; i < 3; i++) {ExpectationValues[i] = 0;} // Fill expectation values with zeros
+	for(int i = 0; i < 5; i++) {ExpectationValues[i] = 0;} // Fill expectation values with zeros
 	
 	accepted = 0;
 }
@@ -73,9 +80,12 @@ void VMC::Run(string filename, string spaced, int MCCs_write) {
 	double R12 = (R[0]-R[3])*(R[0]-R[3]) +
 			     	 (R[1]-R[4])*(R[1]-R[4]) +
 				     (R[2]-R[5])*(R[2]-R[5]);
+	R12 = sqrt(R12);
 	ExpectationValues[0] += Energy;
 	ExpectationValues[1] += Energy*Energy;
-	ExpectationValues[2] += sqrt(R12);
+	ExpectationValues[2] += R12;
+	ExpectationValues[3] += potEnergy(R);
+	ExpectationValues[4] += 1/R12;
 
 	// Open exp values file
 	ofstream file("../data/" + filename);
@@ -97,9 +107,12 @@ void VMC::Run(string filename, string spaced, int MCCs_write) {
 		R12 = (R[0]-R[3])*(R[0]-R[3]) +
 			     	 (R[1]-R[4])*(R[1]-R[4]) +
 				     (R[2]-R[5])*(R[2]-R[5]);
+		R12 = sqrt(R12);
 		ExpectationValues[0] += Energy;
 		ExpectationValues[1] += Energy*Energy;
-		ExpectationValues[2] += sqrt(R12); 
+		ExpectationValues[2] += R12; 
+		ExpectationValues[3] += potEnergy(R);
+		ExpectationValues[4] += 1/R12;
 
 		// If this cycle should be written
 		if(cycle == write[writeCounter]) {
@@ -120,9 +133,12 @@ void VMC::Run_NoSave() {
 	double R12 = (R[0]-R[3])*(R[0]-R[3]) +
 			     	 (R[1]-R[4])*(R[1]-R[4]) +
 				     (R[2]-R[5])*(R[2]-R[5]);
+	R12 = sqrt(R12);
 	ExpectationValues[0] += Energy;
 	ExpectationValues[1] += Energy*Energy;
-	ExpectationValues[2] += sqrt(R12);
+	ExpectationValues[2] += R12;
+	ExpectationValues[3] += potEnergy(R);
+	ExpectationValues[4] += 1/R12;
 
 		// Loop over all MCCs
 	for(int cycle = 1; cycle <= MCCs; cycle++) {
@@ -134,15 +150,53 @@ void VMC::Run_NoSave() {
 		R12 = (R[0]-R[3])*(R[0]-R[3]) +
 			     	 (R[1]-R[4])*(R[1]-R[4]) +
 				     (R[2]-R[5])*(R[2]-R[5]);
+		R12 = sqrt(R12);
 		ExpectationValues[0] += Energy;
 		ExpectationValues[1] += Energy*Energy;
-		ExpectationValues[2] += sqrt(R12); 
+		ExpectationValues[2] += R12; 
+		ExpectationValues[3] += potEnergy(R);
+		ExpectationValues[4] += 1/R12;
 	}
 }
 
 double VMC::getEnergy() {
 	// Getter for the energy
 	return ExpectationValues[0]/MCCs;
+}
+
+double VMC::potEnergy(double* r) {
+	double r1_squared = r[0]*r[0] + r[1]*r[1] + r[2]*r[2];
+	double r2_squared = r[3]*r[3] + r[4]*r[4] + r[5]*r[5];
+
+	return 0.5*omega*omega*(r1_squared+r2_squared);
+}
+
+double VMC::optimalStep() {
+	// If step is set to zero, simply try to find the optimal step
+	// Fit was done for these 3 omegas
+	double omega0 = 0.01; double omega1 = 0.5; double omega2 = 1;
+	
+	// The constant corresponding to m*alpha^-b
+	double m0 = 13.8; double m1 = 1.96; double m2 = 1.39;
+	double b0 = 0.48; double b1 = 0.5; 
+
+	double m, b;
+
+	// simply drawing a straigth line from 0->1 and 1->2
+	if(omega >= omega0 && omega < omega1) {
+		m = m0 + (m1-m0)/(omega1-omega0) * (omega-omega0);
+		b = b0 + (b1-b0)/(omega1-omega0) * (omega-omega0); 
+	}
+	else if(omega >= omega1 && omega <= 1) {
+		m = m1 + (m2-m1)/(omega2-omega1) * (omega-omega1);
+		b = b1;
+	}
+	// If omega > 1 use best fit for omega = 1
+	else {
+		m = m2; b = b1;
+	}
+
+	return m * pow(alpha, -1*b);
 }
 
 void VMC::setOutfileParameters(int MCCs_write, string spaced) {
@@ -218,7 +272,7 @@ void VMC::WriteExpectationValues(int cycle, ofstream& file) {
 	file << cycle << " " << E << " " << EE << " " << r12 <<endl;
 }
 
-void VMC::WriteFinal(string filename) {
+void VMC::WriteVariational(string filename) {
 	// Appending parameters and expectation values to file, assuming Run or Run_NoSaved has been called
 	ofstream file;
 	file.open("../data/" + filename, ios_base::app);
@@ -226,7 +280,7 @@ void VMC::WriteFinal(string filename) {
 	double EE = ExpectationValues[1]/MCCs;
 	double r12 = ExpectationValues[2]/MCCs;
 
-	file << MCCs << " " << alpha << " " << beta << " " << E << " " << EE << " " << r12 <<endl;
+	file << MCCs << " " << alpha << " " << beta << " " << E << " " << EE <<endl;
 }
 
 void VMC::WriteAccepts(string filename) {
@@ -235,4 +289,16 @@ void VMC::WriteAccepts(string filename) {
 	file.open("../data/" + filename, ios_base::app);
 
 	file << MCCs << " " << alpha << " " << step_length << " " << accepted <<endl;
+}
+
+void VMC::WriteVirial(string filename) {
+	ofstream file;
+	file.open("../data/" + filename, ios_base::app);	
+
+	double E = ExpectationValues[0]/MCCs;
+	double EE = ExpectationValues[1]/MCCs;
+	double r12 = ExpectationValues[2]/MCCs;
+	double pot = ExpectationValues[3]/MCCs;
+	double r12_inverse = ExpectationValues[4]/MCCs;
+	file << omega << " " << E << " " << EE << " " << r12 << " " << pot << " " << r12_inverse <<endl;
 }

@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
 			// Run sim
 			VMC* problem = new VMC(psi_T2, EL_2, MCCs, step, omega, alpha, beta);
 			problem->Run_NoSave();
-			problem->WriteFinal(filename);
+			problem->WriteVariational(filename);
 			delete problem;
 
 			cout << "Alpha = " << alpha << " beta = " << beta << endl;

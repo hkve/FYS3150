@@ -34,7 +34,7 @@ private:
 
 	// Energy and expectation values
 	double Energy;
-	double ExpectationValues[3];
+	double ExpectationValues[5];
 
 	// Counting the number of accepted steps
 	int accepted;
@@ -62,12 +62,18 @@ public:
 	// Same as above, but nothing is saved under calculations
 	void Run_NoSave();
 
+	// Calculates the potential energy
+	double potEnergy(double* r);
+
 	// Getter for energy, used when variating both alpha and beta
 	double getEnergy();
 
+	// If step is init as 0, the optimal step is chosen
+	double optimalStep();
+
 	// Sets what mode you want to write 
 	void setOutfileParameters(int MCCs_write, string spaced);
-	
+
 	// Different modes of writing data
 	void Logspace(int MCCs_write);
 	void Linspace(int MCCs_write);
@@ -75,8 +81,9 @@ public:
 
 	// Writing functions
 	void WriteExpectationValues(int cycle, ofstream& file);
-	void WriteFinal(string filename);
+	void WriteVariational(string filename);
 	void WriteAccepts(string filename);
+	void WriteVirial(string filename);
 };
 
 #endif

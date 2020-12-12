@@ -3,10 +3,10 @@ def plotVirial(sim = False):
 	import matplotlib.pyplot as plt
 	import os
 
-	modes = ["noninteractive"]
+	modes = ["noninteractive", "interactive"]
 	filenames = [f"virial_{mode}.dat" for mode in modes]
 
-	MCCs = 6
+	MCCs = 7
 	omegaStart = 0.01
 	omegaEnd = 1
 	N_omega = 20
@@ -18,17 +18,19 @@ def plotVirial(sim = False):
 			os.system(f"../compiled/virialTheorem.exe {MCCs} {omegaStart} {omegaEnd} {N_omega} {mode}")
 	
 	fig, ax = plt.subplots()
-	ax.set_ylim(0,4)
+	#ax.set_ylim(0,4)
 	for mode, filename in zip(modes, filenames):
 		omega, E, EE, r12, V, r12_inverse = np.loadtxt("../data/virial_noninteractive.dat", unpack=True)
 	
+		K = E-V
 		if mode == "interactive":
 			V += r12_inverse
 		
-		K = E-V
+
+		ax.scatter(omega, V/K, label=f"{mode}")
 	
-		ax.scatter(omega, V/K)
-	
+	ax.set(xlabel=r"$\omega$", ylabel=r"$\langle V \rangle / \ \langle T \rangle$")
+	ax.legend()
 	plt.show()
 	
-plotVirial(sim=False)
+plotVirial(sim=True)
