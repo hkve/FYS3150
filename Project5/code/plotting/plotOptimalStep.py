@@ -1,3 +1,4 @@
+
 def plotOptimalStep(sim = False):
 	import numpy as np
 	import matplotlib.pyplot as plt
@@ -7,16 +8,16 @@ def plotOptimalStep(sim = False):
 	from colour import Color
 	import matplotlib as mpl
 	import seaborn as sns
-	omega = 1
-	alphaStart = 0.1
-	alphaEnd = 2.5
-	dAlpha = 0.1
+	omega = 0.01
+	alphaStart = 0.9
+	alphaEnd = 3
+	dAlpha = 0.05
 
-	stepStart = 0.1
-	stepEnd = 5
-	dStep = 0.01
+	stepStart = 7.8
+	stepEnd = 14
+	dStep = 0.1
 
-	filename = "optimalStep1 copy.dat"
+	filename = "optimalStep_omega0.01.dat"
 
 	if sim:
 		os.system(f"../compiled/optimalStep.exe {5} {omega} {alphaStart} {alphaEnd} {dAlpha} {stepStart} {stepEnd} {dStep} {filename}")
@@ -27,7 +28,7 @@ def plotOptimalStep(sim = False):
 		ax = axes[0]
 		ax2 = axes[1]
 		ax.axhline(0.5, linestyle="dashed", c="k", zorder=10000, label=r"50% acceptance rate")
-		ax.set_xlabel("Step length, $\delta$", fontsize=13)
+		ax.set_xlabel("Step size, $\delta$", fontsize=13)
 		ax.set_ylabel("Acceptance rate", fontsize=13)
 		ax.set_title(r"Acceptance rate for different $\alpha$")
 		ax.set_xlim([0,5])
@@ -46,17 +47,20 @@ def plotOptimalStep(sim = False):
 		
 
 		
-		ax2.set_xlabel(rf"$\alpha$", fontsize=13)
-		ax2.set_ylabel(r"Step size closest to 50% accepts", fontsize=13)
+		ax2.set_xlabel(rf"$\alpha$", fontsize=15)
+		ax2.set_ylabel(r"$\delta'$", fontsize=15)
 		optimalStep = findOptimalStep(steps, alphas, percentAcceptAlphas)
+		alphas = alphas[1:]
+		optimalStep = optimalStep[1:]
 		for i,(alpha, oS) in enumerate(zip(alphas, optimalStep)):
 			ax2.scatter(alpha, oS, color=colors[i])
-		fitfunc = lambda x,s: s/x**(1/2)
+		fitfunc = lambda x,m,b: m/x**(b)
+		print(alphas)
 		popt, pcov = curve_fit(fitfunc, alphas, optimalStep)
-		print(popt[0])
-		ax2.plot(alphas, fitfunc(alphas, *popt), color="k", alpha=0.7, lw=2,label=f"Fit: ${round(popt[0],2)}"+r"\cdot \alpha^{-1/2}$")
+		print(popt)
+		ax2.plot(alphas, fitfunc(alphas, *popt), color="k", alpha=0.7, lw=2,label=f"Fit: $\delta'(\\alpha) \\approx {round(popt[0],2)}"+r"\cdot \alpha^{-0.5}$")
 		ax2.legend(loc='upper right', fancybox=True,shadow=True,fontsize=11)
-		ax2.set_title(r"Steps size yielding 50% acceptance rate")
+		ax2.set_title(f"Step size, $\delta '$, yielding 50% acceptance rate. $\omega = {omega}$")
 		plt.show()
 
-plotOptimalStep(sim = False)
+plotOptimalStep(sim = True)
