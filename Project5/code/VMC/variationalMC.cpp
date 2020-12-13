@@ -173,30 +173,8 @@ double VMC::potEnergy(double* r) {
 
 double VMC::optimalStep() {
 	// If step is set to zero, simply try to find the optimal step
-	// Fit was done for these 3 omegas
-	double omega0 = 0.01; double omega1 = 0.5; double omega2 = 1;
-	
-	// The constant corresponding to m*alpha^-b
-	double m0 = 13.8; double m1 = 1.96; double m2 = 1.39;
-	double b0 = 0.48; double b1 = 0.5; 
-
-	double m, b;
-
-	// simply drawing a straigth line from 0->1 and 1->2
-	if(omega >= omega0 && omega < omega1) {
-		m = m0 + (m1-m0)/(omega1-omega0) * (omega-omega0);
-		b = b0 + (b1-b0)/(omega1-omega0) * (omega-omega0); 
-	}
-	else if(omega >= omega1 && omega <= 1) {
-		m = m1 + (m2-m1)/(omega2-omega1) * (omega-omega1);
-		b = b1;
-	}
-	// If omega > 1 use best fit for omega = 1
-	else {
-		m = m2; b = b1;
-	}
-
-	return m * pow(alpha, -1*b);
+	double m = 1.381 * pow(omega, -0.5);
+	return m * pow(alpha, -0.5);
 }
 
 void VMC::setOutfileParameters(int MCCs_write, string spaced) {

@@ -25,19 +25,14 @@ int main(int argc, char *argv[]) {
 	double Energy_min = 100; // Just a big number to get started
 	double Energy;
 
-	double step;
-
 	for(int i = 0; i < searches; i++) {
 		dAlpha = (maxAlpha - minAlpha)/(double)(N_alpha-1);
 		dBeta = (maxBeta - minBeta)/(double)(N_beta-1);
 
-		
-		step = 1.39/sqrt(bestAlpha);
-
 		cout << "BETA" <<endl;
 		for(int j = 0; j < N_beta; j++) {
 			beta = minBeta + j*dBeta;
-			VMC* problem = new VMC(psi_T2, EL_2, MCCs, step, omega, bestAlpha, beta);
+			VMC* problem = new VMC(psi_T2, EL_2, MCCs, 0, omega, bestAlpha, beta);
 			problem->Run_NoSave();
 
 			Energy = problem->getEnergy();
@@ -53,7 +48,7 @@ int main(int argc, char *argv[]) {
 		cout << "ALPHA" <<endl;
 		for(int j = 0; j < N_alpha; j++) {
 			alpha = minAlpha + j*dAlpha;
-			VMC* problem = new VMC(psi_T2, EL_2, MCCs, step, omega, alpha, bestBeta);
+			VMC* problem = new VMC(psi_T2, EL_2, MCCs, 0, omega, alpha, bestBeta);
 			problem->Run_NoSave();
 
 			Energy = problem->getEnergy();

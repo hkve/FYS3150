@@ -31,7 +31,6 @@ int main(int argc, char* argv[]) {
 	double beta;
 
 	string filename = argv[9];
-	double step;
 
 	for(int i = 0; i < N_alpha; i++) {
 		for(int j = 0; j < N_beta; j++) {
@@ -40,11 +39,9 @@ int main(int argc, char* argv[]) {
 			alpha = minAlpha + i*dAlpha;
 			beta = minBeta + j*dBeta;
 			
-			// Optimal step
-			step = 1.39/sqrt(alpha);
 
 			// Run sim
-			VMC* problem = new VMC(psi_T2, EL_2, MCCs, step, omega, alpha, beta);
+			VMC* problem = new VMC(psi_T2, EL_2, MCCs, 0, omega, alpha, beta);
 			problem->Run_NoSave();
 			problem->WriteVariational(filename);
 			delete problem;
