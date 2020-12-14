@@ -173,8 +173,8 @@ double VMC::potEnergy(double* r) {
 
 double VMC::optimalStep() {
 	// If step is set to zero, simply try to find the optimal step
-	double m = 1.381 * pow(omega, -0.5);
-	return m * pow(alpha, -0.5);
+	//double m = 1.381 * pow(omega, -0.5);
+	return 1.389/sqrt(omega*alpha);
 }
 
 void VMC::setOutfileParameters(int MCCs_write, string spaced) {

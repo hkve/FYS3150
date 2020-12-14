@@ -1,5 +1,5 @@
 # Only include programs used in the report
-all: alpha
+all: alpha optimalStep beta betaGrid virial single
 
 # All C++ should be compiled to "compiled" folder
 model:
@@ -22,3 +22,6 @@ betaGrid:
 
 virial:
 	g++ -O3 -o ../compiled/virialTheorem.exe virialTheorem.cpp variationalMC.cpp
+
+single:
+	g++ -O3 -o ../compiled/runSingle.exe runSingle.cpp variationalMC.cpp

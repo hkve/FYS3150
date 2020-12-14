@@ -4,7 +4,7 @@
 int main(int argc, char *argv[]) {
 	int searches = 5;
 	double omega = 1;
-	int MCCs = (int)pow(10,7);
+	int MCCs = (int)pow(10,8);
 
 	double maxAlpha = 1.1;
 	double minAlpha = 0.8;
@@ -24,6 +24,7 @@ int main(int argc, char *argv[]) {
 
 	double Energy_min = 100; // Just a big number to get started
 	double Energy;
+
 
 	for(int i = 0; i < searches; i++) {
 		dAlpha = (maxAlpha - minAlpha)/(double)(N_alpha-1);
