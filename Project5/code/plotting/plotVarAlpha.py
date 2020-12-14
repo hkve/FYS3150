@@ -21,7 +21,7 @@ def varAlpha(sim = False):
 	colors = [color.get_rgb() for color in colors]
 	for filename, mode,title in zip(["varAlphaNoninteractive", "varAlphaInteractive"], ["noninteractive", "interactive"], ["Without interactions", "With interactions"]):
 		if sim:
-			os.system(f"../compiled/variateAlpha.exe {7} {alphaStart} {alphaEnd} {dAlpha} {mode} foo")
+			os.system(f"../compiled/variateAlpha.exe {7} {alphaStart} {alphaEnd} {dAlpha} Save {mode}")
 		with sns.axes_style("darkgrid"):
 			fig, axes = plt.subplots(nrows=1, ncols=2, dpi=120)
 			axes[0].set(xscale="log")
@@ -66,7 +66,7 @@ def varAlphaInteractive(sim = False):
 	alphas = np.linspace(alphaStart, alphaEnd, N_alpha, endpoint=True)
 
 	if sim:
-		os.system(f"../compiled/variateAlpha.exe {5} {alphaStart} {alphaEnd} {dAlpha} interactive a")
+		os.system(f"../compiled/variateAlpha.exe {5} {alphaStart} {alphaEnd} {dAlpha} Save interactive")
 
 	fig, axes = plt.subplots(nrows=1, ncols=2)
 	axes[0].set(xscale="log")
@@ -84,5 +84,5 @@ def varAlphaInteractive(sim = False):
 	axes[1].legend()
 	plt.show()
 
-varAlpha(sim=False)
+varAlpha(sim=True)
 #varAlphaInteractive(sim = True)

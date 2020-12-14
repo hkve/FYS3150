@@ -5,11 +5,11 @@ int main(int argc, char *argv[]) {
 	string mode;
 
 	if(argc < 4) {
-		cerr << "Bad usage, enter log10(MCCs), alphaStart, alphaEnd, dAlpha" <<endl;
+		cerr << "Bad usage, enter log10(MCCs), alphaStart, alphaEnd, dAlpha, solveMode" <<endl;
 		exit(1);
 	}
 	else if(argc == 7) {
-		mode = argv[5];
+		mode = argv[6];
 		if(mode != "interactive" && mode != "noninteractive") {
 			cerr << mode << " is not a valid mode, try 'interactive' or 'noninteractive'" <<endl;
 			cerr << "if none is given, noninteractive is chosen" <<endl;
@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
 	double alphaStart = atof(argv[2]);
 	double alphaEnd = atof(argv[3]);
 	double dAlpha = atof(argv[4]);
-	string solveMode = (string)argv[6];
+	string solveMode = (string)argv[5];
 	
 	string filenameMode = mode;
 	filenameMode[0] = toupper(filenameMode[0]);
@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
 		if (solveMode == "NoSave"){
 			problem->Run_NoSave();// filename + to_string(i) + ".dat", "log", 1000);
 			//problem->WriteFinal(filename + to_string(i) + ".dat");
-			problem->WriteFinal("alpha" + mode + ".dat");
+			problem->WriteVariational("alpha" + mode + ".dat");
 		}
 		else {
 			problem->Run(filename + to_string(i) + ".dat", "log", 1000);

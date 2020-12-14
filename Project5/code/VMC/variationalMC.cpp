@@ -258,7 +258,7 @@ void VMC::WriteVariational(string filename) {
 	double EE = ExpectationValues[1]/MCCs;
 	double r12 = ExpectationValues[2]/MCCs;
 
-	file << MCCs << " " << alpha << " " << beta << " " << E << " " << EE <<endl;
+	file << MCCs << " " << alpha << " " << beta << " " << E << " " << EE << " " << r12 <<endl;
 }
 
 void VMC::WriteAccepts(string filename) {

@@ -4,7 +4,7 @@ def varAlpha(sim = False):
 	import os
 	import seaborn as sns
 
-	#MCCs = 7
+	MCCs = 7
 	alphaStart = 0.5
 	alphaEnd = 1.5
 	dAlpha = 0.01
@@ -19,8 +19,8 @@ def varAlpha(sim = False):
 	with sns.axes_style("darkgrid"):
 		fig, axes = plt.subplots(nrows=1, ncols=2, dpi=120)
 		for i,mode in enumerate(["interactive", "noninteractive"]):
-			if sim and i != 0:
-				os.system(f"../compiled/variateAlpha.exe {7} {alphaStart} {alphaEnd} {dAlpha} {mode} NoSave")
+			if sim: #and i != 0:
+				os.system(f"../compiled/variateAlpha.exe {7} {alphaStart} {alphaEnd} {dAlpha} NoSave {mode}")
 
 			E, r12 = np.loadtxt(f"../data/alpha{mode}.dat", unpack=True, usecols=(3,5))
 			r12_.append(r12)
@@ -41,4 +41,4 @@ def varAlpha(sim = False):
 
 
 
-varAlpha(sim = False)
+varAlpha(sim = True)

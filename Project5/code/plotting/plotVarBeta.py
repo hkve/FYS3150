@@ -25,7 +25,7 @@ def varBeta(sim = False):
 		#print(f"../compiled/variateBeta_grid.exe {MCCs} {omega} {alphaMin} {alphaMax} {N_alpha} {betaMin} {betaMax} {N_beta} {filename}")
 		#os.system(f"../compiled/variateBeta_grid.exe {MCCs} {omega} {alphaMin} {alphaMax} {N_alpha} {betaMin} {betaMax} {N_beta} {filename}")
 
-	MCCs, alpha, beta, E, EE, varE = np.loadtxt(f"../data/{filename}", unpack=True)
+	MCCs, alpha, beta, E, EE, r12 = np.loadtxt(f"../data/{filename}", unpack=True)
 
 	alpha = np.unique(alpha)
 	beta = np.unique(beta)
@@ -48,4 +48,4 @@ def varBeta(sim = False):
 	ax.legend(loc='upper center', fancybox=True,shadow=True,fontsize=12)
 	plt.show()
 	
-varBeta(sim = False)
+varBeta(sim = True)
