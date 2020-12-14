@@ -7,9 +7,9 @@ def plotVirial(sim = False):
 	filenames = [f"virial_{mode}.dat" for mode in modes]
 
 	MCCs = 7
-	omegaStart = 0.01
+	omegaStart = 0.01 
 	omegaEnd = 1
-	N_omega = 20
+	N_omega = 10
 
 	if sim:
 		for mode, filename in zip(modes, filenames):

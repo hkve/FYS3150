@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 
 	double omega = 1;
 	double alpha = alphaStart;
-	double step = 1.5;
+	double step = 0;
 	int N_alpha = (int)round((alphaEnd-alphaStart)/dAlpha) + 1; // Round since compiler somtimes truncate
 	
 	
