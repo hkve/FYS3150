@@ -250,7 +250,7 @@ void VMC::WriteExpectationValues(int cycle, ofstream& file) {
 	file << cycle << " " << E << " " << EE << " " << r12 <<endl;
 }
 
-void VMC::WriteVariational(string filename) {
+void VMC::WriteVariational(string filename, int idx) {
 	// Appending parameters and expectation values to file, assuming Run or Run_NoSaved has been called
 	ofstream file;
 	file.open("../data/" + filename, ios_base::app);
@@ -258,7 +258,12 @@ void VMC::WriteVariational(string filename) {
 	double EE = ExpectationValues[1]/MCCs;
 	double r12 = ExpectationValues[2]/MCCs;
 
+	if(idx!=-1) {
+		file << idx << " ";
+	}
+
 	file << MCCs << " " << alpha << " " << beta << " " << E << " " << EE << " " << r12 <<endl;
+
 }
 
 void VMC::WriteAccepts(string filename) {

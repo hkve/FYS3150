@@ -81,7 +81,7 @@ public:
 
 	// Writing functions
 	void WriteExpectationValues(int cycle, ofstream& file);
-	void WriteVariational(string filename);
+	void WriteVariational(string filename, int idx=-1);
 	void WriteAccepts(string filename);
 	void WriteVirial(string filename);
 };

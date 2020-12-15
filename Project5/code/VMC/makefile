@@ -20,6 +20,9 @@ beta:
 betaGrid:
 	g++ -O3 -o ../compiled/variateBeta_grid.exe variateBeta_grid.cpp variationalMC.cpp 
 
+parallel:
+	g++ -O3 -o ../compiled/variateBeta_grid_parallel.exe variateBeta_grid_parallel.cpp variationalMC.cpp -fopenmp
+
 virial:
 	g++ -O3 -o ../compiled/virialTheorem.exe virialTheorem.cpp variationalMC.cpp
 
