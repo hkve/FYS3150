@@ -42,8 +42,8 @@ int main(int argc, char* argv[]) {
 			delete problem;
 		}
 		if(mode == "interactive") {
-			alpha = 0.95;
-			beta = 0.34;
+			alpha = 0.994;
+			beta = 0.286;
 			VMC* problem = new VMC(psi_T2, EL_2, MCCs, 0, omega, alpha, beta);
 			problem->Run_NoSave();
 			problem->WriteVirial(filename);
