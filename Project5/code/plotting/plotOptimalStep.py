@@ -1,5 +1,4 @@
-
-def plotOptimalStep(sim = False):
+def main(sim = False):
 	import numpy as np
 	import matplotlib.pyplot as plt
 	import os
@@ -8,16 +7,16 @@ def plotOptimalStep(sim = False):
 	from colour import Color
 	import matplotlib as mpl
 	import seaborn as sns
-	omega = 0.01
+	omega = 1
 	alphaStart = 0.9
 	alphaEnd = 3
 	dAlpha = 0.05
 
 	stepStart = 7.8
 	stepEnd = 14
-	dStep = 0.1
+	dStep = 0.01
 
-	filename = "optimalStep_omega0.01.dat"
+	filename = "optimalStep1 copy.dat"
 
 	if sim:
 		os.system(f"../compiled/optimalStep.exe {5} {omega} {alphaStart} {alphaEnd} {dAlpha} {stepStart} {stepEnd} {dStep} {filename}")
@@ -62,5 +61,3 @@ def plotOptimalStep(sim = False):
 		ax2.legend(loc='upper right', fancybox=True,shadow=True,fontsize=11)
 		ax2.set_title(f"Step size, $\delta '$, yielding 50% acceptance rate. $\omega = {omega}$")
 		plt.show()
-
-plotOptimalStep(sim = True)

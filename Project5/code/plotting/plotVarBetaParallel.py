@@ -1,4 +1,4 @@
-def varBetaParallel(sim = False):
+def main(sim = False):
 	import numpy as np
 	import matplotlib.pyplot as plt
 	import os,sys
@@ -31,5 +31,3 @@ def varBetaParallel(sim = False):
 	ax.set_title(r"Estimated ground state energy for varying $\alpha$ and $\beta$",fontsize=14)
 	ax.legend(loc='upper center', fancybox=True,shadow=True,fontsize=12)
 	plt.show()
-
-varBetaParallel()
