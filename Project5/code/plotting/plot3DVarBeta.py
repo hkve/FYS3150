@@ -1,26 +1,24 @@
-def main(sim = False):
+def main(sim = False, a0 = 0.8, a1=1.4,  da = 0.0024, b0 = 0, b1 = 1, db= 0.004,omega=1, MCCs=6):
 	import numpy as np
 	import matplotlib.pyplot as plt
 	import os,sys
 	from mpl_toolkits.mplot3d import Axes3D,art3d
 	from matplotlib.patches import Circle
 
-	MCCs = 6
-	omega = 1
+	
 
 	# These values gave pretty plots, feel free to test different
-	alphaMin = 0.8 
-	alphaMax = 1.4
-	N_alpha = 250
-	betaMin = 0
-	betaMax = 1
-	N_beta = 250
+	alphaMin = a0
+	alphaMax = a1
+	N_alpha = int(round((a1-a0)/da))
+	betaMin = b0
+	betaMax = b1
+	N_beta = int(round( (b1-b0)/db ))
 	filename = f"variateBeta_grid_{betaMin}-{betaMax}-{N_beta}_{alphaMin}-{alphaMax}-{N_alpha}_{MCCs}-{omega}.data"
 
 	if sim:
 		if filename in os.listdir("../data/"):
 			os.system(f"rm ../data/{filename}")
-		print(f"../compiled/variateBeta_grid.exe {MCCs} {omega} {alphaMin} {alphaMax} {N_alpha} {betaMin} {betaMax} {N_beta} {filename}")
 		os.system(f"../compiled/variateBeta_grid.exe {MCCs} {omega} {alphaMin} {alphaMax} {N_alpha} {betaMin} {betaMax} {N_beta} {filename}")
 
 	MCCs, alpha, beta, E, EE, varE = np.loadtxt(f"../data/{filename}", unpack=True)

@@ -1,16 +1,15 @@
 import matplotlib as mpl
 
-def main(sim = False): 
+def main(sim = False, MCCs=7, a0=0.5, a1=1.5, da=0.05): 
 	import numpy as np
 	from colour import Color
 	import matplotlib.pyplot as plt
 	import os
 	import seaborn as sns
 
-	MCCs = 7
-	alphaStart = 0.5
-	alphaEnd = 1.5
-	dAlpha = 0.05
+	alphaStart = a0
+	alphaEnd = a1
+	dAlpha = da
 
 	N_alpha = round(((alphaEnd-alphaStart)/dAlpha),0)
 	N_alpha = int(N_alpha) + 1
@@ -21,7 +20,7 @@ def main(sim = False):
 	colors = [color.get_rgb() for color in colors]
 	for filename, mode,title in zip(["varAlphaNoninteractive", "varAlphaInteractive"], ["noninteractive", "interactive"], ["without interactions", "with interactions"]):
 		if sim:
-			os.system(f"../compiled/variateAlpha.exe {7} {alphaStart} {alphaEnd} {dAlpha} Save {mode}")
+			os.system(f"../compiled/variateAlpha.exe {MCCs} {alphaStart} {alphaEnd} {dAlpha} Save {mode}")
 		with sns.axes_style("darkgrid"):
 			fig, axes = plt.subplots(nrows=1, ncols=2, dpi=120)
 			axes[0].set(xscale="log")
@@ -31,7 +30,7 @@ def main(sim = False):
 				cyles, E, E2 = data[:,0], data[:,1], data[:,2]
 
 				varE = E2-E*E
-				zorder = 1#int(10-10*np.abs(alpha -1))
+				zorder = 1
 				axes[0].plot(cyles, E, color=colors[i], zorder=zorder, lw=1.7,alpha=0.72)#, label=fr"$\alpha$ = {alpha:.1f}, E = {E[-1]:.2f}")
 				axes[1].plot(cyles, varE, color=colors[i], zorder=zorder,lw=1.7,alpha=0.72)#, label=fr"$\alpha$ = {alpha:.1f} $\sigma_E^2$ = {varE[-1]:.2f}")
 			cmap = mpl.colors.ListedColormap(colors)
@@ -42,9 +41,9 @@ def main(sim = False):
 			axes[0].set_title(f"Energy, {title}")
 			axes[1].set_title(f"Variance of energy, {title}")
 
-			axes[0].set_ylabel(r"$E_{L1}$ [a.u]", fontsize=15)
+			axes[0].set_ylabel(r"\langle $E \rangle$ [a.u]", fontsize=15)
 			axes[0].set_xlabel(r"$\tau$", fontsize=15)
-			axes[1].set_ylabel(r"$\sigma_{E_{L1}}^2$  [a.u$^2$]", fontsize=14)
+			axes[1].set_ylabel(r"$\sigma_{E}^2$  [a.u$^2$]", fontsize=14)
 			axes[1].set_xlabel(r"$\tau$", fontsize=15)
 			plt.show()
 			

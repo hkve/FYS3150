@@ -4,7 +4,7 @@ def main():
 	import matplotlib.pyplot as plt 
 	from scipy.optimize import curve_fit
 	import seaborn as sns
-	w = [0.01, 0.1, 0.25, 0.5, 0.75, 1]
+	w = [0.01, 0.1, 0.25, 0.5, 0.75, 1] #values are hard-coded
 	m = [13.9, 4.387, 2.77, 1.96, 1.60, 1.39]
 	fitfunc = lambda x,m: m/x**(0.5)
 	w_hires = np.linspace(w[0],w[-1], 10000)

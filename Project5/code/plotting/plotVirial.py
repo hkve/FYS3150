@@ -25,26 +25,32 @@ def main(sim = False):
 		#ax.set_ylim(0,4)
 
 		for i,(mode, filename) in enumerate(zip(modes, filenames)):
-			omega, E, EE, r12, V, r12_inverse = np.loadtxt("../data/virial_noninteractive.dat", unpack=True)
+			omega, E, EE, r12, V, r12_inverse = np.loadtxt(f"../data/{filename}", unpack=True)
+			print(np.mean(E), filename)
 		
-			K = E-V
 			if mode == "interactive":
 				V += r12_inverse
-			
-			ax.scatter(omega, V/K, label=labels[i], color=colors[i], zorder=100, alpha=0.8)
+
+			K = E-V
+			ax.scatter(omega, K/V, label=labels[i], color=colors[i], zorder=100, alpha=0.8)
 
 			if i == 1:
-				fitfunc = lambda x,m: 1+m/x**(0.5)
-				w_hires = np.linspace(omega[0],omega[-1], 10000, endpoint=True)
-				popt, pcov = curve_fit(fitfunc, omega, V/K)
-				print(popt)
-				ax.plot(w_hires, fitfunc(w_hires, *popt), color="k", alpha=0.7, lw=2, label=f"Fit: $1+ 0.532\\cdot \\omega"+r"^{-0.5}$", linestyle="--")
+				alpha = 0.994
+				fitfunc = lambda x,b: 1+b/(alpha*x)**(0.25) #passet best for 1/r12. Gir b = 0.6
+				#fitfunc = lambda x,b: 2*np.log(2)+b/(alpha*x)**(0.5) # passet best for r12_inverse. Gir b = 0.47024 = ln(1+0.6)
+				#fitfunc = lambda x,a,b,c: a+b/(alpha*x)**(c) 
+				fitfunc = lambda x,b,c: 1+b/(alpha*x)**(c)
+
+				popt, pcov = curve_fit(fitfunc, omega, K/V)
+				b,c = tuple(popt)
+				print(f"Zero point: {(-b)**(1/c)}")
+				#ax.plot(w_hires, fitfunc(w_hires, *popt), color="k", alpha=0.7, lw=2, label=f"Fit: $1+ 0.532\\cdot \\omega"+r"^{-0.5}$", linestyle="--")
 
 
 		
-		ax.set_xlabel(r"$\omega$", fontsize=14)
-		ax.set_ylabel(r"$\langle V \rangle / \ \langle T \rangle$", fontsize=14)
-		ax.legend(fancybox=True, shadow=True, loc="upper right", fontsize=12)
-		ax.set_title(r"Ratio $\langle V \rangle / \ \langle T \rangle$ for both systems", fontsize=14)
+		ax.set_xlabel(r"$\omega$ [a.u]", fontsize=14)
+		ax.set_ylabel(r"$\langle T \rangle / \ \langle V \rangle$", fontsize=14)
+		ax.legend(fancybox=True, shadow=True, loc="lower right", fontsize=12)
+		ax.set_title(r"Ratio $\langle T \rangle / \ \langle V \rangle$ for both systems", fontsize=14)
 		plt.show()
 	

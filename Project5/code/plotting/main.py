@@ -1,7 +1,7 @@
 import numpy as np
 import sys, argparse, subprocess, os
 
-import optimalStepFitter, plotOptimalStep, plotStability, plotEvarEvsAlpha, plot3DVarBeta, plotVarBetaParallel, plotVirial
+import optimalStepFitter, plotAcceptancerate, plotStability, plotEvarEvsAlpha, plot3DVarBeta, plotVarBetaParallel, plotVirial
 
 
 class fakeStr(str):
@@ -27,34 +27,44 @@ comp.add_argument(fakeStr("-fakecompile"), metavar = "compile", required=False, 
 parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS, help='Show this help message and exit.')
 argparse._HelpAction(option_strings=['-h', '--help'], dest='help', default='==SUPPRESS==', help='Show this help message and exit.')
 
-parser.add_argument('type',type=str,  choices = ["stability", "optimal-step", "optimal-step-fit", "E-varE", "3D-beta", "beta-parallel", "virial"],help="Follow program name by optional program specific parameters listed below")
-parser.add_argument("-MCCs", metavar="",type=int, help="int. Number of Monte Carlo cycles to perform")
+parser.add_argument('type',type=str,  choices = ["stability", "acceptance-rate", "optimal-step-fit", "E-varE", "3D-beta", "beta-parallel", "virial"],help="Follow program name by optional program specific parameters listed below")
+parser.add_argument("-omega", metavar="", type=float, help="float. ω, frequency of H.O")
 parser.add_argument("-alpha", metavar = "", type=float, help="float. α, variational parameter")
 parser.add_argument("-beta", metavar="", type=float, help="float. β, variational parameter")
+parser.add_argument("-a0", metavar = "", type=float, help="float. Start value of α")
+parser.add_argument("-a1", metavar = "", type=float, help="float. End value of α")
+parser.add_argument("-da", metavar = "", type=float, help="float. Increment value of α")
+parser.add_argument("-b0", metavar = "", type=float, help="float. Start value of β")
+parser.add_argument("-b1", metavar = "", type=float, help="float. End value of β")
+parser.add_argument("-db", metavar = "", type=float, help="float. Increment value of β")
+parser.add_argument("-step0", metavar = "", type=float, help="float. Start value of step sizes to use in metropolis")
+parser.add_argument("-step1", metavar = "", type=float, help="float. End valuue of step size")
+parser.add_argument("-dstep", metavar = "", type=float, help="float. Increment value step size")
 
+parser.add_argument("-MCCs", metavar="",type=int, help="int. Number of Monte Carlo cycles to perform")
 parser.add_argument("--sim", action="store_true", help="Re-run simulations in plotting code with default parameters. May take time")
-parser.add_argument("--compile", metavar="", type=str, help="str. compile individual programs")
+#parser.add_argument("--compile", metavar="", type=str, help="str. compile individual C++ programs")
 
 
-progparams = parser.add_argument_group("Program parameters (specifics) \nFrom here you can run the C++ programs")
-progparams.add_argument(fakeStr("-fakeRunSingle"), metavar = "runSingle [-T0] [-T1] [-dT] [-MCCs] [-filename] [--compile]", required=False, action="append", help="FILL ME")
-progparams.add_argument(fakeStr("-fakeAlpha"), metavar = "variateAlpha [-T] [-MCCs] [-initSpin] [-filename] [--compile]", required=False, action="append", help="FILL ME")
-progparams.add_argument(fakeStr("-fakeBeta"), metavar="variateBeta [-L] [-MCCs] [-saveAfter] [-T0] [-T1] [-dT] [threads] [-filename] [--compile]", required=False, action="append", help="FILL ME")
 
 plots = parser.add_argument_group("Program plots \nFrom here you can recreate the plots as seen in the report")
-plots.add_argument(fakeStr("-fakeplotStability"), metavar = "stability [--sim]", required=False, action="append", help="Plots exp. values for a 2x2 lattice")
-plots.add_argument(fakeStr("-fakeplotoptimalstep"), metavar = "opt-step [--sim]", required=False, action="append", help="rrPlots exp. values2x2 lattice ")
-plots.add_argument(fakeStr("-fakeplotoptimalstepfit"), metavar = "opt-step-fit", required=False, action="append", help="Plots E and M for a 20x20 lattice")
-plots.add_argument(fakeStr("-fakeplotEvarE"), metavar = "E-varE [--sim]", required=False, action="append", help="Plots the number of accepted flips as a function of MCCs for T = 1.00, 1.35, 1.70, 2.05 and 2.40")
-plots.add_argument(fakeStr("-fakeplot3Dbeta"), metavar = "3D-beta [--sim]", required=False, action="append", help="Plot energy histogram for temperatures T=1 and T=2.4")
-plots.add_argument(fakeStr("-fakeplotbetaparalell"), metavar = "beta-par [--sim]", required=False, action="append", help="Plots the number of accepted flips as a function of MCCs for T = 1.00, 1.35, 1.70, 2.05 and 2.40")
-plots.add_argument(fakeStr("-fakeplotvirial"), metavar = "virial[--sim] ", required=False, action="append", help="Plots the number of accepted flips as a function of MCCs for T = 1.00, 1.35, 1.70, 2.05 and 2.40")
+plots.add_argument(fakeStr("-fakeplotStability"), metavar = "stability [--sim] [-a0] [-a1] [-da] [-MCCs]", required=False, action="append", help="Plots energy and its variance againt MCCs for both systems")
+plots.add_argument(fakeStr("-fakeplotoptimalstep"), metavar = "acceptance-rate [--sim] [-a0] [-a1] [-da] [-omega] [-step0] [-step1] [-dstep] [-MCCs]", required=False, action="append", help="Plots the Acceptance rate")
+plots.add_argument(fakeStr("-fakeplotoptimalstepfit"), metavar = "optimal-step-fit", required=False, action="append", help="Plots the optimal step fit of the m parameter.")
+plots.add_argument(fakeStr("-fakeplotEvarE"), metavar = "E-varE [--sim] [-a0] [-a1] [-da] [-MCCs]", required=False, action="append", help="Plots E and its variance against alpha for both systems")
+plots.add_argument(fakeStr("-fakeplot3Dbeta"), metavar = "3D-beta [--sim] [-a0] [-a1] [-da] [-b0] [-b1] [-db] [-omega] [-MCCs]", required=False, action="append", help="3D plot of energy for several alpha and beta")
+# plots.add_argument(fakeStr("-fakeplotbetaparalell"), metavar = "beta-par [--sim]", required=False, action="append", help="Plots the number of accepted flips as a function of MCCs for T = 1.00, 1.35, 1.70, 2.05 and 2.40")
+plots.add_argument(fakeStr("-fakeplotvirial"), metavar = "virial [--sim] ", required=False, action="append", help="Plots the virial ratio for both systems")
 
+# progparams = parser.add_argument_group("C++ Program parameters (specifics) \n NOTE: C++ programs must be run individually from terminal")
+# progparams.add_argument(fakeStr("-fakeRunSingle"), metavar = "runSingle [-T0] [-T1] [-dT] [-MCCs] [-filename] [--compile]", required=False, action="append", help="")
+# progparams.add_argument(fakeStr("-fakeAlpha"), metavar = "variateAlpha [-T] [-MCCs] [-initSpin] [-filename] [--compile]", required=False, action="append", help="")
+# progparams.add_argument(fakeStr("-fakeBeta"), metavar="variateBeta [-L] [-MCCs] [-saveAfter] [-T0] [-T1] [-dT] [threads] [-filename] [--compile]", required=False, action="append", help="")
 
 examples = parser.add_argument_group("#Examples#")
-examples.add_argument(fakeStr("-ex1"), metavar = "3D-beta --sim", required=False, action="append", help="Simulates 3D alpha/beta plot")
-#examples.add_argument(fakeStr("-ex2"), metavar = "20x20 -MCCs 100", required=False, action="append", help="Simulates 20x20 lattice with default values except for MCCs = 100")
-#examples.add_argument(fakeStr("-ex3"), metavar = "plot-EM-20x20 --sim", required=False, action="append", help="Simulates for default parameters and plots E and M for 20x20 lattice")
+examples.add_argument(fakeStr("-ex1"), metavar = "3D-beta", required=False, action="append", help="Plots D alpha/beta plot, given data files already exist")
+examples.add_argument(fakeStr("-ex2"), metavar = "stability --sim -MCCs 4", required=False, action="append", help="Simulates the systems for default parameters with 10^4 MCCs and plots the stability")
+examples.add_argument(fakeStr("-ex3"), metavar = "E-varE --sim -da 0.01", required=False, action="append", help="Calculates E and the variance for default alpha parameters, except for da=0.01")
 
 
 
@@ -133,27 +143,52 @@ if __name__ == "__main__":
 
 	elif args.type == "stability":
 		defaults["sim"] = False
+		defaults["MCCs"] = 7
+		defaults["a0"] = 0.5
+		defaults["a1"] = 1.5
+		defaults["da"] = 0.05
 		args = assignDefaults(args,defaults)
-		plotStability.main(args["sim"])
+		plotStability.main(args["sim"], args["MCCs"], args["a0"], args["a1"], args["da"])
 
-	elif args.type == "optimal-step":
+	elif args.type == "acceptance-rate":
 		defaults["sim"] = False
+		defaults["MCCs"] = 6
+		defaults["a0"] = 0.9
+		defaults["a1"] = 3
+		defaults["da"] = 0.05
+		defaults["step0"] = 7
+		defaults["step1"] = 0.5
+		defaults["dstep"] = 1.5
+		defaults["omega"] = 1
+
 		args = assignDefaults(args,defaults)
-		plotOptimalStep.main(args["sim"])
+		plotAcceptancerate.main(args["sim"], args["omega"], args["a0"], args["a1"], args["da"], args["step0"], args["step1"], args["dstep"], args["MCCs"])
  
 	elif args.type == "optimal-step-fit":
 		optimalStepFitter.main()
 
 	elif args.type == "E-varE":
 		defaults["sim"] = False
+		defaults["MCCs"] = 6
+		defaults["a0"] = 0.5
+		defaults["a1"] = 1.5
+		defaults["da"] = 0.01
 		args = assignDefaults(args, defaults)
-		plotEvarEvsAlpha.main(args["sim"])
+		plotEvarEvsAlpha.main(args["sim"], args["a0"], args["a1"], args["da"], args["MCCs"])
 	
 	
 	elif args.type == "3D-beta":
 		defaults["sim"] = False
+		defaults["MCCs"] = 6
+		defaults["a0"] = 0.8
+		defaults["a1"] = 1.4
+		defaults["da"] = 0.00024
+		defaults["b0"] = 0
+		defaults["b1"] = 1
+		defaults["db"] = 0.004
+		defaults["omega"] = 1
 		args = assignDefaults(args, defaults)
-		plot3DVarBeta.main(args["sim"])
+		plot3DVarBeta.main(args["sim"],args["a0"], args["a1"], args["da"],args["b0"], args["b1"], args["db"],args["omega"],args["MCCs"] )
 
 	elif args.type == "beta-parallel":
 		defaults["sim"] = False
