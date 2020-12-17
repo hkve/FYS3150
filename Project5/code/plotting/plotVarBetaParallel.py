@@ -33,4 +33,4 @@ def main(sim = False):
 	ax.legend(loc='upper center', fancybox=True,shadow=True,fontsize=12)
 	plt.show()
 
-main()
+
