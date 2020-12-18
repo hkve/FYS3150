@@ -27,7 +27,7 @@ comp.add_argument(fakeStr("-fakecompile"), metavar = "compile", required=False, 
 parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS, help='Show this help message and exit.')
 argparse._HelpAction(option_strings=['-h', '--help'], dest='help', default='==SUPPRESS==', help='Show this help message and exit.')
 
-parser.add_argument('type',type=str,  choices = ["stability", "acceptance-rate", "optimal-step-fit", "E-varE", "3D-beta", "beta-parallel", "virial"],help="Follow program name by optional program specific parameters listed below")
+parser.add_argument('type',type=str,  choices = ["single", "variateAlpha", "variateBeta","stability", "acceptance-rate", "optimal-step-fit", "E-varE", "3D-beta", "beta-parallel", "virial"],help="Follow program name by optional program specific parameters listed below")
 parser.add_argument("-omega", metavar="", type=float, help="float. ω, frequency of H.O")
 parser.add_argument("-alpha", metavar = "", type=float, help="float. α, variational parameter")
 parser.add_argument("-beta", metavar="", type=float, help="float. β, variational parameter")
@@ -40,6 +40,10 @@ parser.add_argument("-db", metavar = "", type=float, help="float. Increment valu
 parser.add_argument("-step0", metavar = "", type=float, help="float. Start value of step sizes to use in metropolis")
 parser.add_argument("-step1", metavar = "", type=float, help="float. End valuue of step size")
 parser.add_argument("-dstep", metavar = "", type=float, help="float. Increment value step size")
+parser.add_argument("-psi", metavar = "", type=str, help="string. What trial wave functions to run, T1 or T2")
+parser.add_argument("-EL", metavar = "", type=str, help="string. What local energy to run, E0 (H0), E1 or E2 (with interactions)")
+parser.add_argument("-outfile", metavar = "", type=str, help="string. Filename to be saved to ../data/")
+parser.add_argument("-solvemode", metavar="", type=str, help="For variating alpha, to run 'noninteractive' or 'interactive'")
 
 parser.add_argument("-MCCs", metavar="",type=int, help="int. Number of Monte Carlo cycles to perform")
 parser.add_argument("--sim", action="store_true", help="Re-run simulations in plotting code with default parameters. May take time")
@@ -56,10 +60,10 @@ plots.add_argument(fakeStr("-fakeplot3Dbeta"), metavar = "3D-beta [--sim] [-a0] 
 # plots.add_argument(fakeStr("-fakeplotbetaparalell"), metavar = "beta-par [--sim]", required=False, action="append", help="Plots the number of accepted flips as a function of MCCs for T = 1.00, 1.35, 1.70, 2.05 and 2.40")
 plots.add_argument(fakeStr("-fakeplotvirial"), metavar = "virial [--sim] ", required=False, action="append", help="Plots the virial ratio for both systems")
 
-# progparams = parser.add_argument_group("C++ Program parameters (specifics) \n NOTE: C++ programs must be run individually from terminal")
-# progparams.add_argument(fakeStr("-fakeRunSingle"), metavar = "runSingle [-T0] [-T1] [-dT] [-MCCs] [-filename] [--compile]", required=False, action="append", help="")
-# progparams.add_argument(fakeStr("-fakeAlpha"), metavar = "variateAlpha [-T] [-MCCs] [-initSpin] [-filename] [--compile]", required=False, action="append", help="")
-# progparams.add_argument(fakeStr("-fakeBeta"), metavar="variateBeta [-L] [-MCCs] [-saveAfter] [-T0] [-T1] [-dT] [threads] [-filename] [--compile]", required=False, action="append", help="")
+progparams = parser.add_argument_group("C++ Program parameters (specifics) \nNOTE: C++ programs must be run individually from terminal")
+progparams.add_argument(fakeStr("-fakesingle"), metavar = "single ", required=False, action="append", help="Runs a single wave function for a single local energy. Default psi = T2, EL=E2, log10(MCCs)=7, omega=1, outfile=dump.dat")
+progparams.add_argument(fakeStr("-fakeAlpha"), metavar = "variateAlpha ", required=False, action="append", help="Variates psi_T1 for noninteractive/interactive case. Default log10(MCCs)=7, a0=0.8, a1=1.2, da=0.1, solvmode 'noninteractive'")
+progparams.add_argument(fakeStr("-fakeBeta"), metavar="variateBeta", required=False, action="append", help="Runs the individual variatons for α and β.")
 
 examples = parser.add_argument_group("#Examples#")
 examples.add_argument(fakeStr("-ex1"), metavar = "3D-beta", required=False, action="append", help="Plots D alpha/beta plot, given data files already exist")
@@ -86,6 +90,8 @@ def compile(name):
 if __name__ == "__main__":
 	if not os.path.isdir("../data/"):
 		subprocess.run(f"mkdir ../data".split())
+	if not os.path.isdir("../compiled/"):
+		subprocess.run(f"mkdir ../compiled".split())
 
 	if len(sys.argv) == 2:
 		if sys.argv[1] == "compile":
@@ -97,49 +103,37 @@ if __name__ == "__main__":
 	for arg in args.__dict__.keys():
 		defaults[arg] = None
 
-	if args.type=="2x2":
-		defaults["T0"] = 1
-		defaults["T1"] = 4
-		defaults["dT"] = 0.1
-		defaults["MCCs"] = int(1e6)
-		defaults["filename"] = "../data/2x2EXP.dat"
+	if args.type=="single":
+		defaults["psi"] = "T2"
+		defaults["EL"] = "E2"
+		defaults["MCCs"] = 7
+		defaults["omega"] = 1
+		defaults["outfile"] = "dump.dat"
 
 		args = assignDefaults(args,defaults)
-
-		if args["compile"]:
-			compile("2x2")
-
-		subprocess.run(f'../cpp/2x2_lattice.out {args["T0"]} {args["T1"]} {args["dT"]} {args["MCCs"]} {args["filename"]}'.split())
-
-	elif args.type=="20x20":
-		defaults["T"] = 1
-		defaults["MCCs"] = 10000
-		defaults["initSpin"] = 0
-		defaults["filename"] = "../data/20x20.dat"
-		args = assignDefaults(args,defaults)
-
-		if args["compile"]:
-			compile("20x20")
 		
+		if not "runSingle.exe" in os.listdir("../compiled/"):
+			compile("single")
+		subprocess.run(f'../compiled/runSingle.exe {args["psi"]} {args["EL"]} {args["MCCs"]} {args["omega"]} {args["outfile"]}'.split())
+	
+	elif args.type =="variateAlpha":
+		defaults["MCCs"] = 7
+		defaults["a0"] = 0.8
+		defaults["a1"] = 1.2
+		defaults["da"] = 0.1
+		defaults["solvemode"] = "noninteractive"
 
-		subprocess.run(f'../cpp/20x20_lattice.out {args["T"]} {args["MCCs"]} {args["initSpin"]} {args["filename"]}'.split())
+		args = assignDefaults(args,defaults)
 
-	elif args.type=="parallel":
-		defaults["L"] = 20
-		defaults["MCCs"] = 1000000
-		defaults["saveAfter"] = int(10**4.2)
-		defaults["T0"] = 2
-		defaults["T1"] = 2.3
-		defaults["dT"] = 0.1
-		defaults["threads"] = 4
-		defaults["filename"] = "parallell_run.dat"
+		if not "variateAlpha.exe" in os.listdir("../compiled/"):
+			compile("alpha")
+		subprocess.run(f'../compiled/variateAlpha.exe {args["MCCs"]} {args["a0"]} {args["a1"]} {args["da"]} {args["solvemode"]}'.split())
 
+	elif args.type=="variateBeta":
+		if not "variateBeta.exe" in os.listdir("../compiled"):
+			compile("beta")
 
-		args = assignDefaults(args, defaults)
-		if args["compile"]:
-			compile("parallel")
-
-		subprocess.run(f'../cpp/parallel.out {args["L"]} {args["MCCs"]} {args["saveAfter"]} {args["T0"]} {args["T1"]} {args["dT"]} {args["threads"]} {args["filename"]}'.split())
+		subprocess.run(f'../compiled/variateBeta.exe')
 
 	elif args.type == "stability":
 		defaults["sim"] = False
