@@ -51,15 +51,13 @@ foo@bar:~$ python3 main.py -h
 ```
 
 ### Examples
-If you want to compile and simulate a 2x2 lattice from T0=1 to T1=8 and output the data to data/foo.dat run
+If you want to run the second trial wave function with 1e8 MCCs, omega = 0.5 and write to /data/foo.dat run
 ```console
-foo@bar:~$ python3 main.py 2x2 -T1 8 -filename foo.dat --compile
+foo@bar:~$ python3 main.py single -psi T2 -EL E2 -omega 0.5 -outfile foo.dat 
 ```
-If you want to simulate a 40x40 lattice from T0 = 1 to T1 = 4 with dT = 0.5 and output the data to data/foo.dat, provided that you have already compiled  
+
+If you want to recreate the stability plot simply write (--sim here assuming you do not have the datafiles)  
 ```console
-foo@bar:~$ python3 main.py parallel -T0 1 -T1 4 -dT 0.5 -filename foo.dat
-```
-If you want to create a plot of the expectation values of a 2x2 lattice for different temperatures as shown in the report, run
-```console
-foo@bar:~$ python3 main.py  plot-exp-2x2 --sim --compile
+foo@bar:~$ python3 main.py stability --sim
+
 ```
